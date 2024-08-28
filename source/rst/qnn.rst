@@ -332,6 +332,128 @@ QuantumLayerV2
         print(rlt)
 
 
+
+QuantumBatchQcloudLayer
+=================================
+
+航空科学基金项目特有的接口，支持该项目特定版本的pyqpanda,可以使用本接口定义一个变分线路，并提交到量子云服务上运行。
+
+.. py:class:: pyvqnet.qnn.quantumlayer.QuantumBatchQcloudLayer(origin_qprog_func, para_num, num_qubits, num_cubits, pauli_str_dict=None, shots = 1000, initializer=None, dtype=None, name="", diff_method="parameter_shift", submit_kwargs={}, query_kwargs={})
+
+    航空科学基金项目特有的接口，支持该项目特定版本的pyqpanda,可以使用本接口定义一个变分线路，并提交到量子云服务上运行。 它提交参数化量子电路到真实芯片并获得测量结果。
+
+    .. note::
+
+        需要预先配置好量子计算云服务，必须设置 'QPANDA_CONFIG'。
+
+        origin_qprog_func 需要返回pypqanda.QProg类型的数据，如果没有设置pauli_str_dict，需要保证该QProg中已经插入了measure。
+        origin_qprog_func 的形式必须按照如下：
+
+        origin_qprog_func(input,param,qubits,cbits,machine)
+        
+            `input`: 输入1维经典数据。
+            
+            `param`: 输入一维的变分量子线路的待训练参数。
+
+            `machine`: 由QuantumBatchQcloudLayer创建的模拟器QCloud，无需用户额外在函数中定义。
+            
+            `qubits`: 由QuantumBatchQcloudLayer创建的模拟器QCloud创建的量子比特,数量为  `num_qubits`, 类型为pyQpanda.Qubits，无需用户额外在函数中定义。
+            
+            `cbits`: 由QuantumBatchQcloudLayer分配的经典比特, 数量为  `num_cubits`, 类型为 pyQpanda.ClassicalCondition，无需用户额外在函数中定义。。
+            
+
+    :param origin_qprog_func: QPanda 构建的变分量子电路函数，必须返回QProg。
+    :param para_num: `int` - 参数数量，参数是大小为[para_num]的QTensor。
+    :param num_qubits: `int` - 量子电路中的量子比特数量。
+    :param num_cubits: `int` - 量子电路中用于测量的经典比特数量。
+    :param pauli_str_dict: `dict|list` - 表示量子电路中泡利运算符的字典或字典列表。 默认为“无”，则进行测量操作，如果输入泡利算符的字典，则会计算单个期望或者多个期望。
+    :param shot: `int` - 测量次数。 默认值为 1000。
+    :param initializer: 参数值的初始化器。 默认为“无”，使用0~2*pi正态分布。
+    :param dtype: 参数的数据类型。 默认值为 None，即使用默认数据类型pyvqnet.kfloat32。
+    :param name: 模块的名称。 默认为空字符串。
+    :param diff_method: 梯度计算的微分方法。 默认为“parameter_shift”,当前不支持其他微分方法。
+    :param submit_kwargs: 用于提交量子电路的附加关键字参数，默认:{"default_task_group_size":200,"test_qcloud_fake":False},当设置test_qcloud_fake为True则本地CPUQVM模拟。
+    :param query_kwargs: 用于查询量子结果的附加关键字参数，默认:{"timeout":2,"print_query_info":True,"sub_circuits_split_size":1}。
+    :return: 一个可以计算量子电路的模块。
+
+    Example::
+
+        import numpy as np
+        import pyqpanda as pq
+        import pyvqnet
+        from pyvqnet.qnn import QuantumLayer,QuantumBatchQcloudLayer
+        from pyvqnet.qnn import expval_qcloud
+
+        def qfun(input,param, m_machine, m_qlist,cubits):
+            measure_qubits = [0,2]
+            m_prog = pq.QProg()
+            cir = pq.QCircuit()
+            cir.insert(pq.RZ(m_qlist[0],input[0]))
+            cir.insert(pq.CNOT(m_qlist[0],m_qlist[1]))
+            cir.insert(pq.RY(m_qlist[1],param[0]))
+            cir.insert(pq.CNOT(m_qlist[0],m_qlist[2]))
+            cir.insert(pq.RZ(m_qlist[1],input[1]))
+            cir.insert(pq.RY(m_qlist[2],param[1]))
+            cir.insert(pq.H(m_qlist[2]))
+            m_prog.insert(cir)
+
+            for idx, ele in enumerate(measure_qubits):
+                m_prog << pq.Measure(m_qlist[ele], cubits[idx])  # pylint: disable=expression-not-assigned
+            return m_prog
+
+        l = QuantumBatchQcloudLayer(qfun,
+                        2,
+                        6,
+                        6,
+                        pauli_str_dict=None,
+                        shots = 1000,
+                        initializer=None,
+                        dtype:Union[int,None]=None,
+                        name="",
+                        diff_method="parameter_shift",
+                        submit_kwargs={},
+                        query_kwargs={})
+        x = pyvqnet.tensor.QTensor([[0.56,1.2],[0.56,1.2],[0.56,1.2],[0.56,1.2],[0.56,1.2]],requires_grad= True)
+        y = l(x)
+        print(y)
+        y.backward()
+        print(l.m_para.grad)
+        print(x.grad)
+
+        def qfun2(input,param, m_machine, m_qlist,cubits):
+            measure_qubits = [0,2]
+            m_prog = pq.QProg()
+            cir = pq.QCircuit()
+            cir.insert(pq.RZ(m_qlist[0],input[0]))
+            cir.insert(pq.CNOT(m_qlist[0],m_qlist[1]))
+            cir.insert(pq.RY(m_qlist[1],param[0]))
+            cir.insert(pq.CNOT(m_qlist[0],m_qlist[2]))
+            cir.insert(pq.RZ(m_qlist[1],input[1]))
+            cir.insert(pq.RY(m_qlist[2],param[1]))
+            cir.insert(pq.H(m_qlist[2]))
+            m_prog.insert(cir)
+
+            return m_prog
+        l = QuantumBatchQcloudLayer(qfun2,
+                    2,
+                    6,
+                    6,
+                    pauli_str_dict={'Z0 X1':10,'':-0.5,'Y2':-0.543},
+                    shots = 1000,
+                    initializer=None,
+                    dtype:Union[int,None]=None,
+                    name="",
+                    diff_method="parameter_shift",
+                    submit_kwargs={},
+                    query_kwargs={})
+        x = pyvqnet.tensor.QTensor([[0.56,1.2],[0.56,1.2],[0.56,1.2],[0.56,1.2]],requires_grad= True)
+        y = l(x)
+        print(y)
+        y.backward()
+        print(l.m_para.grad)
+        print(x.grad)
+
+
 QuantumBatchAsyncQcloudLayer
 =================================
 
@@ -7359,102 +7481,6 @@ model_summary
         # #########################################################
 
 
-QNG
----------------------------------------------------------------
-
-.. py:class:: pyvqnet.qnn.vqc.qng.QNG(qmodel, stepsize=0.01)
-
-    `量子自然梯度法(Quantum Nature Gradient) <https://arxiv.org/abs/1909.02108>`_ 借鉴经典自然梯度法的概念 `Amari (1998) <https://www.mitpressjournals.org/doi/abs/10.1162/089976698300017746>`__ ，
-    我们改为将优化问题视为给定输入的可能输出值的概率分布（即，最大似然估计），则更好的方法是在分布
-    空间中执行梯度下降，它相对于参数化是无量纲和不变的. 因此，无论参数化如何，每个优化步骤总是会为每个参数选择最佳步长。
-    在量子机器学习任务中，量子态空间拥有一个独特的不变度量张量，称为 Fubini-Study 度量张量 :math:`g_{ij}`。
-    该张量将量子线路参数空间中的最速下降转换为分布空间中的最速下降。
-    量子自然梯度的公式如下：
-
-    .. math:: \theta_{t+1} = \theta_t - \eta g^{+}(\theta_t)\nabla \mathcal{L}(\theta),
-
-    其中 :math:`g^{+}` 是伪逆。
-
-    `wrapper_calculate_qng` 是需要加到待计算量子自然梯度的模型的forward函数的装饰器。仅对模型注册的 `Parameter` 类型的参数优化。
-
-    :param qmodel: 量子变分线路模型,需要使用 `wrapper_calculate_qng` 作为forward函数的装饰器。
-    :param stepsize: 梯度下降法的步长，默认0.01。
-
-    .. note::
-
-        仅在非批处理数据上进行了测试。
-        仅支持纯变分量子电路。
-        step() 将更新输入和参数的梯度。
-        step() 仅会更新模型参数的数值。
-
-    Example::
-
-        from pyvqnet.qnn.vqc import QMachine, RX, RY, RZ, CNOT, rz, PauliX, qmatrix, PauliZ, Probability, rx, ry, MeasureAll, U2
-        from pyvqnet.tensor import QTensor, tensor
-        import pyvqnet
-        import numpy as np
-        from pyvqnet.qnn.vqc import wrapper_calculate_qng
-
-        class QModel(pyvqnet.nn.Module):
-            def __init__(self, num_wires, dtype):
-                super(QModel, self).__init__()
-
-                self._num_wires = num_wires
-                self._dtype = dtype
-                self.qm = QMachine(num_wires, dtype=dtype)
-                self.rz_layer1 = RZ(has_params=True, trainable=False, wires=0)
-                self.rz_layer2 = RZ(has_params=True, trainable=False, wires=1)
-                self.u2_layer1 = U2(has_params=True, trainable=False, wires=0)
-                self.l_train1 = RY(has_params=True, trainable=True, wires=1)
-                self.l_train1.params.init_from_tensor(
-                    QTensor([333], dtype=pyvqnet.kfloat32))
-                self.l_train2 = RX(has_params=True, trainable=True, wires=2)
-                self.l_train2.params.init_from_tensor(
-                    QTensor([4444], dtype=pyvqnet.kfloat32))
-                self.xlayer = PauliX(wires=0)
-                self.cnot01 = CNOT(wires=[0, 1])
-                self.cnot12 = CNOT(wires=[1, 2])
-                self.measure = MeasureAll(obs={'Y0': 1})
-
-            @wrapper_calculate_qng
-            def forward(self, x, *args, **kwargs):
-                self.qm.reset_states(x.shape[0])
-
-                ry(q_machine=self.qm, wires=0, params=np.pi / 4)
-                ry(q_machine=self.qm, wires=1, params=np.pi / 3)
-                ry(q_machine=self.qm, wires=2, params=np.pi / 7)
-                self.rz_layer1(q_machine=self.qm, params=x[:, [0]])
-                self.rz_layer2(q_machine=self.qm, params=x[:, [1]])
-
-                self.u2_layer1(q_machine=self.qm, params=x[:, [3, 4]])  #
-
-                self.cnot01(q_machine=self.qm)
-                self.cnot12(q_machine=self.qm)
-                ry(q_machine=self.qm, wires=0, params=np.pi / 7)
-
-                self.l_train1(q_machine=self.qm)
-                self.l_train2(q_machine=self.qm)
-                #rx(q_machine=self.qm, wires=2, params=x[:, [3]])
-                rz(q_machine=self.qm, wires=1, params=x[:, [2]])
-                ry(q_machine=self.qm, wires=0, params=np.pi / 7)
-                rz(q_machine=self.qm, wires=1, params=x[:, [2]])
-
-                self.cnot01(q_machine=self.qm)
-                self.cnot12(q_machine=self.qm)
-                rlt = self.measure(q_machine=self.qm)
-                return rlt
-
-
-        qmodel = QModel(3, pyvqnet.kcomplex64)
-
-        x = QTensor([[1111.0, 2222, 444, 55, 666]])
-
-        qng = pyvqnet.qnn.vqc.QNG(qmodel,0.01)
-
-        qng.step(x)
-
-        print(qmodel.parameters())
-        #[[[333.0084]], [[4443.9985]]]
 
 
 wrapper_single_qubit_op_fuse
