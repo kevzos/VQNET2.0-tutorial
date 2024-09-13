@@ -53,22 +53,30 @@ VQNet是由本源量子开发的量子机器学习计算框架，它可以用于
     rst/qml_demo.rst
 
 .. toctree::
-    :caption: 接口介绍
+    :caption: 神经网络接口介绍
     :maxdepth: 2
 
     rst/QTensor.rst
     rst/nn.rst
-    rst/qnn.rst
     rst/utils.rst
 
 
+.. toctree::
+    :caption: 基于QPanda的量子神经网络接口介绍
+    :maxdepth: 2
+
+    rst/qnn.rst
+
+.. toctree::
+    :caption: 基于自动微分的量子变分线路接口介绍
+    :maxdepth: 2
+
+    rst/vqc.rst
 
 .. toctree::
     :caption: 其他
     :maxdepth: 2
 
-    rst/xtensor.rst
-    rst/xtensor_nn.rst
     rst/FAQ.rst
     rst/CHANGELOG.rst
 
