@@ -4,7 +4,7 @@
 基本例子
 *********************************************************
 
-CPU下模型训练
+模型训练
 =================================
 
 以下的经典神经网络模块均支持自动反向传播计算。当您运行前传函数以后,再执行反向函数就可以计算梯度。一个卷积层的简单例子如下:
@@ -22,7 +22,7 @@ CPU下模型训练
     hw = 4      # input width and heights
 
     # two dimension convolution layer
-    test_conv = Conv2D(ic,oc,(2,2),(2,2),"same")
+    layer = Conv2D(ic,oc,(2,2),(2,2),"same")
 
     # input of shape [b,ic,hw,hw]
     x0 = arange(1,b*ic*hw*hw+1,requires_grad=True,dtype=kfloat32)
@@ -30,48 +30,13 @@ CPU下模型训练
     x1 = x0.reshape([b,ic,hw,hw])
 
     #forward function
-    y = test_conv(x1)
+    y = layer(x1)
 
     #backward function with autograd
     y.backward()
     print(x0.grad)
-    
-
-GPU下模型训练
-=================================
-
-您需要安装linux版本下的pyvqnet才能使用GPU。需要保证数据QTensor以及Module均在GPU上。可使用 `toGPU` 转移数据或者 `gpu` 创建副本,或者在数据创建函数中使用device指定。
-
-请参考以下例子:
-
-.. code-block::
-
-    from pyvqnet.tensor import arange
-    from pyvqnet import kfloat32,DEV_GPU_0
-    from pyvqnet.nn import Conv2D
 
 
-    b = 2        # batch size 
-    ic = 2       # input channels
-    oc = 2      # output channels
-    hw = 4      # input width and heights
-
-
-    test_conv = Conv2D(ic,oc,(2,2),(2,2),"same")
-    #复制到gpu上DEV_GPU_0
-    test_conv.toGPU(DEV_GPU_0)
-    # input of shape [b,ic,hw,hw]
-    x0 = arange(1,b*ic*hw*hw+1,requires_grad=True,dtype=kfloat32).reshape([b,ic,hw,hw])
-
-    #使用gpu 复制数据到DEV_GPU_0,亦可以在函数内指定ID,也可以使用相关tensor接口的device进行指定
-    x0 = x0.GPU(DEV_GPU_0)
-    x0.requires_grad = True
-    #forward function
-    x = test_conv(x0)
-
-    #backward function with autograd
-    x.backward()
-    print(x0.grad)
 
 .. currentmodule:: pyvqnet.nn
 
@@ -123,11 +88,11 @@ forward
         b = 2
         ic = 3
         oc = 2
-        test_conv = Conv2D(ic, oc, (3, 3), (2, 2), "same")
+        layer = Conv2D(ic, oc, (3, 3), (2, 2), "same")
         x0 = QTensor(np.arange(1, b * ic * 5 * 5 + 1).reshape([b, ic, 5, 5]),
                     requires_grad=True,
                     dtype=vq.kfloat32)
-        x = test_conv.forward(x0)
+        x = layer.forward(x0)
         print(x)
 
 
@@ -148,54 +113,13 @@ state_dict
     Example::
 
         from pyvqnet.nn import Conv2D
-        test_conv = Conv2D(2,3,(3,3),(2,2),"same")
-        print(test_conv.state_dict().keys())
+        layer = Conv2D(2,3,(3,3),(2,2),"same")
+        print(layer.state_dict().keys())
         #odict_keys(['weights', 'bias'])
 
 
-toGPU
-=================================
 
-.. py:function:: pyvqnet.nn.module.Module.toGPU(device: int = DEV_GPU_0)
-
-    将模块和其子模块的参数和缓冲数据移动到指定的 GPU 设备中。
-
-    device 指定存储其内部数据的设备。 当device >= DEV_GPU_0时,数据存储在GPU上。如果您的计算机有多个GPU,
-    则可以指定不同的设备来存储数据。例如device = DEV_GPU_1 , DEV_GPU_2, DEV_GPU_3, ... 表示存储在不同序列号的GPU上。
-    
-    .. note::
-        Module在不同GPU上无法进行计算。
-        如果您尝试在 ID 超过验证 GPU 最大数量的 GPU 上创建 QTensor,将引发 Cuda 错误。
-
-    :param device: 当前保存QTensor的设备,默认:DEV_GPU_0。device= pyvqnet.DEV_GPU_0,存储在第一个 GPU 中,devcie = DEV_GPU_1,存储在第二个 GPU 中,依此类推
-    :return: Module 移动到 GPU 设备。
-
-    Examples::
-
-        from pyvqnet.nn.conv import ConvT2D 
-        test_conv = ConvT2D(3, 2, [4,4], [2, 2], "same")
-        test_conv = test_conv.toGPU()
-        print(test_conv.backend)
-        #1000
-
-
-toCPU
-=================================
-
-.. py:function:: pyvqnet.nn.module.Module.toCPU()
-
-    将模块和其子模块的参数和缓冲数据移动到特定的 CPU 设备中。
-
-    :return: Module 移动到 CPU 设备。
-
-    Examples::
-
-        from pyvqnet.nn.conv import ConvT2D 
-        test_conv = ConvT2D(3, 2, [4,4], [2, 2], "same")
-        test_conv = test_conv.toCPU()
-        print(test_conv.backend)
-        #0
-
+ 
 
 .. _save_parameters:
 
@@ -436,9 +360,9 @@ Conv1D
         b= 2
         ic =3
         oc = 2
-        test_conv = Conv1D(ic,oc,3,2,"same")
+        layer = Conv1D(ic,oc,3,2,"same")
         x0 = QTensor(np.arange(1,b*ic*5*5 +1).reshape([b,ic,25]),requires_grad=True,dtype=pyvqnet.kfloat32)
-        x = test_conv.forward(x0)
+        x = layer.forward(x0)
         print(x)
 
 
@@ -479,9 +403,9 @@ Conv2D
         b= 2
         ic =3
         oc = 2
-        test_conv = Conv2D(ic,oc,(3,3),(2,2),"same")
+        layer = Conv2D(ic,oc,(3,3),(2,2),"same")
         x0 = QTensor(np.arange(1,b*ic*5*5+1).reshape([b,ic,5,5]),requires_grad=True,dtype=pyvqnet.kfloat32)
-        x = test_conv.forward(x0)
+        x = layer.forward(x0)
         print(x)
 
 
@@ -519,9 +443,9 @@ ConvT2D
         from pyvqnet.tensor import QTensor
         from pyvqnet.nn import ConvT2D
         import pyvqnet
-        test_conv = ConvT2D(3, 2, (3, 3), (1, 1), "valid")
+        layer = ConvT2D(3, 2, (3, 3), (1, 1), "valid")
         x = QTensor(np.arange(1, 1 * 3 * 5 * 5+1).reshape([1, 3, 5, 5]), requires_grad=True,dtype=pyvqnet.kfloat32)
-        y = test_conv.forward(x)
+        y = layer.forward(x)
         print(y)
 
 
@@ -594,11 +518,7 @@ MaxPool1D
 
         y= test_mp.forward(x)
         print(y)
-        #[[[1. 4. 5.]
-        #   [3. 3. 3.]
-        #   [4. 4. 4.]
-        #   [5. 6. 6.]
-        #   [1. 5. 7.]]]
+ 
 
 AvgPool2D
 =================================
@@ -633,8 +553,7 @@ AvgPool2D
 
         y= test_mp.forward(x)
         print(y)
-        #[[[[1.5  1.75]
-        #    [3.75 3.  ]]]]
+ 
         
 
 MaxPool2D
@@ -736,12 +655,12 @@ BatchNorm2d
         import pyvqnet
         b = 2
         ic = 2
-        test_conv = BatchNorm2d(ic)
+        layer = BatchNorm2d(ic)
 
         x = QTensor(np.arange(1, 17).reshape([b, ic, 4, 1]),
                     requires_grad=True,
                     dtype=pyvqnet.kfloat32)
-        y = test_conv.forward(x)
+        y = layer.forward(x)
         print(y)
 
 
@@ -778,12 +697,12 @@ BatchNorm1d
         from pyvqnet.tensor import QTensor
         from pyvqnet.nn import BatchNorm1d
         import pyvqnet
-        test_conv = BatchNorm1d(4)
+        layer = BatchNorm1d(4)
 
         x = QTensor(np.arange(1, 17).reshape([4, 4]),
                     requires_grad=True,
                     dtype=pyvqnet.kfloat32)
-        y = test_conv.forward(x)
+        y = layer.forward(x)
         print(y)
 
 
@@ -814,9 +733,9 @@ LayerNormNd
         from pyvqnet.tensor import QTensor,kfloat32
         from pyvqnet.nn.layer_norm import LayerNormNd
         ic = 4
-        test_conv = LayerNormNd([2,2])
+        layer = LayerNormNd([2,2])
         x = QTensor(np.arange(1,17).reshape([2,2,2,2]),requires_grad=True,dtype=kfloat32)
-        y = test_conv.forward(x)
+        y = layer.forward(x)
         print(y)
        
 
@@ -848,9 +767,9 @@ LayerNorm2d
         from pyvqnet.tensor import QTensor
         from pyvqnet.nn.layer_norm import LayerNorm2d
         ic = 4
-        test_conv = LayerNorm2d(8)
+        layer = LayerNorm2d(8)
         x = QTensor(np.arange(1,17).reshape([2,2,4,1]),requires_grad=True,dtype=pyvqnet.kfloat32)
-        y = test_conv.forward(x)
+        y = layer.forward(x)
         print(y)
 
 
@@ -883,9 +802,9 @@ LayerNorm1d
         import pyvqnet
         from pyvqnet.tensor import QTensor
         from pyvqnet.nn.layer_norm import LayerNorm1d
-        test_conv = LayerNorm1d(4)
+        layer = LayerNorm1d(4)
         x = QTensor(np.arange(1,17).reshape([4,4]),requires_grad=True,dtype=pyvqnet.kfloat32)
-        y = test_conv.forward(x)
+        y = layer.forward(x)
         print(y)
 
 
@@ -919,9 +838,9 @@ GroupNorm
         import numpy as np
         from pyvqnet.tensor import QTensor,kfloat32
         from pyvqnet.nn import GroupNorm
-        test_conv = GroupNorm(2,10)
+        layer = GroupNorm(2,10)
         x = QTensor(np.arange(0,60*2*5).reshape([2,10,3,2,5]),requires_grad=True,dtype=kfloat32)
-        y = test_conv.forward(x)
+        y = layer.forward(x)
         print(y)
 
 Linear
@@ -957,8 +876,7 @@ Linear
         y = n.forward(input)
         print(y)
 
-     
-        
+
 
 
 Dropout
@@ -988,7 +906,7 @@ Dropout
         y = droplayer(x)
         print(y)
 
-    
+ 
 
 
 DropPath
@@ -1011,7 +929,6 @@ DropPath
         x = tensor.randu([4])
         y = nn.DropPath()(x)
         print(y)
-        #[0.9074978,0.9350062,0.6896403,0.3541051]
 
 
 
@@ -1039,7 +956,7 @@ Pixel_Shuffle
         inx.requires_grad=  True
         y = ps(inx)
         print(y.shape)
-        #[5, 2, 3, 2, 12, 12]
+ 
 
 Pixel_Unshuffle 
 =================================
@@ -1063,7 +980,7 @@ Pixel_Unshuffle
         inx.requires_grad = True
         y = ps(inx)
         print(y.shape)
-        #[5, 2, 3, 18, 4, 4]
+ 
 
 
 GRU
@@ -1195,7 +1112,6 @@ LSTM
         print(hn)
         print(cn)
 
-      
 
 Dynamic_GRU
 =================================
@@ -1477,7 +1393,7 @@ Interpolate
         mode_ = "bilinear"
         size_ = 3
 
-        class model_vqnet(pyvqnet.nn.Module):
+        class Model(pyvqnet.nn.Module):
 
             def __init__(self):
                 super().__init__()
@@ -1491,10 +1407,12 @@ Interpolate
 
         input_vqnet = tensor.QTensor(np_,  dtype=pyvqnet.kfloat32, requires_grad=True)
         loss_pyvqnet = pyvqnet.nn.MeanSquaredError()
+
+        model_vqnet = Model()
         output_vqnet = model_vqnet(input_vqnet)
         l = loss_pyvqnet(tensor.QTensor([[1.0]]), output_vqnet)
         l.backward()
-        print(model.parameters()[0].grad)
+        print(model_vqnet.parameters()[0].grad)
 
 
 fuse_module
@@ -1560,7 +1478,7 @@ fuse_module
         X_train = np.random.randn(80, 1, 8, 8)
         y_train = np.random.choice([0,1], size=(80))
         
-        model = Model().toGPU()
+        model = Model()
         optimizer = Adam(model.parameters(), lr = 0.001)
         batch_size = 20
         epoch = 80
@@ -1579,9 +1497,9 @@ fuse_module
             t = 0
             for data, label in data_generator(X_train, y_train, batch_size, False):
                 optimizer.zero_grad()
-                data, label = QTensor(data,requires_grad=True).toGPU(), QTensor(label,
+                data, label = QTensor(data,requires_grad=True), QTensor(label,
                                                     dtype=6,
-                                                    requires_grad=False).toGPU()
+                                                    requires_grad=False)
                 
                 result = model(data)
                 
@@ -1605,13 +1523,13 @@ fuse_module
         
         model.eval()
 
-        input = tensor.randn((20, 1, 8, 8)).toGPU()
+        input = tensor.randn((20, 1, 8, 8))
         print(list(model.named_children()))
         time_a = time()
         a = model(input)
         print(f"fuse before {time() - time_a}")
         fuse_module(model)
-        model.toGPU()
+        model
         print(list(model.named_children()))
         time_b = time()
         b = model(input)
@@ -1620,57 +1538,6 @@ fuse_module
         print(tensor.max(tensor.abs(a - b)).item())
 
 
-SDPA
-=================================
-.. py:class:: pyvqnet.transformer.SDPA(attn_mask=None,dropout_p=0.,scale=None,is_causal=False)
-
-    构造计算查询、键和值张量的缩放点积注意力的类。如果输入为cpu下的QTensor,则使用数学公式计算, 如果输入在gpu下QTensor,则使用flash-attention方法计算。
-
-    :param attn_mask: 注意力掩码;形状必须可以广播到注意力权重的形状。
-    :param dropout_p: Dropout 概率,如果大于 0.0, 则应用。
-    :param scale:  在 softmax 之前应用的缩放因子。
-    :param is_causal: 如果为 "true",则假定存在左上因果注意屏蔽,如果同时设置了 attn_mask 和 is_causal, 则会出现错误。
-    :return: 一个SDPA类
-
-    Examples::
-    
-        from pyvqnet.transformer import SDPA
-        from pyvqnet import tensor
-        model = SDPA(tensor.QTensor([1.])).toGPU()
-
-    .. py:method:: forward(query,key,value)
-
-        进行前向计算,如果输入为cpu下的QTensor,则使用数学公式计算, 如果输入在gpu下QTensor,则使用flash-attention方法计算。
-
-        :param query: query输入QTensor。
-        :param key: key输入QTensor。
-        :param value: key输入QTensor。
-        :return: SDPA计算返回的QTensor。
-
-        Examples::
-        
-            from pyvqnet.transformer import SDPA
-            from pyvqnet import tensor
-            import pyvqnet
-            from time import time
-            import pyvqnet.nn as nn
-            import numpy as np
-
-            np.random.seed(42)
-
-            model = SDPA(tensor.QTensor([1.])).toGPU()
-
-            query_np = np.random.randn(3, 3, 3, 5).astype(np.float32) 
-            key_np = np.random.randn(3, 3, 3, 5).astype(np.float32)   
-            value_np = np.random.randn(3, 3, 3, 5).astype(np.float32) 
-
-            query_p = tensor.QTensor(query_np, dtype=pyvqnet.kfloat32, requires_grad=True).toGPU()
-            key_p = tensor.QTensor(key_np, dtype=pyvqnet.kfloat32, requires_grad=True).toGPU()
-            value_p = tensor.QTensor(value_np, dtype=pyvqnet.kfloat32, requires_grad=True).toGPU()
-
-            out_sdpa = model(query_p, key_p, value_p)
-
-            out_sdpa.backward()
 
 
 损失函数层
@@ -1940,7 +1807,8 @@ CrossEntropyLoss
 
     Example::
 
-        from pyvqnet.tensor import QTensor, kint64
+        from pyvqnet.tensor import QTensor
+        from pyvqnet import kint64
         from pyvqnet.nn import CrossEntropyLoss
         x = QTensor([
             0.9476322568516703, 0.226547421131723, 0.5944201443911326,

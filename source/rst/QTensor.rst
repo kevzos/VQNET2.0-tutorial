@@ -214,7 +214,7 @@ VQNet量子机器学习所使用的数据结构QTensor的python接口介绍。QT
 
        利用反向传播算法, 计算当前张量所在的计算图中的所有需计算梯度的张量的梯度。
 
-       :param grad: 输入的梯度,如果grad 是None 则输入全1的梯度，默认：None。
+       :param grad: 输入的梯度,如果grad 是None 则输入全1的梯度，默认:None。
        :return: 无
 
        Example::
@@ -482,7 +482,7 @@ VQNet量子机器学习所使用的数据结构QTensor的python接口介绍。QT
 
        反转张量的轴。如果 new_dims = None, 则反转所有轴。
 
-       :param new_dims: 列表形式储存的新的轴顺序,默认： None, 则反转所有轴。
+       :param new_dims: 列表形式储存的新的轴顺序,默认: None, 则反转所有轴。
 
        :return:  新的 QTensor 。
 
@@ -520,7 +520,7 @@ VQNet量子机器学习所使用的数据结构QTensor的python接口介绍。QT
 
 
 
-   .. py:method:: __getitem__()
+   .. py:method:: __getitem__(item )
 
        支持对 QTensor 使用 切片索引, 下标, 或使用 QTensor 作为高级索引访问输入。该操作返回一个新的 QTensor 。
 
@@ -574,7 +574,7 @@ VQNet量子机器学习所使用的数据结构QTensor的python接口介绍。QT
 
 
 
-   .. py:method:: __setitem__()
+   .. py:method:: __setitem__(key, value)
 
        支持对 QTensor 使用 切片索引, 下标, 或使用 QTensor 作为高级索引修改输入。该操作对输入原地进行修改 。
 
@@ -593,8 +593,8 @@ VQNet量子机器学习所使用的数据结构QTensor的python接口介绍。QT
            a[3][4][1] 形式的索引暂不支持, 使用 a[3,4,1] 形式代替。
 
 
-       :param item: 以 pyslice , 整数, QTensor 构成切片索引。
-
+       :param key: 以 pyslice , 整数, QTensor 构成切片索引。
+       :param value: 填充到 `key` 所在位置的数值或者QTensor 
        :return: 无。
 
        Example::
@@ -640,108 +640,11 @@ VQNet量子机器学习所使用的数据结构QTensor的python接口介绍。QT
 
 
 
-   .. py:method:: GPU(device: int = DEV_GPU_0)
-
-       克隆QTensor到指定的GPU设备
-
-       device 指定存储其内部数据的设备。 当device >= DEV_GPU_0时, 数据存储在GPU上。
-       如果您的计算机有多个 GPU, 您可以指定不同的设备来存储数据。 例如, device = DEV_GPU_1, DEV_GPU_2, DEV_GPU_3, ... 表示存储在具有不同序列号的GPU上。
-
-       .. note::
-
-           QTensor在不同GPU上无法进行计算。
-           如果您尝试在 ID 超过验证 GPU 最大数量的 GPU 上创建 QTensor, 将引发 Cuda 错误。
-
-       :param device: 当前保存QTensor的设备, 默认:DEV_GPU_0, device = pyvqnet.DEV_GPU_0, 存储在第一个 GPU 中, devcie = DEV_GPU_1, 存储在第二个 GPU 中, 依此类推。
-
-       :return: QTensor 克隆到 GPU 设备。
-
-       Examples::
-
-           from pyvqnet.tensor import QTensor
-           a = QTensor([2])
-           b = a.GPU()
-           print(b.device)
-
-
-
-   .. py:method:: CPU()
-
-       克隆QTensor到特定的CPU设备
-
-       :return: QTensor 克隆到 CPU 设备。
-
-       Examples::
-
-           from pyvqnet.tensor import QTensor
-           a = QTensor([2])
-           b = a.CPU()
-           print(b.device)
-
-
-
-   .. py:method:: toGPU(device: int = DEV_GPU_0)
-
-       移动QTensor到指定的GPU设备
-
-       device 指定存储其内部数据的设备。 当device >= DEV_GPU时, 数据存储在GPU上。
-       如果您的计算机有多个 GPU, 您可以指定不同的设备来存储数据。
-       例如, device = DEV_GPU_1, DEV_GPU_2, DEV_GPU_3, ... 表示存储在具有不同序列号的GPU上。
-
-       .. note::
-
-           QTensor在不同GPU上无法进行计算。
-           如果您尝试在 ID 超过验证 GPU 最大数量的 GPU 上创建 QTensor, 将引发 Cuda 错误。
-
-       :param device: 当前保存QTensor的设备, 默认:DEV_GPU_0。device = pyvqnet.DEV_GPU_0, 存储在第一个 GPU 中, devcie = DEV_GPU_1, 存储在第二个 GPU 中, 依此类推。
-       :return: QTensor 移动到 GPU 设备。
-
-       Examples::
-
-           from pyvqnet.tensor import QTensor
-           a = QTensor([2])
-           a = a.toGPU()
-           print(a.device)
-
-
-
-
-   .. py:method:: toCPU()
-
-       移动QTensor到特定的GPU设备
-
-       :return: QTensor 移动到 CPU 设备。
-
-       Examples::
-
-           from pyvqnet.tensor import QTensor
-           a = QTensor([2])
-           b = a.toCPU()
-           print(b.device)
-
-
-
-
-   .. py:method:: isGPU()
-
-       该 QTensor 的数据是否存储在 GPU 主机内存上。
-
-       :return: 该 QTensor 的数据是否存储在 GPU 主机内存上。
-
-       Examples::
-
-           from pyvqnet.tensor import QTensor
-           a = QTensor([2])
-           a = a.isGPU()
-           print(a)
-
-
-
    .. py:method:: isCPU()
 
-       该 QTensor 的数据是否存储在 CPU 主机内存上。
+       该 QTensor 的数据是否存储在CPU主机内存上。
 
-       :return: 该 QTensor 的数据是否存储在 CPU 主机内存上。
+       :return: 该 QTensor 的数据是否存储在CPU主机内存上。
 
        Examples::
 
@@ -911,7 +814,7 @@ arange
    :param start: 间隔开始。
    :param end: 间隔结束。
    :param step: 值之间的间距,默认为1。
-   :param device: 要使用的设备,默认 = pyvqnet.DEV_CPU,使用 CPU 设备。
+   :param device: 要使用的设备,默认 = pyvqnet.DEV_CPU,使用CPU设备。
    :param dtype: 参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。
    :param requires_grad: 是否计算梯度,默认为False。
 
@@ -934,7 +837,7 @@ linspace
    :param start: 间隔开始。
    :param end: 间隔结束。
    :param num: 间隔的个数。
-   :param device: 要使用的设备,默认 = pyvqnet.DEV_CPU ,使用 CPU 设备。
+   :param device: 要使用的设备,默认 = pyvqnet.DEV_CPU ,使用CPU设备。
    :param dtype: 参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。
    :param requires_grad: 是否计算梯度,默认为False。
 
@@ -959,7 +862,7 @@ logspace
    :param end: ``base ** end`` 是序列的最终值
    :param num: 要生成的样本数
    :param base: 对数刻度的基数
-   :param device: 要使用的设备,默认 = pyvqnet.DEV_CPU ,使用 CPU 设备。
+   :param device: 要使用的设备,默认 = pyvqnet.DEV_CPU ,使用CPU设备。
    :param dtype: 参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。
    :param requires_grad: 是否计算梯度,默认为False。
 
@@ -982,7 +885,7 @@ eye
 
    :param size: 要创建的(正方形)QTensor 的大小。
    :param offset: 对角线的索引:0(默认)表示主对角线,正值表示上对角线,负值表示下对角线。
-   :param device: 要使用的设备,默认 =pyvqnet.DEV_CPU ,使用 CPU 设备。
+   :param device: 要使用的设备,默认 =pyvqnet.DEV_CPU ,使用CPU设备。
    :param dtype: 参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。
 
    :return: 输出 QTensor 。
@@ -1053,7 +956,7 @@ randu
    :param shape: 要创建的 QTensor 的形状。
    :param min: 分布的下限,默认: 0。
    :param max: 分布的上线,默认: 1。
-   :param device: 要使用的设备,默认 =pyvqnet.DEV_CPU ,使用 CPU 设备。
+   :param device: 要使用的设备,默认 =pyvqnet.DEV_CPU ,使用CPU设备。
    :param dtype: 参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。
    :param requires_grad: 是否计算梯度,默认为False。
 
@@ -1077,7 +980,7 @@ randn
    :param shape: 要创建的 QTensor 的形状。
    :param mean: 分布的均值,默认: 0。
    :param max: 分布的方差,默认: 1。
-   :param device: 要使用的设备,默认 = pyvqnet.DEV_CPU ,使用 CPU 设备。
+   :param device: 要使用的设备,默认 = pyvqnet.DEV_CPU ,使用CPU设备。
    :param dtype: 参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。
    :param requires_grad: 是否计算梯度,默认为False。
 
@@ -1218,8 +1121,7 @@ ceil
        u = tensor.ceil(t)
        print(u)
 
-       # [-2., -1., -1., -1., -1., -0., -0., -0., 0., 1., 1., 1., 1., 2., 2., 2.]
-
+ 
 round
 =====
 
@@ -1248,7 +1150,7 @@ sort
    :param t: 输入 QTensor 。
    :param axis: 排序使用的轴。
    :param descending: 如果是True,进行降序排序,否则使用升序排序。默认:False,为升序。
-   :param stable: 是否使用稳定排序,默认为稳定排序。
+   :param stable: 是否使用稳定排序,默认:True,为稳定排序。
    :return: 输出 QTensor 。
 
    Example::
@@ -1296,7 +1198,7 @@ topK
    :param t: 输入 QTensor 。
    :param k: 取排序后的 k 的个数。
    :param axis: 要排序的维度。默认 = -1,最后一个轴。
-   :param if_descent: 排序使用升序还是降序,默认：True,降序。
+   :param if_descent: 排序使用升序还是降序,默认:True,降序。
 
    :return: 新的 QTensor 。
 
@@ -1324,7 +1226,7 @@ argtopK
    :param t: 输入 QTensor 。
    :param k: 取排序后的 k 的个数。
    :param axis: 要排序的维度。默认 = -1,最后一个轴。
-   :param if_descent: 排序使用升序还是降序,默认：True,降序。
+   :param if_descent: 排序使用升序还是降序,默认:True,降序。
 
    :return: 新的 QTensor 。
 
@@ -1610,7 +1512,6 @@ kron
        a = tensor.arange(1,1+ 24).reshape([2,1,2,3,2])
        b = tensor.arange(1,1+ 24).reshape([6,4])
 
-
        c = tensor.kron(a,b)
        print(c)
 
@@ -1667,8 +1568,7 @@ reciprocal
        u = tensor.reciprocal(t)
        print(u)
 
-       #[1., 0.5000000, 0.3333333, 0.2500000, 0.2000000, 0.1666667, 0.1428571, 0.1250000, 0.1111111]
-
+ 
 sign
 ====
 
@@ -2662,7 +2562,7 @@ concatenate
    对 args 内的多个 QTensor 沿 axis 轴进行联结,返回一个新的 QTensor 。
 
    :param args: 包含输入 QTensor 。
-   :param axis: 要连接的维度。 必须介于 0 和输入张量的最大维数之间。
+   :param axis: 要连接的维度。 必须介于 0 和输入张量的最大维数之间，默认:1。
    :return: 输出 QTensor 。
 
    Example::
@@ -3034,7 +2934,7 @@ broadcast_to
    :param t: 输入QTensor
    :param ref: 参考形状。
 
-   :return: 新广播的 t 的 QTensor。
+   :return: 广播后的 QTensor。
 
    Example::
 
@@ -3082,6 +2982,7 @@ csr_to_dense
        c = csr_to_dense(b)
        print(c)
 
+
 ***********
  实用函数
 ***********
@@ -3102,6 +3003,7 @@ to_tensor
 
        t = tensor.to_tensor(10.0)
        print(t)
+
 
 pad_sequence
 ============
@@ -3140,8 +3042,6 @@ pad_packed_sequence
    填充一批打包的可变长度序列。它是 `pack_pad_sequence` 的逆操作。
    当  ``batch_first`` 是 True,它将返回  ``B x T x *`` 形状的张量,否则返回  ``T x B x *``。
    其中 `T` 为序列最长长度, `B` 为批处理大小。
-
-
 
    :param sequence: 'QTensor' - 待处理数据。
    :param batch_first: 'bool' - 如果为 ``True`` ,批处理将是输入的第一维。 默认值:False。
