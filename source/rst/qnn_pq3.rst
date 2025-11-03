@@ -331,6 +331,7 @@ QuantumBatchAsyncQcloudLayer
         print(x.grad)
 
 
+
 QuantumLayerAdjoint
 ============================
 
