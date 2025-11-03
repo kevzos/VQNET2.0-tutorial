@@ -26,9 +26,17 @@ release = 'v2.17.1.2'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['rst2pdf.pdfbuilder'，'sphinx.ext.autodoc', 'sphinx.ext.napoleon','sphinx.ext.autosummary']
+extensions = ['sphinx.ext.mathjax',  'sphinx.ext.autodoc', 'sphinx.ext.napoleon','sphinx.ext.autosummary']
 
+ 
 
+latex_elements = {
+    'papersize': 'a4paper',
+    'pointsize': '10pt',
+    'preamble': '',
+}
+
+ 
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
