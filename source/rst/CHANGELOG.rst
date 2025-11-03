@@ -1,7 +1,20 @@
 
 VQNet Changelog
 ######################
+[v2.17.1.2] - 2025-11-3
+***************************
 
+Added
+===================
+
+- 在QuantumBatchAsyncQcloudLayer的 `submit_kwargs` 增加 if_print_qcloud_log是否显示qcloud日志。
+
+
+Fixed
+===================
+- 解决astype的一个bug。
+- 解决Linear的一个bug。
+- 删除pool的的一个输出。
 
 
 [v2.17.1] - 2025-8-22
