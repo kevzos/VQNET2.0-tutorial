@@ -26,7 +26,7 @@ release = 'v2.17.1.2'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.mathjax',  'sphinx.ext.autodoc', 'sphinx.ext.napoleon','sphinx.ext.autosummary']
+extensions = ['sphinx.ext.mathjax', 'rst2pdf.pdfbuilder', 'sphinx.ext.autodoc', 'sphinx.ext.napoleon','sphinx.ext.autosummary']
 
  
 
@@ -81,7 +81,12 @@ html_static_path = ['_static', 'rst\images']
 # would mean that specific document would be compressed
 # regardless of the global pdf_compressed setting.
  
-('index', u'output_filename', u'Document Title', u'Author Name')
+# Grouping the document tree into PDF files. List of tuples
+# (source start file, target name, title, author, options).
+pdf_documents = [
+    ('index', 'MyProject', 'My Project', 'Author Name'),
+]
+ 
  
 # A comma-separated list of custom stylesheets. Example:
 pdf_stylesheets = ['a3']

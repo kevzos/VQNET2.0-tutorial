@@ -625,7 +625,7 @@ NoiseQuantumLayer
 QiskitLayerV2
 =================================
 
-.. py:class:: pyvqnet.qnn.CirqLayer(qiskit_circuits,para_num)
+.. py:class:: pyvqnet.qnn.QiskitLayerV2(qiskit_circuits,para_num)
 
     一个用于在 vqnet 中实现前向和反向传播的 qiskit 电路封装层。QISKIT_VQC 是一个定义 qiskit 量子电路及其 `run` 函数的类。
     以下示例展示了它的工作原理。此层仅支持电路的输入和权重作为参数。
