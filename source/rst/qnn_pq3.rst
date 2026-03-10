@@ -121,32 +121,29 @@ QpandaQProgVQCLayer
     它支持批量数据并使用参数移位规则来估计参数的梯度。
     对于 CRX、CRY、CRZ,此层使用 https://iopscience.iop.org/article/10.1088/1367-2630/ac2cb3 中的公式,其余逻辑门采用默认的参数漂移法计算梯度。
 
-    :param origin_qprog_func: 由 QPanda 构建的可调用量子电路函数。
+    :param origin_qprog_func: `callable`- 由 QPanda 构建的可调用量子电路函数。
     :param para_num: `int` - 参数数量；参数是一维的。
     :param qvm_type: `str` - 使用pyqpanda3模拟器类型, `cpu` 或 `gpu` 类型,默认 `cpu` .
     :param pauli_str_dict: `dict|list` - 表示量子电路中的泡利算子的字典或字典列表。默认值为 None。
     :param shots: `int` - 测量镜头数。默认值为 1000。
-    :param initializer: 参数值的初始化器。默认值为 None。
-    :param dtype: 参数的数据类型。默认值为 None,即使用默认数据类型。
-    :param name: 模块名称。默认值为空字符串。
+    :param initializer: `callable`- 参数值的初始化器。默认值为 None。
+    :param dtype: `pyvqnet._core.QTensorDtype`- 参数的数据类型。默认值为 None,即使用默认数据类型。
+    :param name: `string`- 模块名称。默认值为空字符串。
 
     :return: 返回一个QuantumLayerV3类
 
     .. note::
 
         origin_qprog_func 是用户使用 pyqpanda3 定义的量子电路函数:
-        https://qcloud.originqc.com.cn/document/qpanda-3/dc/d12/tutorial_quantum_program.html。。
+        https://qcloud.originqc.com.cn/document/qpanda-3/dc/d12/tutorial_quantum_program.html
 
         此函数必须包含输入和参数两个参数作为函数入参(即使某个参数未实际使用),输出为pyqpanda3.core.QProg类型数据,否则无法在QuantumLayerV3中正常运行。
 
-
-        origin_qprog_func (input,param )
+        origin_qprog_func (input,param)
 
         `input`:用户定义的数组类输入 1 维经典数据。
-
         `param`:array_like 输入用户定义的 1 维量子电路参数。
 
-       
 
     .. note::
 
@@ -165,7 +162,7 @@ QpandaQProgVQCLayer
         from pyvqnet.qnn.pq3.quantumlayer import  QpandaQProgVQCLayer
 
 
-        def qfun(input, param ):
+        def qfun(input, param):
             m_qlist = range(3)
             cubits = range(3)
             measure_qubits = [0,1, 2]
