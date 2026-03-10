@@ -55,10 +55,12 @@ class RSTParser:
         start_line = self.current_line
         line = self.lines[self.current_line].rstrip()
 
-        # 提取类签名
+        # 提取类/函数/方法签名
         # 格式: .. py:class:: module.path.ClassName(param1, param2=default, ...)
+        # 格式: .. py:function:: module.path.func_name(param1, param2=default, ...)
+        # 格式: .. py:method:: module.path.method_name(param1, param2=default, ...)
         # 可能有多行，先获取完整签名
-        signature = line.replace('.. py:class::', '', 1).strip()
+        signature = line.replace('.. py:class::', '', 1).replace('.. py:function::', '', 1).replace('.. py:method::', '', 1).strip()
 
         # 如果签名不完整（没有括号），检查下一行
         if '(' not in signature and self.current_line + 1 < len(self.lines):
@@ -266,6 +268,10 @@ class RSTParser:
                 default_value = None
                 has_default = False
 
+            # 清理参数名中的类型注解（如 diff_method:str -> diff_method）
+            if ':' in param_name:
+                param_name = param_name.split(':')[0].strip()
+
             # 简单的类型推断
             param_type = "string"  # 默认类型
             param_desc = definition['param_docs'].get(param_name, "")
@@ -359,54 +365,72 @@ def main():
     """主函数"""
     parser = RSTParser()
 
-    # 测试解析 qnn_pq3.rst
-    rst_file = "source/rst/qnn_pq3.rst"
+    # 要处理的RST文件列表
+    rst_files = [
+        "source/rst/QTensor.rst",
+        "source/rst/qnn_pq3.rst",
+        "source/rst/vqc.rst"
+    ]
 
-    try:
-        definitions = parser.parse_file(rst_file)
+    # 要提取的目标API列表
+    target_apis = [
+        # QTensor.rst
+        "QTensor",
+        "zero_grad",
+        "backward",
+        "to_numpy",
+        "item",
+        # qnn_pq3.rst
+        "QuantumLayer",
+        "AmplitudeEmbeddingCircuit",
+        "AngleEmbeddingCircuit",
+        "grad",
+        # vqc.rst
+        "QMachine",
+        "reset_states",
+        "hadamard",
+        "Measure",
+        "Probability"
+    ]
 
-        print(f"从 RST 解析的定义数量：{len(definitions)}")
-        print("=" * 70)
+    all_tools = []
 
-        # 过滤出 QpandaQProgVQCLayer
-        target_class = None
-        for defn in definitions:
-            if 'QpandaQProgVQCLayer' in defn['full_name']:
-                target_class = defn
-                break
+    for rst_file in rst_files:
+        try:
+            print(f"\n处理文件: {rst_file}")
+            definitions = parser.parse_file(rst_file)
+            print(f"解析到 {len(definitions)} 个定义")
 
-        if target_class:
-            print(f"\n找到目标类: {target_class['full_name']}")
-            print(f"参数: {target_class['params']}")
-            print(f"描述: {target_class['description'][:100]}...")
-            print(f"参数文档: {target_class['param_docs']}")
-            print("-" * 70)
+            # 查找目标API
+            for defn in definitions:
+                def_name = defn['name']
+                if def_name in target_apis:
+                    print(f"找到目标API: {defn['full_name']}")
+                    # 生成MCP工具
+                    tool = parser.generate_mcp_tool(defn)
+                    all_tools.append(tool)
 
-            # 生成 MCP 工具
-            tool = parser.generate_mcp_tool(target_class)
-            print("\n生成的 MCP 工具定义:")
-            print(json.dumps(tool, indent=2, ensure_ascii=False))
+        except FileNotFoundError:
+            print(f"文件未找到: {rst_file}")
+            print("当前目录:", __file__)
+        except Exception as e:
+            print(f"解析错误: {e}")
+            import traceback
+            traceback.print_exc()
 
-            # 保存到文件
-            with open('qnn_pq3_mcp_tools.json', 'w', encoding='utf-8') as f:
-                json.dump([tool], f, indent=2, ensure_ascii=False)
-            print(f"\n工具定义已保存到 qnn_pq3_mcp_tools.json")
+    # 保存所有工具到文件
+    if all_tools:
+        output_file = 'vqnet_all_tools.json'
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(all_tools, f, indent=2, ensure_ascii=False)
+        print(f"\n共生成 {len(all_tools)} 个工具定义，已保存到 {output_file}")
 
-        # 显示所有定义
-        print(f"\n所有解析的定义:")
-        for i, defn in enumerate(definitions[:10]):  # 限制前10个
-            print(f"{i+1}. {defn['type']}: {defn['full_name']}")
-
-        if len(definitions) > 10:
-            print(f"... 还有 {len(definitions) - 10} 个定义")
-
-    except FileNotFoundError:
-        print(f"文件未找到: {rst_file}")
-        print("当前目录:", __file__)
-    except Exception as e:
-        print(f"解析错误: {e}")
-        import traceback
-        traceback.print_exc()
+        # 打印生成的工具列表
+        print("\n生成的工具列表:")
+        for i, tool in enumerate(all_tools):
+            print(f"{i+1}. {tool['name']}")
+    else:
+        print("\n未找到任何目标API")
 
 
 if __name__ == "__main__":
