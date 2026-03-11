@@ -289,6 +289,68 @@
     }
   },
   {
+    "name": "pyvqnet.nn.AvgPool2D",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "kernel": {
+          "type": "string",
+          "description": "平均池化的窗口大小。"
+        },
+        "stride": {
+          "type": "string",
+          "description": ""
+        },
+        "padding": {
+          "type": "integer",
+          "description": "填充选项, \"valid\" or \"same\" 或包含2个整数的元组,整数为两个维度上的填充长度。 默认 \"valid\"。",
+          "default": "valid"
+        },
+        "name": {
+          "type": "string",
+          "description": "命名,默认为\"\"。 ``padding='valid'`` 不进行填充。 ``padding='same'`` 补零填充输入,输出的height 为 = ceil(height / stride), 输出的width 为 = ceil(width / stride)。 Example:: import numpy as np from pyvqnet.tensor import QTensor from pyvqnet.nn import AvgPool2D test_mp = AvgPool2D([2,2],[2,2],\"valid\") x= QTensor(np.array([0, 1, 0, 4, 5, 2, 3, 2, 1, 3, 4, 4, 0, 4, 3, 2, 5, 2, 6, 4, 1, 0, 0, 5, 7],dtype=float).reshape([1,1,5,5]),requires_grad=True) y= test_mp.forward(x) print(y) #[[[[1.5  1.75] #    [3.75 3.  ]]]]",
+          "default": ""
+        }
+      },
+      "required": [
+        "kernel",
+        "stride"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.nn.MaxPool2D",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "kernel": {
+          "type": "string",
+          "description": "最大池化的窗口大小。"
+        },
+        "stride": {
+          "type": "string",
+          "description": ""
+        },
+        "padding": {
+          "type": "integer",
+          "description": "填充选项, \"valid\" or \"same\" 或包含2个整数的元组,整数为两个维度上的填充长度。 默认 \"valid\"。",
+          "default": "valid"
+        },
+        "name": {
+          "type": "string",
+          "description": "命名,默认为\"\"。 ``padding='valid'`` 不进行填充。 ``padding='same'`` 补零填充输入,输出的height 为 = ceil(height / stride), 输出的width 为 = ceil(width / stride)。 Example:: import numpy as np from pyvqnet.tensor import QTensor from pyvqnet.nn import MaxPool2D test_mp = MaxPool2D([2,2],[2,2],\"valid\") x= QTensor(np.array([0, 1, 0, 4, 5, 2, 3, 2, 1, 3, 4, 4, 0, 4, 3, 2, 5, 2, 6, 4, 1, 0, 0, 5, 7],dtype=float).reshape([1,1,5,5]),requires_grad=True) y= test_mp.forward(x) print(y) # [[[[3. 4.] #    [5. 6.]]]]",
+          "default": ""
+        }
+      },
+      "required": [
+        "kernel",
+        "stride"
+      ]
+    }
+  },
+  {
     "name": "pyvqnet.nn.BatchNorm2d",
     "description": "",
     "inputSchema": {
@@ -383,6 +445,21 @@
         "input_channels",
         "output_channels"
       ]
+    }
+  },
+  {
+    "name": "pyvqnet.nn.dropout.Dropout",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "dropout_rate": {
+          "type": "number",
+          "description": "`float` - 神经元被设置为零的概率。",
+          "default": 0.5
+        }
+      },
+      "required": null
     }
   },
   {

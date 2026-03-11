@@ -398,6 +398,9 @@ def main():
         "Linear",
         "Conv2d",
         "BatchNorm2d",
+        "Dropout",
+        "AvgPool2D",
+        "MaxPool2D",
         # nn.rst - 激活函数
         "ReLu",
         "Gelu",

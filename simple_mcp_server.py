@@ -2910,6 +2910,127 @@ class SimpleMCPServer:
                 "parameters": arguments,
                 "note": "这是基于pyVQNet BatchNorm2d API生成的真实代码，对四维张量进行批量归一化操作。"
             }
+        elif "pyvqnet.nn.dropout.Dropout" in tool_name or "Dropout" in tool_name:
+            # Dropout 层生成
+            dropout_rate = arguments.get('dropout_rate', 0.5)
+            name = arguments.get('name', "")
+
+            # 格式化参数
+            dropout_rate_str = str(dropout_rate) if isinstance(dropout_rate, (int, float)) else dropout_rate
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.nn.dropout import Dropout
+            from pyvqnet.tensor import QTensor
+
+            # 创建Dropout层
+            dropout_layer = Dropout(
+                dropout_rate={dropout_rate_str},
+                name={name_str}
+            )
+
+            # 示例输入 (batch_size, channels, height, width)
+            input = QTensor(np.random.randn(2, 3, 32, 32), requires_grad=True)
+
+            # 前向传播
+            dropout_layer.train()  # 设置为训练模式
+            output = dropout_layer(input)
+            print("Dropout层输出形状:", output.shape)
+            print("Dropout层输出:", output)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Dropout层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Dropout API生成的真实代码，随机将一些单元的输出设置为零，防止过拟合。"
+            }
+        elif "pyvqnet.nn.AvgPool2D" in tool_name or "AvgPool2D" in tool_name:
+            # AvgPool2D 二维平均池化层生成
+            kernel = arguments.get('kernel')
+            stride = arguments.get('stride')
+            padding = arguments.get('padding', "valid")
+            name = arguments.get('name', "")
+
+            # 格式化参数
+            kernel_str = str(kernel) if isinstance(kernel, (int, list, tuple)) else kernel
+            stride_str = str(stride) if isinstance(stride, (int, list, tuple)) else stride
+            padding_str = f'"{padding}"' if isinstance(padding, str) else str(padding)
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.nn import AvgPool2D
+            from pyvqnet.tensor import QTensor
+
+            # 创建二维平均池化层
+            avgpool_layer = AvgPool2D(
+                kernel={kernel_str},
+                stride={stride_str},
+                padding={padding_str},
+                name={name_str}
+            )
+
+            # 示例输入 (batch_size, channels, height, width)
+            input = QTensor(np.random.randn(2, 3, 32, 32), requires_grad=True)
+
+            # 前向传播
+            output = avgpool_layer(input)
+            print("平均池化层输出形状:", output.shape)
+            print("平均池化层输出:", output)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成AvgPool2D二维平均池化层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet AvgPool2D API生成的真实代码，对二维输入进行平均池化操作。"
+            }
+        elif "pyvqnet.nn.MaxPool2D" in tool_name or "MaxPool2D" in tool_name:
+            # MaxPool2D 二维最大池化层生成
+            kernel = arguments.get('kernel')
+            stride = arguments.get('stride')
+            padding = arguments.get('padding', "valid")
+            name = arguments.get('name', "")
+
+            # 格式化参数
+            kernel_str = str(kernel) if isinstance(kernel, (int, list, tuple)) else kernel
+            stride_str = str(stride) if isinstance(stride, (int, list, tuple)) else stride
+            padding_str = f'"{padding}"' if isinstance(padding, str) else str(padding)
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.nn import MaxPool2D
+            from pyvqnet.tensor import QTensor
+
+            # 创建二维最大池化层
+            maxpool_layer = MaxPool2D(
+                kernel={kernel_str},
+                stride={stride_str},
+                padding={padding_str},
+                name={name_str}
+            )
+
+            # 示例输入 (batch_size, channels, height, width)
+            input = QTensor(np.random.randn(2, 3, 32, 32), requires_grad=True)
+
+            # 前向传播
+            output = maxpool_layer(input)
+            print("最大池化层输出形状:", output.shape)
+            print("最大池化层输出:", output)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成MaxPool2D二维最大池化层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet MaxPool2D API生成的真实代码，对二维输入进行最大池化操作。"
+            }
         # ==================== 新增: nn模块 激活函数 ====================
         elif "pyvqnet.nn.ReLu" in tool_name or "ReLu" in tool_name:
             # ReLu 激活函数生成
