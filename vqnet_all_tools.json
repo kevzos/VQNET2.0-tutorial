@@ -1,0 +1,240 @@
+[
+  {
+    "name": "pyvqnet.tensor.tensor.QTensor",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "string",
+          "description": "输入数据,可以是 _core.Tensor 或numpy 数组。"
+        },
+        "requires_grad": {
+          "type": "string",
+          "description": "是否应该跟踪张量的梯度,默认为 False。",
+          "default": "False"
+        },
+        "nodes": {
+          "type": "array",
+          "description": "计算图中的后继者列表,默认为无。",
+          "default": null
+        },
+        "device": {
+          "type": "string",
+          "description": "当前保存QTensor的设备, 默认:DEV_GPU_0。device = pyvqnet.DEV_GPU_0, 存储在第一个 GPU 中, devcie = DEV_GPU_1, 存储在第二个 GPU 中, 依此类推。",
+          "default": "0"
+        },
+        "dtype": {
+          "type": "string",
+          "description": "目标数据类型dtype。",
+          "default": null
+        },
+        "name": {
+          "type": "string",
+          "description": "QTensor的名字,default:\"\"。 Example:: from pyvqnet.tensor import QTensor from pyvqnet.dtype import * import numpy as np t1 = QTensor(np.ones([2,3])) t2 =  QTensor([2,3,4j,5]) t3 =  QTensor([[[2,3,4,5],[2,3,4,5]]],dtype=kbool) print(t1) print(t2) print(t3) # [[1. 1. 1.] #  [1. 1. 1.]] # [2.+0.j 3.+0.j 0.+4.j 5.+0.j] # [[[ True  True  True  True] #   [ True  True  True  True]]] .. py:attribute:: ndim 返回张量的维度的个数。 Example:: from pyvqnet.tensor import QTensor a = QTensor([2, 3, 4, 5], requires_grad=True) print(a.ndim) # 1 .. py:attribute:: shape 返回张量的维度 Example:: from pyvqnet.tensor import QTensor a = QTensor([2, 3, 4, 5], requires_grad=True) print(a.shape) # [4] .. py:attribute:: size 返回张量的元素个数。 Example:: from pyvqnet.tensor import QTensor a = QTensor([2, 3, 4, 5], requires_grad=True) print(a.size) # 4 .. py:method:: numel 返回张量的元素个数。 Example:: from pyvqnet.tensor import QTensor a = QTensor([2, 3, 4, 5], requires_grad=True) print(a.numel()) # 4 .. py:attribute:: dtype 返回张量的数据类型。 支持数据类型如下： =========================================  =============================== dtype                                      description =========================================  =============================== ``pyvqnet.kbool``                          布尔变量 ``pyvqnet.kuint8``                         8比特整数 (无符号) ``pyvqnet.kint8``                          8比特整数 (有符号) ``pyvqnet.kint16``                         16比特整数 (signed) ``pyvqnet.kint32``                         32比特整数 (signed) ``pyvqnet.kint64``                         64比特整数 (signed) ``pyvqnet.kfloat32``                       32比特浮点数, 见 https://en.wikipedia.org/wiki/IEEE_754 ``pyvqnet.kfloat64``                       64比特浮点数, 见 https://en.wikipedia.org/wiki/IEEE_754 ``pyvqnet.kcomplex64``                     64比特复数，由两个 `float32` 构成 ``pyvqnet.kcomplex128``                    128比特复数，由两个 `float64` 构成 ``pyvqnet.kbfloat16``                      16比特浮点数, 有时被称为脑浮点格式（Brain floating point），其位分配为 1 位符号位、8 位指数位、7 位尾数位 =========================================  =============================== Example:: from pyvqnet.tensor import QTensor a = QTensor([2, 3, 4, 5]) print(a.dtype) # 4 .. py:attribute:: is_dense 是否是稠密张量。 Example:: from pyvqnet.tensor import QTensor a = QTensor([2, 3, 4, 5]) print(a.is_dense) #1 .. py:attribute:: is_contiguous 是否是contiguous的多维数组。 Example:: from pyvqnet.tensor import QTensor a = QTensor([[2, 3, 4, 5],[2, 3, 4, 5]]) b = a.is_contiguous print(b) #True c= a.permute((1,0)) print(c.is_contiguous) #False .. py:method:: zero_grad() 将张量的梯度设置为零。将在优化过程中被优化器使用。 Example:: from pyvqnet.tensor import QTensor t3 = QTensor([2, 3, 4, 5], requires_grad=True) t3.zero_grad() print(t3.grad) # [0., 0., 0., 0.] .. py:method:: backward(grad=None) 利用反向传播算法, 计算当前张量所在的计算图中的所有需计算梯度的张量的梯度。 Example:: from pyvqnet.tensor import QTensor target = QTensor([[0, 0, 1, 0, 0, 0, 0, 0, 0, 0.2]], requires_grad=True) y = 2*target + 3 y.backward() print(target.grad) #[[2. 2. 2. 2. 2. 2. 2. 2. 2. 2.]] .. py:method:: to_numpy() 将张量的数据拷贝到一个numpy.ndarray里面。 numpy不支持bfloat16类型，需要先转成其他numpy支持的数据类型例如float32，再调用该接口。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor t3 = QTensor([2, 3, 4, 5], requires_grad=True) t4 = t3.to_numpy() print(t4) # [2. 3. 4. 5.] .. py:method:: item() 从只包含单个元素的 QTensor 返回唯一的元素。 Example:: from pyvqnet.tensor import tensor t = tensor.ones([1]) print(t.item()) # 1.0 .. py:method:: contiguous() 返回当前QTensor的contiguous形式 ,如果已经是contiguous, 则返回自身。 Example:: from pyvqnet.tensor import tensor t = tensor.ones([1]) print(t.contiguous()) .. py:method:: argmax(*kargs) 返回输入 QTensor 中所有元素的最大值的索引, 或返回 QTensor 按某一维度的最大值的索引。",
+          "default": ""
+        }
+      },
+      "required": [
+        "data"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.quantumlayer.QuantumLayer",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "qprog_with_measure": {
+          "type": "string",
+          "description": "用pyQPand构建的量子线路运行和测量函数。"
+        },
+        "para_num": {
+          "type": "integer",
+          "description": "`int` - 参数个数。"
+        },
+        "diff_method": {
+          "type": "string",
+          "description": "求解量子线路参数梯度的方法,“参数位移”或“有限差分”,默认参数偏移。",
+          "default": "parameter_shift"
+        },
+        "delta": {
+          "type": "string",
+          "description": "有限差分计算梯度时的 \\delta。",
+          "default": "0.01"
+        },
+        "dtype": {
+          "type": "string",
+          "description": "参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。",
+          "default": null
+        },
+        "name": {
+          "type": "string",
+          "description": "这个模块的名字, 默认为\"\"。 qprog_with_measure是pyQPanda中定义的量子线路函数 :https://qcloud.originqc.com.cn/document/qpanda-3/dc/d12/tutorial_quantum_program.html。 此函数必须包含输入和参数两个参数作为函数入参(即使某个参数未实际使用),输出为线路的测量结果或者期望值（需要为np.ndarray或包含数值的列表）,否则无法在QpandaQCircuitVQCLayerLite中正常运行。 量子线路函数 qprog_with_measure (input,param)的使用可参考下面的例子。 `input`: 输入一维经典数据。如果没有,输入 None。 `param`: 输入一维的变分量子线路的待训练参数。 该类具有别名 `QuantumLayerV2`, `QpandaQCircuitVQCLayerLite`。 该类计算梯度需要额外使用pyqpanda3进行线路计算个数与参数个数、数据个数、数据维度的乘积线性相关。 Example:: from pyvqnet.qnn.pq3.measure import ProbsMeasure from pyvqnet.qnn.pq3.quantumlayer import QuantumLayer from pyvqnet.tensor import QTensor,ones import pyqpanda3.core as pq def pqctest (input,param): num_of_qubits = 4 m_machine = pq.CPUQVM() qubits = range(num_of_qubits) circuit = pq.QCircuit() circuit<<pq.H(qubits[0]) circuit<<pq.H(qubits[1]) circuit<<pq.H(qubits[2]) circuit<<pq.H(qubits[3]) circuit<<pq.RZ(qubits[0],input[0]) circuit<<pq.RZ(qubits[1],input[1]) circuit<<pq.RZ(qubits[2],input[2]) circuit<<pq.RZ(qubits[3],input[3]) circuit<<pq.CNOT(qubits[0],qubits[1]) circuit<<pq.RZ(qubits[1],param[0]) circuit<<pq.CNOT(qubits[0],qubits[1]) circuit<<pq.CNOT(qubits[1],qubits[2]) circuit<<pq.RZ(qubits[2],param[1]) circuit<<pq.CNOT(qubits[1],qubits[2]) circuit<<pq.CNOT(qubits[2],qubits[3]) circuit<<pq.RZ(qubits[3],param[2]) circuit<<pq.CNOT(qubits[2],qubits[3]) prog = pq.QProg() prog<<circuit rlt_prob = ProbsMeasure(m_machine,prog,[0,2]) return rlt_prob pqc = QuantumLayer(pqctest,3) #classic data as input input = QTensor([[1,2,3,4],[4,2,2,3],[3.0,3,2,2]] ) #forward circuits rlt = pqc(input) print(rlt) grad = ones(rlt.data.shape)*1000 #backward circuits rlt.backward(grad) print(pqc.m_para.grad)",
+          "default": ""
+        }
+      },
+      "required": [
+        "qprog_with_measure",
+        "para_num"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.quantumlayer.grad",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "quantum_prog_func": {
+          "type": "string",
+          "description": "pyqpanda设计的量子线路运行函数。"
+        },
+        "input_params": {
+          "type": "integer",
+          "description": "待求梯度的参数。 参数的梯度 Examples:: from pyvqnet.qnn.pq3 import grad, ProbsMeasure import pyqpanda3.core as pq def pqctest(param): machine = pq.CPUQVM() qubits = range(2) circuit = pq.QCircuit(2) circuit<<pq.RX(qubits[0], param[0]) circuit<<pq.RY(qubits[1], param[1]) circuit<<pq.CNOT(qubits[0], qubits[1]) circuit<<pq.RX(qubits[1], param[2]) prog = pq.QProg() prog<<circuit EXP = ProbsMeasure(machine,prog,[1]) return EXP g = grad(pqctest, [0.1,0.2, 0.3]) print(g) exp = pqctest([0.1,0.2, 0.3]) print(exp)"
+        },
+        "*args": {
+          "type": "string",
+          "description": ""
+        }
+      },
+      "required": [
+        "quantum_prog_func",
+        "input_params",
+        "*args"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.template.AmplitudeEmbeddingCircuit",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "input_feat": {
+          "type": "string",
+          "description": "表示参数的numpy数组。"
+        },
+        "qubits": {
+          "type": "array",
+          "description": "量子比特索引列表。 Example:: import numpy as np import pyqpanda3.core as pq from pyvqnet.qnn.pq3.template import AmplitudeEmbeddingCircuit input_feat = np.array([2.2, 1, 4.5, 3.7]) qlist = range(3) machine = pq.CPUQVM() m_prog = pq.QProg() cir = AmplitudeEmbeddingCircuit(input_feat,qlist)"
+        }
+      },
+      "required": [
+        "input_feat",
+        "qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.template.AngleEmbeddingCircuit",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "input_feat": {
+          "type": "string",
+          "description": "表示参数的numpy数组。"
+        },
+        "qubits": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "rotation": {
+          "type": "integer",
+          "description": "使用什么旋转,默认为“X”。 Example:: from pyvqnet.qnn.pq3.template import AngleEmbeddingCircuit import numpy as np m_qlist = range(2) input_feat = np.array([2.2, 1]) C = AngleEmbeddingCircuit(input_feat,m_qlist,'X') print(C) C = AngleEmbeddingCircuit(input_feat,m_qlist,'Y') print(C) C = AngleEmbeddingCircuit(input_feat,m_qlist,'Z') print(C)",
+          "default": "X"
+        }
+      },
+      "required": [
+        "input_feat",
+        "qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.QMachine",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "num_wires": {
+          "type": "string",
+          "description": "量子比特数。"
+        },
+        "dtype": {
+          "type": "string",
+          "description": "计算数据的数据类型。默认值是pyvqnet。kcomplex64,对应的参数精度为pyvqnet.kfloat32。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "grad_mode": {
+          "type": "integer",
+          "description": "梯度计算模式,可为 \"adjoint\",默认值:\"\",使用自动微分模拟。",
+          "default": ""
+        },
+        "save_ir": {
+          "type": "integer",
+          "description": "设置为True时,将操作保存到originIR,默认值:False。 Example:: from pyvqnet.qnn.vqc import QMachine qm = QMachine(4) print(qm.states) # [[[[[1.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]] #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]] .. py:method:: reset_states(batchsize) 将模拟器里面初态重新初始化,并且广播为 (batchsize,[2]**num_qubits) 维度从而使得模拟器可以进行批量数据的模型计算。",
+          "default": "False"
+        }
+      },
+      "required": [
+        "num_wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.hadamard",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import hadamard,QMachine qm  = QMachine(4) hadamard(q_machine=qm, wires=1,) print(qm.states) # [[[[[0.7071068+0.j 0.       +0.j] #     [0.       +0.j 0.       +0.j]] # #    [[0.7071068+0.j 0.       +0.j] #     [0.       +0.j 0.       +0.j]]] # # #   [[[0.       +0.j 0.       +0.j] #     [0.       +0.j 0.       +0.j]] # #    [[0.       +0.j 0.       +0.j] #     [0.       +0.j 0.       +0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.Probability",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "wires": {
+          "type": "integer",
+          "description": "测量比特的索引,列表、元组或者整数。"
+        },
+        "name": {
+          "type": "string",
+          "description": "模块的名字,默认:\"\"。 .. py:method:: forward(q_machine) 进行概率测量计算",
+          "default": ""
+        }
+      },
+      "required": [
+        "wires"
+      ]
+    }
+  }
+]
