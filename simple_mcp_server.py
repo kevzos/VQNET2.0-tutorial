@@ -2761,6 +2761,539 @@ class SimpleMCPServer:
                 "parameters": arguments,
                 "note": "这是基于pyVQNet PauliZ API生成的真实代码，用于翻转量子态相位。"
             }
+        # ==================== 新增: nn模块 神经网络层 ====================
+        elif "pyvqnet.nn.Linear" in tool_name or "Linear" in tool_name:
+            # Linear 全连接层生成
+            input_channels = arguments.get('input_channels')
+            output_channels = arguments.get('output_channels')
+            use_bias = arguments.get('use_bias', True)
+            dtype = arguments.get('dtype', None)
+            name = arguments.get('name', "")
+
+            # 格式化参数
+            use_bias_str = str(use_bias) if isinstance(use_bias, bool) else use_bias
+            dtype_str = dtype if dtype is not None else 'None'
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.nn import Linear
+            from pyvqnet.tensor import QTensor
+
+            # 创建全连接层
+            linear_layer = Linear(
+                input_channels={input_channels},
+                output_channels={output_channels},
+                use_bias={use_bias_str},
+                dtype={dtype_str},
+                name={name_str}
+            )
+
+            # 示例输入
+            input = QTensor(np.random.randn(2, {input_channels}), requires_grad=True)
+
+            # 前向传播
+            output = linear_layer(input)
+            print("全连接层输出形状:", output.shape)
+            print("全连接层输出:", output)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Linear全连接层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Linear API生成的真实代码，实现y = x@A.T + b的线性变换。"
+            }
+        elif "pyvqnet.nn.Conv2d" in tool_name or "Conv2d" in tool_name:
+            # Conv2d 二维卷积层生成
+            in_channels = arguments.get('in_channels')
+            out_channels = arguments.get('out_channels')
+            kernel_size = arguments.get('kernel_size')
+            stride = arguments.get('stride', 1)
+            padding = arguments.get('padding', 0)
+            dilation = arguments.get('dilation', 1)
+            groups = arguments.get('groups', 1)
+            use_bias = arguments.get('use_bias', True)
+            dtype = arguments.get('dtype', None)
+            name = arguments.get('name', "")
+
+            # 格式化参数
+            stride_str = str(stride) if isinstance(stride, int) else stride
+            padding_str = str(padding) if isinstance(padding, int) else padding
+            dilation_str = str(dilation) if isinstance(dilation, int) else dilation
+            groups_str = str(groups) if isinstance(groups, int) else groups
+            use_bias_str = str(use_bias) if isinstance(use_bias, bool) else use_bias
+            dtype_str = dtype if dtype is not None else 'None'
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.nn import Conv2d
+            from pyvqnet.tensor import QTensor
+
+            # 创建二维卷积层
+            conv_layer = Conv2d(
+                in_channels={in_channels},
+                out_channels={out_channels},
+                kernel_size={kernel_size},
+                stride={stride_str},
+                padding={padding_str},
+                dilation={dilation_str},
+                groups={groups_str},
+                use_bias={use_bias_str},
+                dtype={dtype_str},
+                name={name_str}
+            )
+
+            # 示例输入 (batch_size, channels, height, width)
+            input = QTensor(np.random.randn(2, {in_channels}, 32, 32), requires_grad=True)
+
+            # 前向传播
+            output = conv_layer(input)
+            print("卷积层输出形状:", output.shape)
+            print("卷积层输出:", output)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Conv2d二维卷积层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Conv2d API生成的真实代码，实现二维卷积操作。"
+            }
+        elif "pyvqnet.nn.BatchNorm2d" in tool_name or "BatchNorm2d" in tool_name:
+            # BatchNorm2d 二维批量归一化层生成
+            channel_num = arguments.get('channel_num')
+            momentum = arguments.get('momentum', 0.1)
+            epsilon = arguments.get('epsilon', 1e-5)
+            affine = arguments.get('affine', True)
+            dtype = arguments.get('dtype', None)
+            name = arguments.get('name', "")
+
+            # 格式化参数
+            momentum_str = str(momentum) if isinstance(momentum, (int, float)) else momentum
+            epsilon_str = str(epsilon) if isinstance(epsilon, (int, float)) else epsilon
+            affine_str = str(affine) if isinstance(affine, bool) else affine
+            dtype_str = dtype if dtype is not None else 'None'
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.nn import BatchNorm2d
+            from pyvqnet.tensor import QTensor
+
+            # 创建二维批量归一化层
+            bn_layer = BatchNorm2d(
+                channel_num={channel_num},
+                momentum={momentum_str},
+                epsilon={epsilon_str},
+                affine={affine_str},
+                dtype={dtype_str},
+                name={name_str}
+            )
+
+            # 示例输入 (batch_size, channels, height, width)
+            input = QTensor(np.random.randn(2, {channel_num}, 32, 32), requires_grad=True)
+
+            # 前向传播
+            bn_layer.train()  # 设置为训练模式
+            output = bn_layer(input)
+            print("批量归一化层输出形状:", output.shape)
+            print("批量归一化层输出:", output)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成BatchNorm2d批量归一化层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet BatchNorm2d API生成的真实代码，对四维张量进行批量归一化操作。"
+            }
+        # ==================== 新增: nn模块 激活函数 ====================
+        elif "pyvqnet.nn.ReLu" in tool_name or "ReLu" in tool_name:
+            # ReLu 激活函数生成
+            name = arguments.get('name', "")
+
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.nn import ReLu
+            from pyvqnet.tensor import QTensor
+
+            # 创建ReLU激活函数
+            relu = ReLu(name={name_str})
+
+            # 示例输入
+            input = QTensor(np.array([-2, -1, 0, 1, 2]), requires_grad=True)
+
+            # 前向传播
+            output = relu(input)
+            print("ReLU激活输出:", output)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成ReLU激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet ReLu API生成的真实代码，实现max(0, x)的激活函数。"
+            }
+        elif "pyvqnet.nn.Gelu" in tool_name or "Gelu" in tool_name:
+            # Gelu 激活函数生成
+            approximate = arguments.get('approximate', "tanh")
+            name = arguments.get('name', "")
+
+            approximate_str = f'"{approximate}"' if isinstance(approximate, str) else approximate
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.nn import Gelu
+            from pyvqnet.tensor import QTensor
+
+            # 创建GELU激活函数
+            gelu = Gelu(approximate={approximate_str}, name={name_str})
+
+            # 示例输入
+            input = QTensor(np.array([-2, -1, 0, 1, 2]), requires_grad=True)
+
+            # 前向传播
+            output = gelu(input)
+            print("GELU激活输出:", output)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成GELU激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Gelu API生成的真实代码，实现高斯误差线性单元激活函数。"
+            }
+        elif "pyvqnet.nn.Sigmoid" in tool_name or "Sigmoid" in tool_name:
+            # Sigmoid 激活函数生成
+            name = arguments.get('name', "")
+
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.nn import Sigmoid
+            from pyvqnet.tensor import QTensor
+
+            # 创建Sigmoid激活函数
+            sigmoid = Sigmoid(name={name_str})
+
+            # 示例输入
+            input = QTensor(np.array([-5, -2, 0, 2, 5]), requires_grad=True)
+
+            # 前向传播
+            output = sigmoid(input)
+            print("Sigmoid激活输出:", output)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Sigmoid激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Sigmoid API生成的真实代码，实现1/(1+exp(-x))的S型激活函数。"
+            }
+        # ==================== 新增: nn模块 损失函数 ====================
+        elif "pyvqnet.nn.CrossEntropyLoss" in tool_name or "CrossEntropyLoss" in tool_name:
+            # CrossEntropyLoss 交叉熵损失函数生成
+            name = arguments.get('name', "")
+
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.nn import CrossEntropyLoss
+            from pyvqnet.tensor import QTensor
+
+            # 创建交叉熵损失函数
+            loss_fn = CrossEntropyLoss(name={name_str})
+
+            # 示例输入 (batch_size, num_classes)
+            input = QTensor(np.random.randn(3, 5), requires_grad=True)
+            # 示例目标 (batch_size,)
+            target = QTensor(np.array([0, 2, 1]), dtype='int64')
+
+            # 计算损失
+            loss = loss_fn(input, target)
+            print("交叉熵损失:", loss)
+
+            # 反向传播
+            loss.backward()
+            print("输入梯度:", input.grad)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成CrossEntropyLoss损失函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet CrossEntropyLoss API生成的真实代码，计算输入和目标之间的交叉熵损失。"
+            }
+        elif "pyvqnet.nn.NLL_Loss" in tool_name or "NLL_Loss" in tool_name:
+            # NLL_Loss 负对数似然损失函数生成
+            name = arguments.get('name', "")
+
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.nn import NLL_Loss, LogSoftmax
+            from pyvqnet.tensor import QTensor
+
+            # 创建负对数似然损失函数
+            loss_fn = NLL_Loss(name={name_str})
+            log_softmax = LogSoftmax(dim=1)
+
+            # 示例输入 (batch_size, num_classes)
+            input = QTensor(np.random.randn(3, 5), requires_grad=True)
+            # 经过LogSoftmax处理
+            log_probs = log_softmax(input)
+            # 示例目标 (batch_size,)
+            target = QTensor(np.array([0, 2, 1]), dtype='int64')
+
+            # 计算损失
+            loss = loss_fn(log_probs, target)
+            print("负对数似然损失:", loss)
+
+            # 反向传播
+            loss.backward()
+            print("输入梯度:", input.grad)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成NLL_Loss损失函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet NLL_Loss API生成的真实代码，计算对数概率和目标之间的负对数似然损失。"
+            }
+        # ==================== 新增: optim模块 优化器 ====================
+        elif "pyvqnet.optim.adam.Adam" in tool_name or "Adam" in tool_name:
+            # Adam 优化器生成
+            params = arguments.get('params', 'model.parameters()')
+            lr = arguments.get('lr', 0.01)
+            beta1 = arguments.get('beta1', 0.9)
+            beta2 = arguments.get('beta2', 0.999)
+            epsilon = arguments.get('epsilon', 1e-8)
+            weight_decay = arguments.get('weight_decay', 0)
+            amsgrad = arguments.get('amsgrad', False)
+
+            # 格式化参数
+            lr_str = str(lr) if isinstance(lr, (int, float)) else lr
+            beta1_str = str(beta1) if isinstance(beta1, (int, float)) else beta1
+            beta2_str = str(beta2) if isinstance(beta2, (int, float)) else beta2
+            epsilon_str = str(epsilon) if isinstance(epsilon, (int, float)) else epsilon
+            weight_decay_str = str(weight_decay) if isinstance(weight_decay, (int, float)) else weight_decay
+            amsgrad_str = str(amsgrad) if isinstance(amsgrad, bool) else amsgrad
+
+            generated_code = f"""
+            from pyvqnet.nn import Linear, Module
+            from pyvqnet.optim import Adam
+            from pyvqnet.tensor import QTensor
+            import numpy as np
+
+            # 示例模型
+            class SimpleModel(Module):
+                def __init__(self):
+                    super().__init__()
+                    self.linear = Linear(10, 2)
+
+                def forward(self, x):
+                    return self.linear(x)
+
+            model = SimpleModel()
+
+            # 创建Adam优化器
+            optimizer = Adam(
+                params={params},
+                lr={lr_str},
+                beta1={beta1_str},
+                beta2={beta2_str},
+                epsilon={epsilon_str},
+                weight_decay={weight_decay_str},
+                amsgrad={amsgrad_str}
+            )
+
+            # 示例训练步骤
+            input = QTensor(np.random.randn(3, 10), requires_grad=True)
+            target = QTensor(np.array([0, 1, 0]), dtype='int64')
+
+            # 前向传播
+            output = model(input)
+            loss = output.sum()
+
+            # 反向传播
+            loss.backward()
+
+            # 更新参数
+            optimizer.step()
+            optimizer.zero_grad()
+
+            print("优化器更新完成")
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Adam优化器代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Adam API生成的真实代码，实现自适应矩估计优化算法。"
+            }
+        elif "pyvqnet.optim.sgd.SGD" in tool_name or "SGD" in tool_name:
+            # SGD 优化器生成
+            params = arguments.get('params', 'model.parameters()')
+            lr = arguments.get('lr', 0.01)
+            momentum = arguments.get('momentum', 0)
+            nesterov = arguments.get('nesterov', False)
+
+            # 格式化参数
+            lr_str = str(lr) if isinstance(lr, (int, float)) else lr
+            momentum_str = str(momentum) if isinstance(momentum, (int, float)) else momentum
+            nesterov_str = str(nesterov) if isinstance(nesterov, bool) else nesterov
+
+            generated_code = f"""
+            from pyvqnet.nn import Linear, Module
+            from pyvqnet.optim import SGD
+            from pyvqnet.tensor import QTensor
+            import numpy as np
+
+            # 示例模型
+            class SimpleModel(Module):
+                def __init__(self):
+                    super().__init__()
+                    self.linear = Linear(10, 2)
+
+                def forward(self, x):
+                    return self.linear(x)
+
+            model = SimpleModel()
+
+            # 创建SGD优化器
+            optimizer = SGD(
+                params={params},
+                lr={lr_str},
+                momentum={momentum_str},
+                nesterov={nesterov_str}
+            )
+
+            # 示例训练步骤
+            input = QTensor(np.random.randn(3, 10), requires_grad=True)
+            target = QTensor(np.array([0, 1, 0]), dtype='int64')
+
+            # 前向传播
+            output = model(input)
+            loss = output.sum()
+
+            # 反向传播
+            loss.backward()
+
+            # 更新参数
+            optimizer.step()
+            optimizer.zero_grad()
+
+            print("优化器更新完成")
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成SGD优化器代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet SGD API生成的真实代码，实现随机梯度下降优化算法。"
+            }
+        # ==================== 新增: vqc模块 测量函数 ====================
+        elif "pyvqnet.qnn.vqc.Samples" in tool_name or "Samples" in tool_name:
+            # Samples 采样测量生成
+            wires = arguments.get('wires', None)
+            obs = arguments.get('obs', None)
+            shots = arguments.get('shots', 1)
+            name = arguments.get('name', "")
+
+            # 格式化参数
+            wires_str = 'None' if wires is None else str(wires)
+            obs_str = 'None' if obs is None else str(obs)
+            shots_str = str(shots) if isinstance(shots, int) else shots
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import Samples, QMachine, hadamard
+            from pyvqnet.tensor import QTensor
+
+            # 创建量子虚拟机
+            qm = QMachine(2)
+            qm.reset_states(1)
+
+            # 制备量子态
+            hadamard(q_machine=qm, wires=0)
+            hadamard(q_machine=qm, wires=1)
+
+            # 创建采样测量
+            measure = Samples(
+                wires={wires_str},
+                obs={obs_str},
+                shots={shots_str},
+                name={name_str}
+            )
+
+            # 执行测量
+            samples = measure(q_machine=qm)
+            print("采样结果:", samples)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Samples采样测量代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Samples API生成的真实代码，对量子态进行多次采样测量。"
+            }
+        elif "pyvqnet.qnn.vqc.HermitianExpval" in tool_name or "HermitianExpval" in tool_name:
+            # HermitianExpval 厄米特期望值测量生成
+            obs = arguments.get('obs')
+            name = arguments.get('name', "")
+
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import HermitianExpval, QMachine, PauliX, hadamard
+            from pyvqnet.tensor import QTensor
+            import numpy as np
+
+            # 创建量子虚拟机
+            qm = QMachine(1)
+            qm.reset_states(1)
+
+            # 制备量子态
+            hadamard(q_machine=qm, wires=0)
+
+            # 定义可观测量（泡利X矩阵）
+            obs = np.array([[0, 1], [1, 0]], dtype=np.complex64)
+
+            # 创建厄米特期望值测量
+            measure = HermitianExpval(
+                obs={obs if obs is not None else 'obs'},
+                name={name_str}
+            )
+
+            # 执行测量
+            expval = measure(q_machine=qm)
+            print("期望值:", expval)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成HermitianExpval期望值测量代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet HermitianExpval API生成的真实代码，计算厄米特可观测量的期望值。"
+            }
         else:
             return {
                 "status": "success",

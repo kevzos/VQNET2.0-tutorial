@@ -369,7 +369,8 @@ def main():
     rst_files = [
         "source/rst/QTensor.rst",
         "source/rst/qnn_pq3.rst",
-        "source/rst/vqc.rst"
+        "source/rst/vqc.rst",
+        "source/rst/nn.rst"
     ]
 
     # 要提取的目标API列表
@@ -390,7 +391,23 @@ def main():
         "reset_states",
         "hadamard",
         "Measure",
-        "Probability"
+        "Probability",
+        "Samples",
+        "HermitianExpval",
+        # nn.rst - 神经网络层
+        "Linear",
+        "Conv2d",
+        "BatchNorm2d",
+        # nn.rst - 激活函数
+        "ReLu",
+        "Gelu",
+        "Sigmoid",
+        # nn.rst - 损失函数
+        "CrossEntropyLoss",
+        "NLL_Loss",
+        # optim.rst - 优化器
+        "Adam",
+        "SGD"
     ]
 
     all_tools = []

@@ -236,5 +236,310 @@
         "wires"
       ]
     }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.Samples",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "wires": {
+          "type": "string",
+          "description": "样本量子比特索引。默认值:None,根据运行时使用模拟器的所有比特。",
+          "default": null
+        },
+        "obs": {
+          "type": "string",
+          "description": "该值只能设为None。",
+          "default": null
+        },
+        "shots": {
+          "type": "integer",
+          "description": "样本重复次数,默认值:1。",
+          "default": 1
+        },
+        "name": {
+          "type": "string",
+          "description": "此模块的名称,默认值:“”。 .. py:method:: forward(q_machine) 进行采样操作。",
+          "default": ""
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.HermitianExpval",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "obs": {
+          "type": "string",
+          "description": "厄密特观测量。"
+        },
+        "name": {
+          "type": "string",
+          "description": "模块的名字,默认:\"\"。 .. py:method:: forward(q_machine) 进行厄密特量测量。",
+          "default": ""
+        }
+      },
+      "required": [
+        "obs"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.nn.BatchNorm2d",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "channel_num": {
+          "type": "integer",
+          "description": "`int` - 输入通道数。"
+        },
+        "momentum": {
+          "type": "number",
+          "description": "`float` - 计算指数加权平均时的动量,默认为 0.1。",
+          "default": 0.1
+        },
+        "epsilon": {
+          "type": "number",
+          "description": "`float` - 数值稳定参数, 默认 1e-5。",
+          "default": 1e-05
+        },
+        "affine": {
+          "type": "boolean",
+          "description": "`bool` - 一个布尔值,当设置为 ``True`` 时,此模块具有可学习的每通道仿射参数,初始化为 1(用于权重)和 0(用于偏差)。默认值:``True``。",
+          "default": true
+        },
+        "beta_initializer": {
+          "type": "string",
+          "description": "`callable` - beta的初始化方式,默认全零初始化。",
+          "default": "zeros"
+        },
+        "gamma_initializer": {
+          "type": "string",
+          "description": "`callable` - gamma的的初始化方式,默认全一初始化。",
+          "default": "ones"
+        },
+        "dtype": {
+          "type": "string",
+          "description": "参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。",
+          "default": null
+        },
+        "name": {
+          "type": "string",
+          "description": "批归一化层命名,默认为\"\"。 Example:: import numpy as np from pyvqnet.tensor import QTensor from pyvqnet.nn import BatchNorm2d import pyvqnet b = 2 ic = 2 test_conv = BatchNorm2d(ic) x = QTensor(np.arange(1, 17).reshape([b, ic, 4, 1]), requires_grad=True, dtype=pyvqnet.kfloat32) y = test_conv.forward(x) print(y) # [ # [[[-1.3242440], #  [-1.0834724], #  [-0.8427007], #  [-0.6019291]], # [[-1.3242440], #  [-1.0834724], #  [-0.8427007], #  [-0.6019291]]], # [[[0.6019291], #  [0.8427007], #  [1.0834724], #  [1.3242440]], # [[0.6019291], #  [0.8427007], #  [1.0834724], #  [1.3242440]]] # ]",
+          "default": ""
+        }
+      },
+      "required": [
+        "channel_num"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.nn.Linear",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "input_channels": {
+          "type": "integer",
+          "description": "`int` - 输入数据通道数。"
+        },
+        "output_channels": {
+          "type": "integer",
+          "description": "`int` - 输出数据通道数。"
+        },
+        "weight_initializer": {
+          "type": "string",
+          "description": "`callable` - 权重初始化函数,默认为空,使用he_uniform。",
+          "default": null
+        },
+        "bias_initializer": {
+          "type": "string",
+          "description": "`callable` - 偏置初始化参数,默认为空,使用he_uniform。",
+          "default": null
+        },
+        "use_bias": {
+          "type": "boolean",
+          "description": "`bool` - 是否使用偏置项, 默认使用。",
+          "default": true
+        },
+        "dtype": {
+          "type": "string",
+          "description": "参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。",
+          "default": null
+        },
+        "name": {
+          "type": "string",
+          "description": "线性层的命名,默认为\"\"。 Example:: import numpy as np import pyvqnet from pyvqnet.tensor import QTensor from pyvqnet.nn import Linear c1 =2 c2 = 3 cin = 7 cout = 5 n = Linear(cin,cout) input = QTensor(np.arange(1,c1*c2*cin+1).reshape((c1,c2,cin)),requires_grad=True,dtype=pyvqnet.kfloat32) y = n.forward(input) print(y) # [ # [[4.3084583, -1.9228780, -0.3428757, 1.2840536, -0.5865945], #  [9.8339605, -5.5135884, -3.1228657, 4.3025794, -4.1492314], #  [15.3594627, -9.1042995, -5.9028554, 7.3211040, -7.7118683]], # [[20.8849659, -12.6950111, -8.6828451, 10.3396301, -11.2745066], #  [26.4104652, -16.2857227, -11.4628344, 13.3581581, -14.8371439], #  [31.9359703, -19.8764324, -14.2428246, 16.3766804, -18.3997803]] # ]",
+          "default": ""
+        }
+      },
+      "required": [
+        "input_channels",
+        "output_channels"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.nn.NLL_Loss",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "这个模块的名字, 默认为\"\"。 误差前向计算函数的所需参数: x: :math:`(N, *)`,损失函数的输出预测值,可以为多维变量。 y: :math:`(N, *)`,损失函数目标值。必须为64位整数,kint64。 请注意,跟pytorch等框架不同的是,NLL_Loss函数的前向函数中,第一个参数为目标值,第二个参数为预测值。 Example:: from pyvqnet.tensor import QTensor from pyvqnet import kint64 from pyvqnet.nn import NLL_Loss x = QTensor([ 0.9476322568516703, 0.226547421131723, 0.5944201443911326, 0.42830868492969476, 0.76414068655387, 0.00286059168094277, 0.3574236812873617, 0.9096948856639084, 0.4560809854582528, 0.9818027091583286, 0.8673569904602182, 0.9860275114020933, 0.9232667066664217, 0.303693313961628, 0.8461034903175555 ]) x=x.reshape([1, 3, 1, 5]) x.requires_grad = True y = QTensor([[[2, 1, 0, 0, 2]]], dtype=kint64) loss_result = NLL_Loss() result = loss_result(y, x) print(result) #[-0.6187226]",
+          "default": ""
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.nn.CrossEntropyLoss",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "这个模块的名字, 默认为\"\"。 误差前向计算函数的所需参数: x: :math:`(N, *)`,损失函数的输出,可以为多维变量。 y: :math:`(N, *)`,损失函数期望的真值。必须为64位整数,kint64。 请注意,跟pytorch等框架不同的是,CrossEntropyLoss函数的前向函数中,第一个参数为目标值,第二个参数为预测值。 Example:: from pyvqnet.tensor import QTensor from pyvqnet import kint64 from pyvqnet.nn import CrossEntropyLoss x = QTensor([ 0.9476322568516703, 0.226547421131723, 0.5944201443911326, 0.42830868492969476, 0.76414068655387, 0.00286059168094277, 0.3574236812873617, 0.9096948856639084, 0.4560809854582528, 0.9818027091583286, 0.8673569904602182, 0.9860275114020933, 0.9232667066664217, 0.303693313961628, 0.8461034903175555 ]) x=x.reshape([1, 3, 1, 5]) x.requires_grad = True y = QTensor([[[2, 1, 0, 0, 2]]], dtype=kint64) loss_result = CrossEntropyLoss() result = loss_result(y, x) print(result) #[1.1508200]",
+          "default": ""
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.nn.Sigmoid",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "激活函数层的命名,默认为\"\"。 Examples:: from pyvqnet.nn import Sigmoid from pyvqnet.tensor import QTensor layer = Sigmoid() y = layer(QTensor([1.0, 2.0, 3.0, 4.0])) print(y) # [0.7310586, 0.8807970, 0.9525741, 0.9820138]",
+          "default": ""
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.nn.ReLu",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "激活函数层的命名,默认为\"\"。 Examples:: from pyvqnet.nn import ReLu from pyvqnet.tensor import QTensor layer = ReLu() y = layer(QTensor([-1, 2.0, -3, 4.0])) print(y) # [0., 2., 0., 4.]",
+          "default": ""
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.nn.Gelu",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "approximate": {
+          "type": "string",
+          "description": "近似计算方式, 默认为\"tanh\"。",
+          "default": "tanh"
+        },
+        "name": {
+          "type": "string",
+          "description": "激活函数层的命名,默认为\"\"。 Examples:: from pyvqnet.tensor import randu, ones_like from pyvqnet.nn import Gelu qa = randu([5,4]) qb = Gelu()(qa) print(qb) # [[0.0292515,0.0668998,0.4036024,0.8369502], #  [0.1929213,0.1981275,0.2358531,0.7790835], #  [0.1754935,0.6204091,0.2354677,0.2409406], #  [0.4238827,0.804715 ,0.1633414,0.2853   ], #  [0.1959854,0.590143 ,0.553995 ,0.0008423]]",
+          "default": ""
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.optim.adam.Adam",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "params": {
+          "type": "string",
+          "description": "需要优化的模型参数。"
+        },
+        "lr": {
+          "type": "string",
+          "description": "学习率(默认值:0.01)。",
+          "default": "0.01"
+        },
+        "beta1": {
+          "type": "string",
+          "description": "用于计算梯度及其平方的运行平均值的系数(默认值:0.9)。",
+          "default": "0.9"
+        },
+        "beta2": {
+          "type": "string",
+          "description": "用于计算梯度及其平方的运行平均值的系数(默认值:0.999)。",
+          "default": "0.999"
+        },
+        "epsilon": {
+          "type": "string",
+          "description": "添加到分母以提高数值稳定性的常数(默认值:1e-8)。",
+          "default": "1e-8"
+        },
+        "weight_decay": {
+          "type": "integer",
+          "description": "权重衰减系数(默认值0)。 Example:: import numpy as np from pyvqnet.optim import adam from pyvqnet.tensor import QTensor w = np.arange(24).reshape(1,2,3,4).astype(np.float64) param = QTensor(w) param.grad = QTensor(np.arange(24).reshape(1,2,3,4).astype(np.float64)) params = [param] opti = adam.Adam(params) for i in range(1,3): opti._step() print(param) # [ # [[[0., 0.9900000, 1.9900000, 2.9900000], #  [3.9900000, 4.9899998, 5.9899998, 6.9899998], #  [7.9899998, 8.9899998, 9.9899998, 10.9899998]], # [[11.9899998, 12.9899998, 13.9899998, 14.9899998], #  [15.9899998, 16.9899998, 17.9899998, 18.9899998], #  [19.9899998, 20.9899998, 21.9899998, 22.9899998]]] # ] # [ # [[[0., 0.9800000, 1.9800000, 2.9800000], #  [3.9800000, 4.9799995, 5.9799995, 6.9799995], #  [7.9799995, 8.9799995, 9.9799995, 10.9799995]], # [[11.9799995, 12.9799995, 13.9799995, 14.9799995], #  [15.9799995, 16.9799995, 17.9799995, 18.9799995], #  [19.9799995, 20.9799995, 21.9799995, 22.9799995]]] # ]",
+          "default": 0
+        },
+        "amsgrad": {
+          "type": "string",
+          "description": "是否使用该算法的 AMSGrad 变体(默认值:False)。",
+          "default": "False"
+        }
+      },
+      "required": [
+        "params"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.optim.sgd.SGD",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "params": {
+          "type": "string",
+          "description": "需要优化的模型参数。"
+        },
+        "lr": {
+          "type": "string",
+          "description": "学习率(默认值:0.01)。",
+          "default": "0.01"
+        },
+        "momentum": {
+          "type": "string",
+          "description": "动量因子(默认值:0)。",
+          "default": "0"
+        },
+        "nesterov": {
+          "type": "integer",
+          "description": "启用 Nesterov 动量 (默认: False)。 Example:: import numpy as np from pyvqnet.optim import sgd from pyvqnet.tensor import QTensor w = np.arange(24).reshape(1,2,3,4).astype(np.float64) param = QTensor(w) param.grad = QTensor(np.arange(24).reshape(1,2,3,4).astype(np.float64)) params = [param] opti = sgd.SGD(params) for i in range(1,3): opti._step() print(param) # [ # [[[0., 0.9900000, 1.9800000, 2.9700000], #  [3.9600000, 4.9499998, 5.9400001, 6.9299998], #  [7.9200001, 8.9099998, 9.8999996, 10.8900003]], # [[11.8800001, 12.8699999, 13.8599997, 14.8500004], #  [15.8400002, 16.8299999, 17.8199997, 18.8099995], #  [19.7999992, 20.7900009, 21.7800007, 22.7700005]]] # ] # [ # [[[0., 0.9800000, 1.9600000, 2.9400001], #  [3.9200001, 4.8999996, 5.8800001, 6.8599997], #  [7.8400002, 8.8199997, 9.7999992, 10.7800007]], # [[11.7600002, 12.7399998, 13.7199993, 14.7000008], #  [15.6800003, 16.6599998, 17.6399994, 18.6199989], #  [19.5999985, 20.5800018, 21.5600014, 22.5400009]]] # ] Rotosolve ^^^^^^^^^^^^^^ Rotosolve算法它允许相对于其他参数的固定值直接跳转到单个参数的最佳值,直接找到量子线路最佳参数的优化算法。 .. py:class:: pyvqnet.optim.rotosolve.Rotosolve(max_iter =50) Rotosolve:可以使用 rotosolve 算法来最小化线性组合的量子测量期望值。 请参阅以下论文: https://arxiv.org/abs/1903.12166, Ken M. Nakanishi。 https://arxiv.org/abs/1905.09692, Mateusz Ostaszewski。",
+          "default": "False"
+        }
+      },
+      "required": [
+        "params"
+      ]
+    }
   }
 ]
