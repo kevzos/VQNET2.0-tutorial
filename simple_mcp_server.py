@@ -3984,6 +3984,437 @@ class SimpleMCPServer:
                 "parameters": arguments,
                 "note": "这是基于pyVQNet HermitianExpval API生成的真实代码，计算厄米特可观测量的期望值。"
             }
+        elif "pyvqnet.qnn.vqc.MeasureAll" in tool_name or "MeasureAll" in tool_name:
+            # MeasureAll 全量子比特测量生成
+            obs = arguments.get('obs')
+            name = arguments.get('name', "")
+
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import MeasureAll, QMachine, hadamard
+            from pyvqnet.tensor import QTensor
+            import numpy as np
+
+            # 创建量子虚拟机
+            num_qubits = 2
+            qm = QMachine(num_qubits)
+            qm.reset_states(num_qubits)
+
+            # 制备量子态
+            hadamard(q_machine=qm, wires=0)
+            hadamard(q_machine=qm, wires=1)
+
+            # 定义可观测量
+            obs = np.array([[1, 0], [0, -1]], dtype=np.complex64)  # 泡利Z矩阵
+
+            # 创建全量子比特测量
+            measure = MeasureAll(
+                obs={obs if obs is not None else 'obs'},
+                name={name_str}
+            )
+
+            # 执行测量
+            result = measure(q_machine=qm)
+            print("全测量结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成MeasureAll全量子比特测量代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet MeasureAll API生成的真实代码，对所有量子比特进行测量。"
+            }
+        elif "pyvqnet.qnn.vqc.cnot" in tool_name or "cnot" in tool_name:
+            # cnot 受控非门生成
+            q_machine = arguments.get('q_machine', 'qm')
+            wires = arguments.get('wires')
+            params = arguments.get('params', None)
+            use_dagger = arguments.get('use_dagger', False)
+
+            # 格式化参数
+            wires_str = str(wires) if isinstance(wires, (list, tuple)) else wires
+            params_str = params if params is not None else 'None'
+            use_dagger_str = str(use_dagger) if isinstance(use_dagger, bool) else use_dagger
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import QMachine, cnot, hadamard, measure_all
+            import numpy as np
+
+            # 创建量子虚拟机
+            qm = QMachine(2)
+            qm.reset_states(2)
+
+            # 制备量子态
+            hadamard(q_machine=qm, wires=0)
+
+            # 应用CNOT门
+            cnot(
+                q_machine=qm,
+                wires={wires_str if wires is not None else '[0, 1]'},
+                params={params_str},
+                use_dagger={use_dagger_str}
+            )
+
+            # 测量
+            result = measure_all(q_machine=qm, shots=1000)
+            print("CNOT门测量结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成cnot受控非门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet cnot API生成的真实代码，实现受控非门操作。wires参数格式为[控制比特, 目标比特]。"
+            }
+        elif "pyvqnet.qnn.vqc.swap" in tool_name or "swap" in tool_name:
+            # swap 交换门生成
+            q_machine = arguments.get('q_machine', 'qm')
+            wires = arguments.get('wires')
+            params = arguments.get('params', None)
+            use_dagger = arguments.get('use_dagger', False)
+
+            # 格式化参数
+            wires_str = str(wires) if isinstance(wires, (list, tuple)) else wires
+            params_str = params if params is not None else 'None'
+            use_dagger_str = str(use_dagger) if isinstance(use_dagger, bool) else use_dagger
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import QMachine, swap, pauliX, measure_all
+            import numpy as np
+
+            # 创建量子虚拟机
+            qm = QMachine(2)
+            qm.reset_states(2)
+
+            # 制备量子态：q0=|1>, q1=|0>
+            pauliX(q_machine=qm, wires=0)
+
+            # 应用SWAP门
+            swap(
+                q_machine=qm,
+                wires={wires_str if wires is not None else '[0, 1]'},
+                params={params_str},
+                use_dagger={use_dagger_str}
+            )
+
+            # 测量
+            result = measure_all(q_machine=qm, shots=1000)
+            print("SWAP门测量结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成swap交换门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet swap API生成的真实代码，实现两个量子比特的状态交换。"
+            }
+        elif "pyvqnet.qnn.vqc.toffoli" in tool_name or "toffoli" in tool_name:
+            # toffoli 托佛利门生成
+            q_machine = arguments.get('q_machine', 'qm')
+            wires = arguments.get('wires')
+            params = arguments.get('params', None)
+            use_dagger = arguments.get('use_dagger', False)
+
+            # 格式化参数
+            wires_str = str(wires) if isinstance(wires, (list, tuple)) else wires
+            params_str = params if params is not None else 'None'
+            use_dagger_str = str(use_dagger) if isinstance(use_dagger, bool) else use_dagger
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import QMachine, toffoli, pauliX, measure_all
+            import numpy as np
+
+            # 创建量子虚拟机
+            qm = QMachine(3)
+            qm.reset_states(3)
+
+            # 制备量子态：q0=|1>, q1=|1>, q2=|0>
+            pauliX(q_machine=qm, wires=0)
+            pauliX(q_machine=qm, wires=1)
+
+            # 应用Toffoli门（控制位0,1，目标位2）
+            toffoli(
+                q_machine=qm,
+                wires={wires_str if wires is not None else '[0, 1, 2]'},
+                params={params_str},
+                use_dagger={use_dagger_str}
+            )
+
+            # 测量
+            result = measure_all(q_machine=qm, shots=1000)
+            print("Toffoli门测量结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成toffoli托佛利门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet toffoli API生成的真实代码，实现三量子比特的Toffoli（受控-受控-非）门操作。"
+            }
+        elif "pyvqnet.qnn.vqc.cz" in tool_name or "cz" in tool_name:
+            # cz 受控Z门生成
+            q_machine = arguments.get('q_machine', 'qm')
+            wires = arguments.get('wires')
+            params = arguments.get('params', None)
+            use_dagger = arguments.get('use_dagger', False)
+
+            # 格式化参数
+            wires_str = str(wires) if isinstance(wires, (list, tuple)) else wires
+            params_str = params if params is not None else 'None'
+            use_dagger_str = str(use_dagger) if isinstance(use_dagger, bool) else use_dagger
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import QMachine, cz, hadamard, measure_all
+            import numpy as np
+
+            # 创建量子虚拟机
+            qm = QMachine(2)
+            qm.reset_states(2)
+
+            # 制备量子态
+            hadamard(q_machine=qm, wires=0)
+            hadamard(q_machine=qm, wires=1)
+
+            # 应用CZ门
+            cz(
+                q_machine=qm,
+                wires={wires_str if wires is not None else '[0, 1]'},
+                params={params_str},
+                use_dagger={use_dagger_str}
+            )
+
+            # 测量
+            result = measure_all(q_machine=qm, shots=1000)
+            print("CZ门测量结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成cz受控Z门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet cz API生成的真实代码，实现受控Z门操作。"
+            }
+        elif "pyvqnet.qnn.vqc.rx" in tool_name or "rx" in tool_name:
+            # rx 绕X轴旋转门生成
+            q_machine = arguments.get('q_machine', 'qm')
+            wires = arguments.get('wires')
+            params = arguments.get('params')
+            use_dagger = arguments.get('use_dagger', False)
+
+            # 格式化参数
+            params_str = str(params) if params is not None else 'np.pi/2'
+            use_dagger_str = str(use_dagger) if isinstance(use_dagger, bool) else use_dagger
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import QMachine, rx, measure_all
+            import numpy as np
+
+            # 创建量子虚拟机
+            qm = QMachine(1)
+            qm.reset_states(1)
+
+            # 应用RX门（绕X轴旋转90度）
+            rx(
+                q_machine=qm,
+                wires={wires if wires is not None else 0},
+                params={params_str},
+                use_dagger={use_dagger_str}
+            )
+
+            # 测量
+            result = measure_all(q_machine=qm, shots=1000)
+            print("RX门测量结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成rx绕X轴旋转门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet rx API生成的真实代码，实现绕X轴的旋转门操作。params参数为旋转角度。"
+            }
+        elif "pyvqnet.qnn.vqc.ry" in tool_name or "ry" in tool_name:
+            # ry 绕Y轴旋转门生成
+            q_machine = arguments.get('q_machine', 'qm')
+            wires = arguments.get('wires')
+            params = arguments.get('params')
+            use_dagger = arguments.get('use_dagger', False)
+
+            # 格式化参数
+            params_str = str(params) if params is not None else 'np.pi/2'
+            use_dagger_str = str(use_dagger) if isinstance(use_dagger, bool) else use_dagger
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import QMachine, ry, measure_all
+            import numpy as np
+
+            # 创建量子虚拟机
+            qm = QMachine(1)
+            qm.reset_states(1)
+
+            # 应用RY门（绕Y轴旋转90度）
+            ry(
+                q_machine=qm,
+                wires={wires if wires is not None else 0},
+                params={params_str},
+                use_dagger={use_dagger_str}
+            )
+
+            # 测量
+            result = measure_all(q_machine=qm, shots=1000)
+            print("RY门测量结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成ry绕Y轴旋转门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet ry API生成的真实代码，实现绕Y轴的旋转门操作。params参数为旋转角度。"
+            }
+        elif "pyvqnet.qnn.vqc.rz" in tool_name or "rz" in tool_name:
+            # rz 绕Z轴旋转门生成
+            q_machine = arguments.get('q_machine', 'qm')
+            wires = arguments.get('wires')
+            params = arguments.get('params')
+            use_dagger = arguments.get('use_dagger', False)
+
+            # 格式化参数
+            params_str = str(params) if params is not None else 'np.pi/2'
+            use_dagger_str = str(use_dagger) if isinstance(use_dagger, bool) else use_dagger
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import QMachine, rz, hadamard, measure_all
+            import numpy as np
+
+            # 创建量子虚拟机
+            qm = QMachine(1)
+            qm.reset_states(1)
+
+            # 制备叠加态
+            hadamard(q_machine=qm, wires=0)
+
+            # 应用RZ门（绕Z轴旋转90度）
+            rz(
+                q_machine=qm,
+                wires={wires if wires is not None else 0},
+                params={params_str},
+                use_dagger={use_dagger_str}
+            )
+
+            # 测量
+            result = measure_all(q_machine=qm, shots=1000)
+            print("RZ门测量结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成rz绕Z轴旋转门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet rz API生成的真实代码，实现绕Z轴的旋转门操作。params参数为旋转角度。"
+            }
+        elif "pyvqnet.qnn.vqc.VQC_HardwareEfficientAnsatz" in tool_name or "VQC_HardwareEfficientAnsatz" in tool_name:
+            # VQC_HardwareEfficientAnsatz 硬件高效ansatz生成
+            n_qubits = arguments.get('n_qubits')
+            single_rot_gate_list = arguments.get('single_rot_gate_list')
+            entangle_gate = arguments.get('entangle_gate', '"CNOT"')
+            entangle_rules = arguments.get('entangle_rules', '"linear"')
+            depth = arguments.get('depth', 1)
+            initial = arguments.get('initial', None)
+            dtype = arguments.get('dtype', None)
+
+            # 格式化参数
+            single_rot_gate_list_str = str(single_rot_gate_list) if isinstance(single_rot_gate_list, list) else '["RY", "RZ"]'
+            initial_str = initial if initial is not None else 'None'
+            dtype_str = dtype if dtype is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import VQC_HardwareEfficientAnsatz, QMachine
+            import numpy as np
+
+            # 创建硬件高效ansatz
+            ansatz = VQC_HardwareEfficientAnsatz(
+                n_qubits={n_qubits if n_qubits is not None else 3},
+                single_rot_gate_list={single_rot_gate_list_str},
+                entangle_gate={entangle_gate},
+                entangle_rules={entangle_rules},
+                depth={depth},
+                initial={initial_str},
+                dtype={dtype_str}
+            )
+
+            # 获取线路参数数量
+            param_count = ansatz.param_count
+            print("线路参数数量:", param_count)
+
+            # 生成随机参数
+            params = np.random.randn(param_count)
+
+            # 创建量子虚拟机并运行线路
+            qm = QMachine({n_qubits if n_qubits is not None else 3})
+            qm.reset_states({n_qubits if n_qubits is not None else 3})
+            ansatz(q_machine=qm, params=params)
+
+            print("硬件高效ansatz线路构建完成")
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成VQC_HardwareEfficientAnsatz硬件高效ansatz代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet VQC_HardwareEfficientAnsatz API生成的真实代码，创建硬件高效的变分量子线路模板。"
+            }
+        elif "pyvqnet.qnn.vqc.VQC_AngleEmbedding" in tool_name or "VQC_AngleEmbedding" in tool_name:
+            # VQC_AngleEmbedding 角度编码生成
+            input_feat = arguments.get('input_feat')
+            wires = arguments.get('wires')
+            q_machine = arguments.get('q_machine', 'qm')
+            rotation = arguments.get('rotation', '"X"')
+
+            # 格式化参数
+            input_feat_str = str(input_feat) if input_feat is not None else '[0.1, 0.2, 0.3]'
+            wires_str = str(wires) if isinstance(wires, (list, tuple)) else '[0, 1, 2]'
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import VQC_AngleEmbedding, QMachine, measure_all
+            import numpy as np
+
+            # 输入特征
+            input_feat = {input_feat_str}
+            wires = {wires_str}
+
+            # 创建量子虚拟机
+            qm = QMachine(len(wires))
+            qm.reset_states(len(wires))
+
+            # 应用角度编码
+            VQC_AngleEmbedding(
+                input_feat=input_feat,
+                wires=wires,
+                q_machine=qm,
+                rotation={rotation}
+            )
+
+            # 测量
+            result = measure_all(q_machine=qm, shots=1000)
+            print("角度编码后测量结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成VQC_AngleEmbedding角度编码代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet VQC_AngleEmbedding API生成的真实代码，将经典特征编码到量子比特的旋转角度中。"
+            }
         else:
             return {
                 "status": "success",

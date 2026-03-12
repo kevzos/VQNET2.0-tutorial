@@ -712,6 +712,223 @@
     }
   },
   {
+    "name": "pyvqnet.qnn.vqc.rx",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import rx,QMachine from pyvqnet.tensor import QTensor qm  = QMachine(4) rx(q_machine=qm, wires=1,params=QTensor([0.5])) print(qm.states) # [[[[[0.9689124+0.j       0.       +0.j      ] #     [0.       +0.j       0.       +0.j      ]] # #    [[0.       -0.247404j 0.       +0.j      ] #     [0.       +0.j       0.       +0.j      ]]] # # #   [[[0.       +0.j       0.       +0.j      ] #     [0.       +0.j       0.       +0.j      ]] # #    [[0.       +0.j       0.       +0.j      ] #     [0.       +0.j       0.       +0.j      ]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.ry",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import ry,QMachine from pyvqnet.tensor import QTensor qm  = QMachine(4) ry(q_machine=qm, wires=1,params=QTensor([0.5]),) print(qm.states) # [[[[[0.9689124+0.j 0.       +0.j] #     [0.       +0.j 0.       +0.j]] # #    [[0.247404 +0.j 0.       +0.j] #     [0.       +0.j 0.       +0.j]]] # # #   [[[0.       +0.j 0.       +0.j] #     [0.       +0.j 0.       +0.j]] # #    [[0.       +0.j 0.       +0.j] #     [0.       +0.j 0.       +0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.rz",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import rz,QMachine from pyvqnet.tensor import QTensor qm  = QMachine(4) rz(q_machine=qm, wires=1,params=QTensor([0.5]),) print(qm.states) # [[[[[0.9689124-0.247404j 0.       +0.j      ] #     [0.       +0.j       0.       +0.j      ]] # #    [[0.       +0.j       0.       +0.j      ] #     [0.       +0.j       0.       +0.j      ]]] # # #   [[[0.       +0.j       0.       +0.j      ] #     [0.       +0.j       0.       +0.j      ]] # #    [[0.       +0.j       0.       +0.j      ] #     [0.       +0.j       0.       +0.j      ]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.cnot",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import cnot,QMachine qm  = QMachine(4) cnot(q_machine=qm,wires=[1,0],) print(qm.states) # [[[[[1.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]] # # #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.swap",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import swap,QMachine qm  = QMachine(4) swap(q_machine=qm,wires=[1,0],) print(qm.states) # [[[[[1.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]] # # #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.cz",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import cz,QMachine qm  = QMachine(4) cz(q_machine=qm,wires=[1,0],) print(qm.states) # [[[[[1.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]] # # #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.toffoli",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import toffoli,QMachine qm  = QMachine(4) toffoli(q_machine=qm,wires=[0,1,2],) print(qm.states) # [[[[[1.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]] # # #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
     "name": "pyvqnet.qnn.vqc.Probability",
     "description": "",
     "inputSchema": {
@@ -729,6 +946,27 @@
       },
       "required": [
         "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.MeasureAll",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "obs": {
+          "type": "string",
+          "description": "测量观测量。"
+        },
+        "name": {
+          "type": "string",
+          "description": "模块的名字,默认:\"\"。 .. py:method:: forward(q_machine) 进行测量操作",
+          "default": ""
+        }
+      },
+      "required": [
+        "obs"
       ]
     }
   },
@@ -780,6 +1018,83 @@
       },
       "required": [
         "obs"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.VQC_HardwareEfficientAnsatz",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "n_qubits": {
+          "type": "string",
+          "description": "量子比特数。"
+        },
+        "single_rot_gate_list": {
+          "type": "array",
+          "description": "单个量子比特旋转门列表由一个或多个作用于每个量子比特的旋转门构成。目前支持 Rx、Ry、Rz。"
+        },
+        "entangle_gate": {
+          "type": "string",
+          "description": "非参数化纠缠门。支持 CNOT、CZ。默认值: CNOT。",
+          "default": "CNOT"
+        },
+        "entangle_rules": {
+          "type": "string",
+          "description": "纠缠门在电路中的使用方式。\"linear\" 表示纠缠门将作用于每个相邻的量子比特。'all' 表示纠缠门将作用于任意两个量子比特。默认值: \"linear\"。",
+          "default": "linear"
+        },
+        "depth": {
+          "type": "string",
+          "description": "假设的深度, 默认值: 1。",
+          "default": "1"
+        },
+        "initial": {
+          "type": "string",
+          "description": "使用initial 初始化所有其中参数逻辑门的参数, 默认值: None, 此模块将随机初始化参数。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "参数的数据类型,默认值: None,使用 float32。 Example:: from pyvqnet.nn import Module,Linear,ModuleList from pyvqnet.qnn.vqc.qcircuit import VQC_HardwareEfficientAnsatz,RZZ,RZ from pyvqnet.qnn.vqc import Probability,QMachine from pyvqnet import tensor class QM(Module): def __init__(self, name=\"\"): super().__init__(name) self.linearx = Linear(4,2) self.ansatz = VQC_HardwareEfficientAnsatz(4, [\"rx\", \"RY\", \"rz\"], entangle_gate=\"cnot\", entangle_rules=\"linear\", depth=2) self.encode1 = RZ(wires=0) self.encode2 = RZ(wires=1) self.measure = Probability(wires=[0,2]) self.device = QMachine(4) def forward(self, x, *args, **kwargs): self.device.reset_states(x.shape[0]) y = self.linearx(x) self.encode1(params = y[:, [0]],q_machine = self.device,) self.encode2(params = y[:, [1]],q_machine = self.device,) self.ansatz(q_machine =self.device) return self.measure(q_machine =self.device) bz =3 inputx = tensor.arange(1.0,bz*4+1).reshape([bz,4]) inputx.requires_grad= True qlayer = QM() y = qlayer(inputx) y.backward() print(y) # [[0.3075959 0.2315064 0.2491432 0.2117545] #  [0.3075958 0.2315062 0.2491433 0.2117546] #  [0.3075958 0.2315062 0.2491432 0.2117545]]",
+          "default": null
+        }
+      },
+      "required": [
+        "n_qubits",
+        "single_rot_gate_list"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.VQC_AngleEmbedding",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "input_feat": {
+          "type": "string",
+          "description": "表示参数的数组。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特idx。"
+        },
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "rotation": {
+          "type": "integer",
+          "description": "旋转门,默认为“X”。 Example:: from pyvqnet.qnn.vqc import VQC_AngleEmbedding, QMachine from pyvqnet.tensor import QTensor qm  = QMachine(2) VQC_AngleEmbedding(QTensor([2.2, 1]), [0, 1], q_machine=qm, rotation='X') print(qm.states) # [[[ 0.398068 +0.j         0.       -0.2174655j] #   [ 0.       -0.7821081j -0.4272676+0.j       ]]] VQC_AngleEmbedding(QTensor([2.2, 1]), [0, 1], q_machine=qm, rotation='Y') print(qm.states) # [[[-0.0240995+0.6589843j  0.4207355+0.2476033j] #   [ 0.4042482-0.2184162j  0.       -0.3401631j]]] VQC_AngleEmbedding(QTensor([2.2, 1]), [0, 1], q_machine=qm, rotation='Z') print(qm.states) # [[[0.659407 +0.0048471j 0.4870554-0.0332093j] #   [0.4569675+0.047989j  0.340018 +0.0099326j]]]",
+          "default": "X"
+        }
+      },
+      "required": [
+        "input_feat",
+        "wires",
+        "q_machine"
       ]
     }
   },
