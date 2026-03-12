@@ -536,6 +536,280 @@ class SimpleMCPServer:
                 "parameters": arguments,
                 "note": "这是基于pyVQNet reshape API生成的真实代码，将张量重塑为指定形状。"
             }
+        elif "pyvqnet.tensor.full" in tool_name or "full" in tool_name:
+            # full 函数生成
+            shape = arguments.get('shape')
+            value = arguments.get('value')
+            device = arguments.get('device', 'pyvqnet.DEV_CPU')
+            dtype = arguments.get('dtype', None)
+
+            # 格式化参数
+            shape_str = str(shape) if isinstance(shape, (list, tuple)) else shape
+            dtype_str = dtype if dtype is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.tensor import full
+            from pyvqnet.dtype import *
+
+            # 生成指定值的张量
+            tensor = full(
+                shape={shape_str},
+                value={value},
+                device={device},
+                dtype={dtype_str}
+            )
+            print("指定值张量形状:", tensor.shape)
+            print("指定值张量:", tensor)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成full函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet full API生成的真实代码，生成指定形状并用指定值填充的张量。"
+            }
+        elif "pyvqnet.tensor.eye" in tool_name or "eye" in tool_name:
+            # eye 函数生成
+            size = arguments.get('size')
+            offset = arguments.get('offset', 0)
+            device = arguments.get('device', 'pyvqnet.DEV_CPU')
+            dtype = arguments.get('dtype', None)
+
+            # 格式化参数
+            dtype_str = dtype if dtype is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.tensor import eye
+            from pyvqnet.dtype import *
+
+            # 生成单位矩阵
+            tensor = eye(
+                size={size},
+                offset={offset},
+                device={device},
+                dtype={dtype_str}
+            )
+            print("单位矩阵形状:", tensor.shape)
+            print("单位矩阵:", tensor)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成eye函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet eye API生成的真实代码，生成指定大小的单位矩阵。"
+            }
+        elif "pyvqnet.tensor.exp" in tool_name or "exp" in tool_name:
+            # exp 函数生成
+            t = arguments.get('t')
+
+            generated_code = f"""
+            from pyvqnet.tensor import exp, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            tensor = {t}
+
+            # 指数计算
+            result = exp(tensor)
+            print("指数计算结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成exp函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet exp API生成的真实代码，计算张量的自然指数。"
+            }
+        elif "pyvqnet.tensor.log" in tool_name or "log" in tool_name:
+            # log 函数生成
+            t = arguments.get('t')
+
+            generated_code = f"""
+            from pyvqnet.tensor import log, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            tensor = {t}
+
+            # 对数计算
+            result = log(tensor)
+            print("对数计算结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成log函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet log API生成的真实代码，计算张量的自然对数。"
+            }
+        elif "pyvqnet.tensor.power" in tool_name or "power" in tool_name:
+            # power 函数生成
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import power, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            base = {t1}
+            exponent = {t2}
+
+            # 幂运算
+            result = power(base, exponent)
+            print("幂运算结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成power函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet power API生成的真实代码，计算张量的幂运算。"
+            }
+        elif "pyvqnet.tensor.sums" in tool_name or "sums" in tool_name:
+            # sums 函数生成
+            t = arguments.get('t')
+            axis = arguments.get('axis', None)
+            keepdims = arguments.get('keepdims', False)
+
+            # 格式化参数
+            axis_str = str(axis) if axis is not None else 'None'
+            keepdims_str = str(keepdims) if isinstance(keepdims, bool) else keepdims
+
+            generated_code = f"""
+            from pyvqnet.tensor import sums, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            tensor = {t}
+
+            # 求和运算
+            result = sums(tensor, axis={axis_str}, keepdims={keepdims_str})
+            print("求和结果形状:", result.shape)
+            print("求和结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成sums函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet sums API生成的真实代码，在指定轴上对张量进行求和。"
+            }
+        elif "pyvqnet.tensor.mean" in tool_name or "mean" in tool_name:
+            # mean 函数生成
+            t = arguments.get('t')
+            axis = arguments.get('axis', None)
+            keepdims = arguments.get('keepdims', False)
+
+            # 格式化参数
+            axis_str = str(axis) if axis is not None else 'None'
+            keepdims_str = str(keepdims) if isinstance(keepdims, bool) else keepdims
+
+            generated_code = f"""
+            from pyvqnet.tensor import mean, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            tensor = {t}
+
+            # 求平均值
+            result = mean(tensor, axis={axis_str}, keepdims={keepdims_str})
+            print("平均值结果形状:", result.shape)
+            print("平均值结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成mean函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet mean API生成的真实代码，在指定轴上计算张量的平均值。"
+            }
+        elif "pyvqnet.tensor.transpose" in tool_name or "transpose" in tool_name:
+            # transpose 函数生成
+            t = arguments.get('t')
+            dim = arguments.get('dim')
+
+            # 格式化参数
+            dim_str = str(dim) if isinstance(dim, list) else dim
+
+            generated_code = f"""
+            from pyvqnet.tensor import transpose, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            tensor = {t}
+
+            # 矩阵转置
+            result = transpose(tensor, dim={dim_str})
+            print("转置后形状:", result.shape)
+            print("转置结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成transpose函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet transpose API生成的真实代码，按照指定维度顺序转置张量。"
+            }
+        elif "pyvqnet.tensor.squeeze" in tool_name or "squeeze" in tool_name:
+            # squeeze 函数生成
+            t = arguments.get('t')
+            axis = arguments.get('axis', -1)
+
+            generated_code = f"""
+            from pyvqnet.tensor import squeeze, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            tensor = {t}
+
+            # 去除单维度
+            result = squeeze(tensor, axis={axis})
+            print("squeeze后形状:", result.shape)
+            print("squeeze结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成squeeze函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet squeeze API生成的真实代码，去除张量中维度大小为1的轴。"
+            }
+        elif "pyvqnet.tensor.greater" in tool_name or "greater" in tool_name:
+            # greater 函数生成
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import greater, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            t1 = {t1}
+            t2 = {t2}
+
+            # 大于比较
+            result = greater(t1, t2)
+            print("大于比较结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成greater函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet greater API生成的真实代码，逐元素比较两个张量是否满足t1 > t2。"
+            }
         elif "pyvqnet.qnn.pq3.quantumlayer.QpandaQProgVQCLayer" in tool_name or "QuantumLayerV3" in tool_name:
             # QpandaQProgVQCLayer 类生成（别名QuantumLayerV3）
             origin_qprog_func = arguments.get('origin_qprog_func')
