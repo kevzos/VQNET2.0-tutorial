@@ -241,6 +241,301 @@ class SimpleMCPServer:
                 "parameters": arguments,
                 "note": "这是基于pyVQNet QTensor API生成的真实代码。data可以是列表、numpy数组或其他张量。device默认使用pyvqnet.DEV_CPU。"
             }
+        elif "pyvqnet.tensor.ones" in tool_name or "ones" in tool_name:
+            # ones 函数生成
+            shape = arguments.get('shape')
+            device = arguments.get('device', 'pyvqnet.DEV_CPU')
+            dtype = arguments.get('dtype', None)
+
+            # 格式化参数
+            shape_str = str(shape) if isinstance(shape, (list, tuple)) else shape
+            dtype_str = dtype if dtype is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.tensor import ones
+            from pyvqnet.dtype import *
+
+            # 生成全1张量
+            tensor = ones(
+                shape={shape_str},
+                device={device},
+                dtype={dtype_str}
+            )
+            print("全1张量形状:", tensor.shape)
+            print("全1张量:", tensor)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成ones函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet ones API生成的真实代码，生成指定形状的全1张量。"
+            }
+        elif "pyvqnet.tensor.zeros" in tool_name or "zeros" in tool_name:
+            # zeros 函数生成
+            shape = arguments.get('shape')
+            device = arguments.get('device', 'pyvqnet.DEV_CPU')
+            dtype = arguments.get('dtype', None)
+
+            # 格式化参数
+            shape_str = str(shape) if isinstance(shape, (list, tuple)) else shape
+            dtype_str = dtype if dtype is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.tensor import zeros
+            from pyvqnet.dtype import *
+
+            # 生成全0张量
+            tensor = zeros(
+                shape={shape_str},
+                device={device},
+                dtype={dtype_str}
+            )
+            print("全0张量形状:", tensor.shape)
+            print("全0张量:", tensor)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成zeros函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet zeros API生成的真实代码，生成指定形状的全0张量。"
+            }
+        elif "pyvqnet.tensor.arange" in tool_name or "arange" in tool_name:
+            # arange 函数生成
+            start = arguments.get('start')
+            end = arguments.get('end')
+            step = arguments.get('step', 1)
+            device = arguments.get('device', 'pyvqnet.DEV_CPU')
+            dtype = arguments.get('dtype', None)
+            requires_grad = arguments.get('requires_grad', False)
+
+            # 格式化参数
+            requires_grad_str = str(requires_grad) if isinstance(requires_grad, bool) else requires_grad
+            dtype_str = dtype if dtype is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.tensor import arange
+            from pyvqnet.dtype import *
+
+            # 生成序列张量
+            tensor = arange(
+                start={start},
+                end={end},
+                step={step},
+                device={device},
+                dtype={dtype_str},
+                requires_grad={requires_grad_str}
+            )
+            print("序列张量形状:", tensor.shape)
+            print("序列张量:", tensor)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成arange函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet arange API生成的真实代码，生成[start, end)范围内步长为step的序列张量。"
+            }
+        elif "pyvqnet.tensor.randn" in tool_name or "randn" in tool_name:
+            # randn 函数生成
+            shape = arguments.get('shape')
+            mean = arguments.get('mean', 0.0)
+            std = arguments.get('std', 1.0)
+            device = arguments.get('device', 'pyvqnet.DEV_CPU')
+            dtype = arguments.get('dtype', None)
+            requires_grad = arguments.get('requires_grad', False)
+
+            # 格式化参数
+            shape_str = str(shape) if isinstance(shape, (list, tuple)) else shape
+            requires_grad_str = str(requires_grad) if isinstance(requires_grad, bool) else requires_grad
+            dtype_str = dtype if dtype is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.tensor import randn
+            from pyvqnet.dtype import *
+
+            # 生成正态分布随机张量
+            tensor = randn(
+                shape={shape_str},
+                mean={mean},
+                std={std},
+                device={device},
+                dtype={dtype_str},
+                requires_grad={requires_grad_str}
+            )
+            print("随机张量形状:", tensor.shape)
+            print("随机张量:", tensor)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成randn函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet randn API生成的真实代码，生成指定均值和标准差的正态分布随机张量。"
+            }
+        elif "pyvqnet.tensor.add" in tool_name or "add" in tool_name:
+            # add 函数生成
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import add, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            t1 = {t1}
+            t2 = {t2}
+
+            # 张量加法
+            result = add(t1, t2)
+            print("加法结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成add函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet add API生成的真实代码，实现两个张量的逐元素加法。"
+            }
+        elif "pyvqnet.tensor.mul" in tool_name or "mul" in tool_name:
+            # mul 函数生成
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import mul, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            t1 = {t1}
+            t2 = {t2}
+
+            # 张量乘法
+            result = mul(t1, t2)
+            print("乘法结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成mul函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet mul API生成的真实代码，实现两个张量的逐元素乘法。"
+            }
+        elif "pyvqnet.tensor.matmul" in tool_name or "matmul" in tool_name:
+            # matmul 函数生成
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import matmul, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            t1 = {t1}
+            t2 = {t2}
+
+            # 矩阵乘法
+            result = matmul(t1, t2)
+            print("矩阵乘法结果形状:", result.shape)
+            print("矩阵乘法结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成matmul函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet matmul API生成的真实代码，实现两个张量的矩阵乘法。"
+            }
+        elif "pyvqnet.tensor.concatenate" in tool_name or "concatenate" in tool_name:
+            # concatenate 函数生成
+            args = arguments.get('args')
+            axis = arguments.get('axis', 1)
+
+            # 格式化参数
+            args_str = str(args) if isinstance(args, list) else args
+
+            generated_code = f"""
+            from pyvqnet.tensor import concatenate, QTensor
+            import numpy as np
+
+            # 创建输入张量列表
+            tensors = {args_str}
+
+            # 张量拼接
+            result = concatenate(tensors, axis={axis})
+            print("拼接后张量形状:", result.shape)
+            print("拼接后张量:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成concatenate函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet concatenate API生成的真实代码，在指定轴上拼接多个张量。"
+            }
+        elif "pyvqnet.tensor.flatten" in tool_name or "flatten" in tool_name:
+            # flatten 函数生成
+            t = arguments.get('t')
+            start = arguments.get('start', 0)
+            end = arguments.get('end', -1)
+
+            generated_code = f"""
+            from pyvqnet.tensor import flatten, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            tensor = {t}
+
+            # 张量展平
+            result = flatten(tensor, start={start}, end={end})
+            print("展平后张量形状:", result.shape)
+            print("展平后张量:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成flatten函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet flatten API生成的真实代码，将张量从start到end的维度展平为一维。"
+            }
+        elif "pyvqnet.tensor.reshape" in tool_name or "reshape" in tool_name:
+            # reshape 函数生成
+            t = arguments.get('t')
+            new_shape = arguments.get('new_shape')
+
+            # 格式化参数
+            new_shape_str = str(new_shape) if isinstance(new_shape, (list, tuple)) else new_shape
+
+            generated_code = f"""
+            from pyvqnet.tensor import reshape, QTensor
+            import numpy as np
+
+            # 创建输入张量
+            tensor = {t}
+
+            # 张量重塑
+            result = reshape(tensor, new_shape={new_shape_str})
+            print("重塑后张量形状:", result.shape)
+            print("重塑后张量:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成reshape函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet reshape API生成的真实代码，将张量重塑为指定形状。"
+            }
         elif "pyvqnet.qnn.pq3.quantumlayer.QpandaQProgVQCLayer" in tool_name or "QuantumLayerV3" in tool_name:
             # QpandaQProgVQCLayer 类生成（别名QuantumLayerV3）
             origin_qprog_func = arguments.get('origin_qprog_func')

@@ -41,6 +41,271 @@
     }
   },
   {
+    "name": "pyvqnet.tensor.ones",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "shape": {
+          "type": "string",
+          "description": "数据的形状。"
+        },
+        "device": {
+          "type": "string",
+          "description": "储存在哪个设备上,默认: pyvqnet.DEV_CPU,在CPU上。",
+          "default": "pyvqnet.DEV_CPU"
+        },
+        "dtype-None": {
+          "type": "string",
+          "description": ""
+        }
+      },
+      "required": [
+        "shape",
+        "dtype-None"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.zeros",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "shape": {
+          "type": "string",
+          "description": "输入形状。"
+        },
+        "device": {
+          "type": "string",
+          "description": "储存在哪个设备上,默认: pyvqnet.DEV_CPU,在CPU上。",
+          "default": "pyvqnet.DEV_CPU"
+        },
+        "dtype": {
+          "type": "string",
+          "description": "参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor t = tensor.zeros([2, 3, 4]) print(t) # [ # [[0., 0., 0., 0.], #  [0., 0., 0., 0.], #  [0., 0., 0., 0.]], # [[0., 0., 0., 0.], #  [0., 0., 0., 0.], #  [0., 0., 0., 0.]] # ]",
+          "default": null
+        }
+      },
+      "required": [
+        "shape"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.arange",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "string",
+          "description": "间隔开始。"
+        },
+        "end": {
+          "type": "string",
+          "description": "间隔结束。"
+        },
+        "step": {
+          "type": "string",
+          "description": "值之间的间距,默认为1。",
+          "default": "1"
+        },
+        "device": {
+          "type": "string",
+          "description": "要使用的设备,默认 = pyvqnet.DEV_CPU,使用 CPU 设备。",
+          "default": "pyvqnet.DEV_CPU"
+        },
+        "dtype": {
+          "type": "string",
+          "description": "参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。",
+          "default": null
+        },
+        "requires_grad": {
+          "type": "integer",
+          "description": "是否计算梯度,默认为False。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor t = tensor.arange(2, 30, 4) print(t) # [ 2.,  6., 10., 14., 18., 22., 26.]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.randn",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "shape": {
+          "type": "string",
+          "description": "要创建的 QTensor 的形状。"
+        },
+        "mean": {
+          "type": "string",
+          "description": "分布的均值,默认: 0。",
+          "default": "0.0"
+        },
+        "std": {
+          "type": "string",
+          "description": "",
+          "default": "1.0"
+        },
+        "device": {
+          "type": "string",
+          "description": "要使用的设备,默认 = pyvqnet.DEV_CPU ,使用 CPU 设备。",
+          "default": "pyvqnet.DEV_CPU"
+        },
+        "dtype": {
+          "type": "string",
+          "description": "参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。",
+          "default": null
+        },
+        "requires_grad": {
+          "type": "integer",
+          "description": "是否计算梯度,默认为False。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor shape = [2, 3] t = tensor.randn(shape) print(t) # [ # [-0.9529880, -0.4947567, -0.6399882], # [-0.6987777, -0.0089036, -0.5084590] # ]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "shape"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.add",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "t1": {
+          "type": "string",
+          "description": "第一个 QTensor 。"
+        },
+        "t2": {
+          "type": "integer",
+          "description": "第二个 QTensor 。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor t1 = QTensor([1, 2, 3]) t2 = QTensor([4, 5, 6]) x = tensor.add(t1, t2) print(x) # [5., 7., 9.]"
+        }
+      },
+      "required": [
+        "t1",
+        "t2"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.mul",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "t1": {
+          "type": "string",
+          "description": "第一个 QTensor 。"
+        },
+        "t2": {
+          "type": "integer",
+          "description": "第二个 QTensor 。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor t1 = QTensor([1, 2, 3]) t2 = QTensor([4, 5, 6]) x = tensor.mul(t1, t2) print(x) # [4., 10., 18.]"
+        }
+      },
+      "required": [
+        "t1",
+        "t2"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.matmul",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "t1": {
+          "type": "string",
+          "description": "第一个 QTensor 。"
+        },
+        "t2": {
+          "type": "integer",
+          "description": "第二个 QTensor 。 Example:: from pyvqnet.tensor import tensor t1 = tensor.ones([2,3]) t1.requires_grad = True t2 = tensor.ones([3,4]) t2.requires_grad = True t3  = tensor.matmul(t1,t2) t3.backward(tensor.ones_like(t3)) print(t1.grad) # [ # [4., 4., 4.], #  [4., 4., 4.] # ] print(t2.grad) # [ # [2., 2., 2., 2.], #  [2., 2., 2., 2.], #  [2., 2., 2., 2.] # ]"
+        }
+      },
+      "required": [
+        "t1",
+        "t2"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.concatenate",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "args": {
+          "type": "string",
+          "description": "包含输入 QTensor 。"
+        },
+        "axis": {
+          "type": "integer",
+          "description": "要连接的维度。 必须介于 0 和输入张量的最大维数之间。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor x = QTensor([[1, 2, 3],[4,5,6]], requires_grad=True) y = 1-x x = tensor.concatenate([x,y],1) print(x) # [ # [1., 2., 3., 0., -1., -2.], # [4., 5., 6., -3., -4., -5.] # ]",
+          "default": 1
+        }
+      },
+      "required": [
+        "args"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.flatten",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "t": {
+          "type": "string",
+          "description": "输入 QTensor 。"
+        },
+        "start": {
+          "type": "string",
+          "description": "展平开始的轴,默认 = 0,从第一个轴开始。",
+          "default": "0"
+        },
+        "end": {
+          "type": "integer",
+          "description": "展平结束的轴,默认 = -1,以最后一个轴结束。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor t = QTensor([1, 2, 3]) x = tensor.flatten(t) print(x) # [1., 2., 3.]",
+          "default": "- 1"
+        }
+      },
+      "required": [
+        "t"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.reshape",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "t": {
+          "type": "string",
+          "description": "输入 QTensor 。"
+        },
+        "new_shape": {
+          "type": "integer",
+          "description": "新的形状。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor import numpy as np R, C = 3, 4 a = np.arange(R * C).reshape(R, C).astype(np.float32) t = QTensor(a) reshape_t = tensor.reshape(t, [C, R]) print(reshape_t) # [ # [0., 1., 2.], # [3., 4., 5.], # [6., 7., 8.], # [9., 10., 11.] # ]"
+        }
+      },
+      "required": [
+        "t",
+        "new_shape"
+      ]
+    }
+  },
+  {
     "name": "pyvqnet.qnn.pq3.quantumlayer.QuantumLayer",
     "description": "",
     "inputSchema": {
