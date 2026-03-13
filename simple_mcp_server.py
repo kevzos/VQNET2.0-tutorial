@@ -4415,6 +4415,558 @@ class SimpleMCPServer:
                 "parameters": arguments,
                 "note": "这是基于pyVQNet HermitianExpval API生成的真实代码，计算厄米特可观测量的期望值。"
             }
+        elif "pyvqnet.qnn.pq3.quantumlayer.QuantumLayerAdjoint" in tool_name or "QuantumLayerAdjoint" in tool_name:
+            # QuantumLayerAdjoint 伴随法梯度计算层
+            pq3_vqc_circuit = arguments.get('pq3_vqc_circuit')
+            param_num = arguments.get('param_num')
+            pauli_dicts = arguments.get('pauli_dicts')
+            name = arguments.get('name', "")
+
+            name_str = f'"{name}"' if isinstance(name, str) else name
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3 import QuantumLayerAdjoint
+            from pyvqnet import tensor
+            from pyqpanda3.vqcircuit import VQCircuit
+            import pyqpanda3 as pq3
+
+            # 使用VQCircuit接口的量子线路函数
+            def pqctest(x, param):
+                vqc = VQCircuit()
+                vqc.set_Param([len(param) + len(x)])
+                w_offset = len(x)
+                for j in range(len(x)):
+                    vqc << pq3.core.RX(j, vqc.Param([j]))
+                return vqc
+
+            # 创建伴随法梯度计算层
+            n = 7
+            Xn_string = ' '.join([f'X{{i}}' for i in range(n)])
+            pauli_dict = {{Xn_string: 1.}}
+
+            layer = QuantumLayerAdjoint(pqctest, param_num={param_num}, pauli_dicts={pauli_dicts if pauli_dicts else 'pauli_dict'}, name={name_str})
+
+            # 前向传播
+            x = tensor.randn([2, 5])
+            x.requires_grad = True
+            y = layer(x)
+            print("输出:", y)
+
+            # 反向传播
+            y.backward()
+            print("参数梯度:", layer.m_para.grad)
+            print("输入梯度:", x.grad)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成QuantumLayerAdjoint伴随法梯度计算层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet QuantumLayerAdjoint API生成的真实代码，使用伴随法计算量子电路参数梯度。"
+            }
+        elif "pyvqnet.qnn.pq3.template.CSWAPcircuit" in tool_name or "CSWAPcircuit" in tool_name:
+            # CSWAPcircuit 受控SWAP线路
+            qubits = arguments.get('qubits')
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3 import CSWAPcircuit
+            import pyqpanda3.core as pq
+
+            # 创建受控SWAP线路
+            # 第一个量子比特为控制比特
+            m_qlist = range(3)
+            c = CSWAPcircuit({qubits if qubits else '[m_qlist[0], m_qlist[1], m_qlist[2]]'})
+            print("CSWAP线路:")
+            print(c)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成CSWAPcircuit受控SWAP线路代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet CSWAPcircuit API生成的真实代码，创建受控SWAP量子线路。"
+            }
+        elif "pyvqnet.qnn.pq3.template.Controlled_Hadamard" in tool_name or "Controlled_Hadamard" in tool_name:
+            # Controlled_Hadamard 受控Hadamard门
+            qubits = arguments.get('qubits')
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3 import Controlled_Hadamard
+            import pyqpanda3.core as pq
+
+            # 创建受控Hadamard门
+            qubits = {qubits if qubits else 'range(2)'}
+            cir = Controlled_Hadamard(qubits)
+            print("受控Hadamard线路:")
+            print(cir)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Controlled_Hadamard受控Hadamard门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Controlled_Hadamard API生成的真实代码，创建受控Hadamard量子门。"
+            }
+        elif "pyvqnet.qnn.pq3.template.CCZ" in tool_name or "CCZ" in tool_name:
+            # CCZ 受控-受控-Z门
+            qubits = arguments.get('qubits')
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3 import CCZ
+            import pyqpanda3.core as pq
+
+            # 创建CCZ门（受控-受控-Z）
+            qubits = {qubits if qubits else 'range(3)'}
+            cir = CCZ(qubits)
+            print("CCZ线路:")
+            print(cir)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成CCZ受控-受控-Z门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet CCZ API生成的真实代码，创建CCZ量子门。"
+            }
+        elif "pyvqnet.qnn.pq3.ansatz.HardwareEfficientAnsatz" in tool_name:
+            # HardwareEfficientAnsatz 硬件高效拟设
+            qubits = arguments.get('qubits')
+            single_rot_gate_list = arguments.get('single_rot_gate_list')
+            entangle_gate = arguments.get('entangle_gate', 'CNOT')
+            entangle_rules = arguments.get('entangle_rules', 'linear')
+            depth = arguments.get('depth', 1)
+
+            gate_list_str = str(single_rot_gate_list) if single_rot_gate_list else '["rx", "RY", "rz"]'
+
+            generated_code = f"""
+            import pyqpanda3.core as pq
+            from pyvqnet.tensor import QTensor, tensor
+            from pyvqnet.qnn.pq3.ansatz import HardwareEfficientAnsatz
+
+            # 创建硬件高效拟设
+            qlist = {qubits if qubits else 'range(4)'}
+            c = HardwareEfficientAnsatz(
+                qlist,
+                {gate_list_str},
+                entangle_gate="{entangle_gate}",
+                entangle_rules="{entangle_rules}",
+                depth={depth}
+            )
+
+            # 生成参数
+            w = tensor.ones([c.get_para_num()])
+
+            # 创建线路
+            cir = c.create_ansatz(w)
+            print("HardwareEfficientAnsatz线路:")
+            print(cir)
+            print(f"参数数量: {{c.get_para_num()}}")
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成HardwareEfficientAnsatz硬件高效拟设代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet HardwareEfficientAnsatz API生成的真实代码，创建硬件高效变分量子线路。"
+            }
+        elif "pyvqnet.qnn.pq3.template.BasicEntanglerTemplate" in tool_name or "BasicEntanglerTemplate" in tool_name:
+            # BasicEntanglerTemplate 基础纠缠模板
+            weights = arguments.get('weights')
+            num_qubits = arguments.get('num_qubits', 1)
+            rotation = arguments.get('rotation', 'pq.RX')
+
+            generated_code = f"""
+            import pyqpanda3.core as pq
+            import numpy as np
+            from pyvqnet.qnn.pq3 import BasicEntanglerTemplate
+
+            # 设置随机种子
+            np.random.seed(42)
+
+            # 创建基础纠缠模板
+            num_qubits = {num_qubits}
+            shape = [1, num_qubits]
+            weights = {weights if weights else 'np.random.random(size=shape)'}
+
+            qubits = range(num_qubits)
+            circuit = BasicEntanglerTemplate(weights=weights, num_qubits=num_qubits, rotation={rotation})
+
+            # 创建线路
+            result = circuit.compute_circuit()
+            cir = circuit.create_circuit(qubits)
+            print("BasicEntanglerTemplate线路:")
+            circuit.print_circuit(qubits)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成BasicEntanglerTemplate基础纠缠模板代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet BasicEntanglerTemplate API生成的真实代码，创建基础纠缠量子线路模板。"
+            }
+        elif "pyvqnet.qnn.pq3.template.StronglyEntanglingTemplate" in tool_name or "StronglyEntanglingTemplate" in tool_name:
+            # StronglyEntanglingTemplate 强纠缠模板
+            weights = arguments.get('weights')
+            num_qubits = arguments.get('num_qubits', 1)
+            ranges = arguments.get('ranges', None)
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3 import StronglyEntanglingTemplate
+            import pyqpanda3.core as pq
+            from pyvqnet.tensor import *
+            import numpy as np
+
+            # 设置随机种子
+            np.random.seed(42)
+
+            # 创建强纠缠模板
+            num_qubits = {num_qubits}
+            shape = [2, num_qubits, 3]
+            weights = {weights if weights else 'np.random.random(size=shape)'}
+
+            qubits = range(num_qubits)
+            circuit = StronglyEntanglingTemplate(weights, num_qubits=num_qubits{', ranges=' + str(ranges) if ranges else ''})
+
+            # 创建线路
+            result = circuit.compute_circuit()
+            cir = circuit.create_circuit(qubits)
+            print("StronglyEntanglingTemplate线路:")
+            circuit.print_circuit(qubits)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成StronglyEntanglingTemplate强纠缠模板代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet StronglyEntanglingTemplate API生成的真实代码，创建强纠缠量子线路模板。"
+            }
+        elif "pyvqnet.qnn.pq3.ComplexEntangelingTemplate" in tool_name or "ComplexEntangelingTemplate" in tool_name:
+            # ComplexEntangelingTemplate 复杂纠缠模板
+            weights = arguments.get('weights')
+            num_qubits = arguments.get('num_qubits')
+            depth = arguments.get('depth')
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3 import ComplexEntangelingTemplate
+            import pyqpanda3.core as pq
+            from pyvqnet.tensor import *
+
+            # 创建复杂纠缠模板
+            depth = {depth if depth else 3}
+            num_qubits = {num_qubits if num_qubits else 8}
+            shape = [depth, num_qubits, 3]
+            weights = {weights if weights else 'tensor.randn(shape)'}
+
+            qubits = range(num_qubits)
+            circuit = ComplexEntangelingTemplate(weights, num_qubits=num_qubits, depth=depth)
+
+            # 创建线路
+            result = circuit.create_circuit(qubits)
+            print("ComplexEntangelingTemplate线路:")
+            circuit.print_circuit(qubits)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成ComplexEntangelingTemplate复杂纠缠模板代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet ComplexEntangelingTemplate API生成的真实代码，创建复杂纠缠量子线路模板。"
+            }
+        elif "pyvqnet.qnn.pq3.Quantum_Embedding" in tool_name or "Quantum_Embedding" in tool_name:
+            # Quantum_Embedding 量子嵌入
+            num_repetitions_input = arguments.get('num_repetitions_input')
+            depth_input = arguments.get('depth_input')
+            num_unitary_layers = arguments.get('num_unitary_layers')
+            num_repetitions = arguments.get('num_repetitions')
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3 import QpandaQCircuitVQCLayerLite, Quantum_Embedding
+            from pyvqnet.tensor import tensor
+            import pyqpanda3.core as pq
+
+            # 设置参数
+            depth_input = {depth_input if depth_input else 2}
+            num_repetitions = {num_repetitions if num_repetitions else 2}
+            num_repetitions_input = {num_repetitions_input if num_repetitions_input else 2}
+            num_unitary_layers = {num_unitary_layers if num_unitary_layers else 2}
+
+            # 创建量子机器
+            local_machine = pq.CPUQVM()
+
+            # 计算量子比特数
+            nq = depth_input * num_repetitions_input
+            qubits = range(nq)
+            cubits = range(nq)
+
+            # 创建输入数据
+            data_in = tensor.ones([12, depth_input])
+            data_in.requires_grad = True
+
+            # 创建量子嵌入
+            qe = Quantum_Embedding(nq, local_machine, num_repetitions_input,
+                                    depth_input, num_unitary_layers, num_repetitions)
+            qlayer = QpandaQCircuitVQCLayerLite(qe.compute_circuit, qe.param_num)
+
+            # 前向传播
+            y = qlayer.forward(data_in)
+            print("输出:", y)
+
+            # 反向传播
+            y.backward()
+            print("输入梯度:", data_in.grad)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Quantum_Embedding量子嵌入代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Quantum_Embedding API生成的真实代码，创建量子嵌入线路。"
+            }
+        elif "pyvqnet.qnn.pq3.template.QuantumPoolingCircuit" in tool_name or "QuantumPoolingCircuit" in tool_name:
+            # QuantumPoolingCircuit 量子池化线路
+            sources_wires = arguments.get('sources_wires')
+            sinks_wires = arguments.get('sinks_wires')
+            params = arguments.get('params')
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3.template import QuantumPoolingCircuit
+            import pyqpanda3.core as pq
+            from pyvqnet import tensor
+
+            # 创建量子池化线路
+            qlists = range(4)
+            p = {params if params else 'tensor.full([6], 0.35)'}
+
+            cir = QuantumPoolingCircuit(
+                {sources_wires if sources_wires else '[0, 1]'},
+                {sinks_wires if sinks_wires else '[2, 3]'},
+                p,
+                qlists
+            )
+            print("QuantumPoolingCircuit线路:")
+            print(cir)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成QuantumPoolingCircuit量子池化线路代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet QuantumPoolingCircuit API生成的真实代码，创建量子池化线路。"
+            }
+        elif "pyvqnet.qnn.pq3.template.FermionicSingleExcitation" in tool_name or "FermionicSingleExcitation" in tool_name:
+            # FermionicSingleExcitation 费米子单激发算子
+            weight = arguments.get('weight')
+            wires = arguments.get('wires')
+            qubits = arguments.get('qubits')
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3 import FermionicSingleExcitation, expval
+            import pyqpanda3.core as pq
+
+            # 创建费米子单激发算子
+            weight = {weight if weight else 0.5}
+            qlists = range(3)
+
+            cir = FermionicSingleExcitation(
+                weight,
+                {wires if wires else '[1, 0, 2]'},
+                {qubits if qubits else 'qlists'}
+            )
+            print("FermionicSingleExcitation线路:")
+            print(cir)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成FermionicSingleExcitation费米子单激发算子代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet FermionicSingleExcitation API生成的真实代码，创建费米子单激发量子线路。"
+            }
+        elif "pyvqnet.qnn.pq3.template.FermionicDoubleExcitation" in tool_name or "FermionicDoubleExcitation" in tool_name:
+            # FermionicDoubleExcitation 费米子双激发算子
+            weight = arguments.get('weight')
+            wires1 = arguments.get('wires1')
+            wires2 = arguments.get('wires2')
+            qubits = arguments.get('qubits')
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3 import FermionicDoubleExcitation, expval
+            import pyqpanda3.core as pq
+
+            # 创建费米子双激发算子
+            weight = {weight if weight else 1.5}
+            qlists = range(5)
+
+            cir = FermionicDoubleExcitation(
+                weight,
+                wires1={wires1 if wires1 else '[0, 1]'},
+                wires2={wires2 if wires2 else '[2, 3, 4]'},
+                qubits={qubits if qubits else 'qlists'}
+            )
+            print("FermionicDoubleExcitation线路:")
+            print(cir)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成FermionicDoubleExcitation费米子双激发算子代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet FermionicDoubleExcitation API生成的真实代码，创建费米子双激发量子线路。"
+            }
+        elif "pyvqnet.qnn.pq3.measure.ProbsMeasure" in tool_name or "ProbsMeasure" in tool_name:
+            # ProbsMeasure 概率测量
+            prog = arguments.get('prog')
+            measure_qubits = arguments.get('measure_qubits')
+            shots = arguments.get('shots', 1)
+
+            generated_code = f"""
+            from pyqpanda3.core import *
+            from pyvqnet.qnn.pq3.measure import probs_measure
+
+            # 创建量子线路
+            circuit = QCircuit(3)
+            circuit << H(0)
+            circuit << P(2, 0.2)
+            circuit << RX(1, 0.9)
+            circuit << RX(0, 0.6)
+            circuit << RX(1, 0.3)
+            circuit << RY(1, 0.3)
+            circuit << RY(2, 2.7)
+            circuit << RX(0, 1.5)
+
+            prog = QProg()
+            prog.append(circuit)
+            prog.append(measure(0, 0))
+            prog.append(measure(1, 1))
+            prog.append(measure(2, 2))
+
+            # 创建量子虚拟机
+            machine = CPUQVM()
+
+            # 执行概率测量
+            measure_result = probs_measure(machine, prog, {measure_qubits if measure_qubits else '[2, 0]'}, shots={shots})
+            print("概率测量结果:", measure_result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成ProbsMeasure概率测量代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet ProbsMeasure API生成的真实代码，计算量子线路的概率分布。"
+            }
+        elif "pyvqnet.qnn.pq3.measure.DensityMatrixFromQstate" in tool_name or "DensityMatrixFromQstate" in tool_name:
+            # DensityMatrixFromQstate 密度矩阵计算
+            state = arguments.get('state')
+            indices = arguments.get('indices')
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3.measure import DensityMatrixFromQstate
+
+            # 定义量子态
+            qstate = {state if state else '[(0.9306699299765968+0j), (0.18865613455240968+0j), (0.1886561345524097+0j), (0.03824249173404786+0j), -0.048171819846746615j, -0.00976491131165138j, -0.23763904794287155j, -0.048171819846746615j]'}
+
+            # 计算子系统密度矩阵
+            dm = DensityMatrixFromQstate(qstate, {indices if indices else '[0, 1]'})
+            print("密度矩阵:")
+            print(dm)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成DensityMatrixFromQstate密度矩阵计算代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet DensityMatrixFromQstate API生成的真实代码，计算子系统的密度矩阵。"
+            }
+        elif "pyvqnet.qnn.pq3.measure.VN_Entropy" in tool_name or "VN_Entropy" in tool_name:
+            # VN_Entropy 冯诺依曼熵
+            state = arguments.get('state')
+            indices = arguments.get('indices')
+            base = arguments.get('base', None)
+
+            base_str = base if base is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3.measure import VN_Entropy
+
+            # 定义量子态
+            qstate = {state if state else '[(0.9022961387408862 + 0j), -0.06676534788028633j, (0.18290448232350312 + 0j), -0.3293638014158896j, (0.03707657410649268 + 0j), -0.06676534788028635j, (0.18290448232350312 + 0j), -0.013534006039561714j]'}
+
+            # 计算冯诺依曼熵
+            entropy = VN_Entropy(qstate, {indices if indices else '[0, 1]'}, base={base_str})
+            print("冯诺依曼熵:", entropy)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成VN_Entropy冯诺依曼熵计算代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet VN_Entropy API生成的真实代码，计算子系统的冯诺依曼熵。"
+            }
+        elif "pyvqnet.qnn.pq3.measure.Mutal_Info" in tool_name or "Mutal_Info" in tool_name:
+            # Mutal_Info 互信息
+            state = arguments.get('state')
+            indices0 = arguments.get('indices0')
+            indices1 = arguments.get('indices1')
+            base = arguments.get('base', None)
+
+            base_str = base if base is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3.measure import Mutal_Info
+
+            # 定义量子态
+            qstate = {state if state else '[(0.9022961387408862 + 0j), -0.06676534788028633j, (0.18290448232350312 + 0j), -0.3293638014158896j, (0.03707657410649268 + 0j), -0.06676534788028635j, (0.18290448232350312 + 0j), -0.013534006039561714j]'}
+
+            # 计算互信息
+            mi = Mutal_Info(qstate, {indices0 if indices0 else '[0]'}, {indices1 if indices1 else '[2]'}, base={base_str})
+            print("互信息:", mi)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Mutal_Info互信息计算代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Mutal_Info API生成的真实代码，计算两个子系统间的互信息。"
+            }
+        elif "pyvqnet.qnn.pq3.measure.Purity" in tool_name or "Purity" in tool_name:
+            # Purity 纯度
+            state = arguments.get('state')
+            qubits_idx = arguments.get('qubits_idx')
+
+            generated_code = f"""
+            from pyvqnet.qnn.pq3.measure import Purity
+
+            # 定义量子态
+            qstate = {state if state else '[(0.9022961387408862 + 0j), -0.06676534788028633j, (0.18290448232350312 + 0j), -0.3293638014158896j, (0.03707657410649268 + 0j), -0.06676534788028635j, (0.18290448232350312 + 0j), -0.013534006039561714j]'}
+
+            # 计算纯度
+            purity = Purity(qstate, {qubits_idx if qubits_idx else '[0, 1]'})
+            print("纯度:", purity)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Purity纯度计算代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Purity API生成的真实代码，计算子系统的纯度。"
+            }
         else:
             return {
                 "status": "success",
