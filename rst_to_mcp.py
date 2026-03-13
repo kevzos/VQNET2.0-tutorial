@@ -531,6 +531,28 @@ def main():
         "CRotCircuit",
         "expval",
         "QuantumMeasure",
+        # qnn_pq3.rst - 量子层扩展
+        "QpandaQProgVQCLayer",
+        "QuantumLayerAdjoint",
+        # qnn_pq3.rst - 量子门和模板
+        "CSWAPcircuit",
+        "Controlled_Hadamard",
+        "CCZ",
+        "HardwareEfficientAnsatz",
+        "BasicEntanglerTemplate",
+        "StronglyEntanglingTemplate",
+        "ComplexEntangelingTemplate",
+        "Quantum_Embedding",
+        "QuantumPoolingCircuit",
+        # qnn_pq3.rst - 费米子激发
+        "FermionicSingleExcitation",
+        "FermionicDoubleExcitation",
+        # qnn_pq3.rst - 测量扩展
+        "ProbsMeasure",
+        "DensityMatrixFromQstate",
+        "VN_Entropy",
+        "Mutal_Info",
+        "Purity",
         # nn.rst - 神经网络层
         "Linear",
         "Conv1d",

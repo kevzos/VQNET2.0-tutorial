@@ -2302,6 +2302,92 @@
     }
   },
   {
+    "name": "pyvqnet.qnn.pq3.quantumlayer.QpandaQProgVQCLayer",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "origin_qprog_func": {
+          "type": "string",
+          "description": "`callable`- 由 QPanda 构建的可调用量子电路函数。"
+        },
+        "para_num": {
+          "type": "integer",
+          "description": "`int` - 参数数量；参数是一维的。"
+        },
+        "qvm_type": {
+          "type": "string",
+          "description": "`str` - 使用pyqpanda3模拟器类型, `cpu` 或 `gpu` 类型,默认 `cpu` .",
+          "enum": [
+            "cpu",
+            "gpu"
+          ],
+          "default": "cpu"
+        },
+        "pauli_str_dict": {
+          "type": "object",
+          "description": "`dict|list` - 表示量子电路中的泡利算子的字典或字典列表。默认值为 None。",
+          "default": null
+        },
+        "shots": {
+          "type": "integer",
+          "description": "`int` - 测量镜头数。默认值为 1000。",
+          "default": 1000
+        },
+        "initializer": {
+          "type": "string",
+          "description": "`callable`- 参数值的初始化器。默认值为 None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "`pyvqnet._core.QTensorDtype`- 参数的数据类型。默认值为 None,即使用默认数据类型。",
+          "default": null
+        },
+        "name": {
+          "type": "string",
+          "description": "`string`- 模块名称。默认值为空字符串。 origin_qprog_func 是用户使用 pyqpanda3 定义的量子电路函数: https://qcloud.originqc.com.cn/document/qpanda-3/dc/d12/tutorial_quantum_program.html 此函数必须包含输入和参数两个参数作为函数入参(即使某个参数未实际使用),输出为pyqpanda3.core.QProg类型数据,否则无法在QuantumLayerV3中正常运行。 origin_qprog_func (input,param) `input`:用户定义的数组类输入 1 维经典数据。 `param`:array_like 输入用户定义的 1 维量子电路参数。 该类具有别名 `QuantumLayerV3` 。 该类计算梯度需要额外使用pyqpanda3进行线路计算个数与参数个数、数据个数、数据维度的乘积线性相关。 Example:: import pyqpanda3.core as pq import pyvqnet from pyvqnet.qnn.pq3.quantumlayer import  QpandaQProgVQCLayer def qfun(input, param): m_qlist = range(3) cubits = range(3) measure_qubits = [0,1, 2] m_prog = pq.QProg() cir = pq.QCircuit(3) cir<<pq.RZ(m_qlist[0], input[0]) cir<<pq.RX(m_qlist[2], input[2]) qcir = pq.RX(m_qlist[1], param[1]).control(m_qlist[0]) cir<<qcir qcir = pq.RY(m_qlist[0], param[2]).control(m_qlist[1]) cir<<qcir cir<<pq.RY(m_qlist[0], input[1]) qcir = pq.RZ(m_qlist[0], param[3]).control(m_qlist[1]) cir<<qcir m_prog<<cir for idx, ele in enumerate(measure_qubits): m_prog << pq.measure(m_qlist[ele], cubits[idx])  # pylint: disable=expression-not-assigned return m_prog from pyvqnet.utils.initializer import ones l = QpandaQProgVQCLayer(qfun, 4, \"cpu\", pauli_str_dict=None, shots=1000, initializer=ones, name=\"\") x = pyvqnet.tensor.QTensor( [[2.56, 1.2,-3]], requires_grad=True) y = l(x) y.backward() print(l.m_para.grad.to_numpy()) print(x.grad.to_numpy())",
+          "default": ""
+        }
+      },
+      "required": [
+        "origin_qprog_func",
+        "para_num"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.quantumlayer.QuantumLayerAdjoint",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "pq3_vqc_circuit": {
+          "type": "string",
+          "description": "自定义 pyqpanda3 VQCircuit 电路。"
+        },
+        "param_num": {
+          "type": "string",
+          "description": "参数数量。"
+        },
+        "pauli_dicts": {
+          "type": "array",
+          "description": "预期观测值，可以是列表。"
+        },
+        "dtype": {
+          "type": "string",
+          "description": "参数类型，kfloat32 或 kfloat64，默认值：None，使用 kfloat32。",
+          "default": "None，name="
+        }
+      },
+      "required": [
+        "pq3_vqc_circuit",
+        "param_num",
+        "pauli_dicts"
+      ]
+    }
+  },
+  {
     "name": "pyvqnet.qnn.pq3.quantumlayer.grad",
     "description": "",
     "inputSchema": {
@@ -2469,6 +2555,295 @@
     }
   },
   {
+    "name": "pyvqnet.qnn.pq3.template.CSWAPcircuit",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "qubits": {
+          "type": "integer",
+          "description": "量子比特索引列表第一个量子比特是控制量子比特。qlist的长度必须为3。 Example:: from pyvqnet.qnn.pq3 import CSWAPcircuit import pyqpanda3.core as pq m_machine = pq.CPUQVM() m_qlist = range(3) c =CSWAPcircuit([m_qlist[1],m_qlist[2],m_qlist[0]]) print(c)"
+        }
+      },
+      "required": [
+        "qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.template.Controlled_Hadamard",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "qubits": {
+          "type": "integer",
+          "description": "量子比特索引。 Examples:: import pyqpanda3.core as pq machine = pq.CPUQVM() qubits =range(2) from pyvqnet.qnn.pq3 import Controlled_Hadamard cir = Controlled_Hadamard(qubits) print(cir)"
+        }
+      },
+      "required": [
+        "qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.template.CCZ",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "qubits": {
+          "type": "string",
+          "description": "量子比特索引。 pyqpanda QCircuit Example:: import pyqpanda3.core as pq machine = pq.CPUQVM() qubits = range(3) from pyvqnet.qnn.pq3 import CCZ cir = CCZ(qubits)"
+        }
+      },
+      "required": [
+        "qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.template.FermionicSingleExcitation",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "weight": {
+          "type": "string",
+          "description": "量子比特 p 上的变参."
+        },
+        "wires": {
+          "type": "string",
+          "description": "表示区间[r, p]中的量子比特索引子集。最小长度必须为2。第一索引值被解释为r,最后一个索引值被解释为p。 中间的索引被CNOT门作用,以计算量子位集的奇偶校验。"
+        },
+        "qubits": {
+          "type": "array",
+          "description": "量子比特索引。 pyqpanda QCircuit Examples:: from pyvqnet.qnn.pq3 import FermionicSingleExcitation, expval weight = 0.5 import pyqpanda3.core as pq machine = pq.CPUQVM() qlists = range(3) cir = FermionicSingleExcitation(weight, [1, 0, 2], qlists)"
+        }
+      },
+      "required": [
+        "weight",
+        "wires",
+        "qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.template.FermionicDoubleExcitation",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "weight": {
+          "type": "string",
+          "description": "可变参数"
+        },
+        "wires1": {
+          "type": "array",
+          "description": "代表的量子比特的索引列表区间 [s, r] 中占据量子比特的子集。第一个索引被解释为 s,最后一索引被解释为 r。 CNOT 门对中间的索引进行操作,以计算一组量子位的奇偶性。"
+        },
+        "wires2": {
+          "type": "array",
+          "description": "代表的量子比特的索引列表区间 [q, p] 中占据量子比特的子集。第一根索引被解释为 q,最后一索引被解释为 p。 CNOT 门对中间的索引进行操作,以计算一组量子位的奇偶性。"
+        },
+        "qubits": {
+          "type": "array",
+          "description": "量子比特索引。 pyqpanda QCircuit Examples:: import pyqpanda3.core as pq from pyvqnet.qnn.pq3 import FermionicDoubleExcitation, expval machine = pq.CPUQVM() qlists = range(5) weight = 1.5 cir = FermionicDoubleExcitation(weight, wires1=[0, 1], wires2=[2, 3, 4], qubits=qlists)"
+        }
+      },
+      "required": [
+        "weight",
+        "wires1",
+        "wires2",
+        "qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.template.QuantumPoolingCircuit",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "sources_wires": {
+          "type": "string",
+          "description": "将被忽略的源量子位索引。"
+        },
+        "sinks_wires": {
+          "type": "string",
+          "description": "将保留的目标量子位索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "输入参数。"
+        },
+        "qubits": {
+          "type": "integer",
+          "description": "量子比特索引。 pyqpanda QCircuit Examples:: from pyvqnet.qnn.pq3.template import QuantumPoolingCircuit import pyqpanda3.core as pq from pyvqnet import tensor qlists = range(4) p = tensor.full([6], 0.35) cir = QuantumPoolingCircuit([0, 1], [2, 3], p, qlists) print(cir)"
+        }
+      },
+      "required": [
+        "sources_wires",
+        "sinks_wires",
+        "params",
+        "qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.ansatz.HardwareEfficientAnsatz",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "qubits": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "single_rot_gate_list": {
+          "type": "array",
+          "description": "单个量子位旋转门列表由一个或多个作用于每个量子位的旋转门构成。目前支持 Rx、Ry、Rz。"
+        },
+        "entangle_gate": {
+          "type": "string",
+          "description": "非参数化纠缠门。支持CNOT、CZ。默认: CNOT。",
+          "default": "CNOT"
+        },
+        "entangle_rules": {
+          "type": "string",
+          "description": "电路中如何使用纠缠门。 ``linear`` 意味着纠缠门将作用于每个相邻的量子位。 ``all`` 意味着纠缠门将作用于任何两个 qbuits。 默认值:``linear``。",
+          "default": "linear"
+        },
+        "depth": {
+          "type": "integer",
+          "description": "ansatz 的深度,默认:1。 Example:: import pyqpanda3.core as pq from pyvqnet.tensor import QTensor,tensor from pyvqnet.qnn.pq3.ansatz import HardwareEfficientAnsatz machine = pq.CPUQVM() qlist = range(4) c = HardwareEfficientAnsatz(qlist,[\"rx\", \"RY\", \"rz\"], entangle_gate=\"cnot\", entangle_rules=\"linear\", depth=1) w = tensor.ones([c.get_para_num()]) cir = c.create_ansatz(w) print(cir)",
+          "default": 1
+        }
+      },
+      "required": [
+        "qubits",
+        "single_rot_gate_list"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.template.BasicEntanglerTemplate",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "weights": {
+          "type": "string",
+          "description": "形状的权重张量 `(L, len(qubits))`。 每个权重都用作量子含参门中的参数。默认值为: ``None`` ,则使用 `(1,1)` 正态分布随机数作为权重。",
+          "default": null
+        },
+        "num_qubits": {
+          "type": "string",
+          "description": "量子比特数,默认为1。",
+          "default": "1"
+        },
+        "rotation": {
+          "type": "integer",
+          "description": "使用单参数单量子比特门,``pyqpanda.RX`` 被用作默认值。 Example:: import pyqpanda3.core as pq import numpy as np from pyvqnet.qnn.pq3 import BasicEntanglerTemplate np.random.seed(42) num_qubits = 5 shape = [1, num_qubits] weights = np.random.random(size=shape) machine = pq.CPUQVM() qubits = range(num_qubits) circuit = BasicEntanglerTemplate(weights=weights, num_qubits=num_qubits, rotation=pq.RZ) result = circuit.compute_circuit() cir = circuit.create_circuit(qubits) circuit.print_circuit(qubits)",
+          "default": "pyqpanda.RX"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.template.StronglyEntanglingTemplate",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "weights": {
+          "type": "string",
+          "description": "形状为 ``(L, M, 3)`` 的权重张量,默认值:None,使用形状为 ``(1,1,3)`` 的随机张量。",
+          "default": null
+        },
+        "num_qubits": {
+          "type": "string",
+          "description": "量子比特数,默认值:1。",
+          "default": "1"
+        },
+        "ranges": {
+          "type": "integer",
+          "description": "确定每个后续层的范围超参数的序列； 默认值:None,使用 :math:`r=l \\ mod M` 作为ranges 的值。 Example:: from pyvqnet.qnn.pq3 import StronglyEntanglingTemplate import pyqpanda3.core as pq from pyvqnet.tensor import * import numpy as np np.random.seed(42) num_qubits = 3 shape = [2, num_qubits, 3] weights = np.random.random(size=shape) machine = pq.CPUQVM() qubits = range(num_qubits) circuit = StronglyEntanglingTemplate(weights, num_qubits=num_qubits ) result = circuit.compute_circuit() cir = circuit.create_circuit(qubits) circuit.print_circuit(qubits)",
+          "default": null
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.ComplexEntangelingTemplate",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "weights": {
+          "type": "string",
+          "description": "参数,[depth,num_qubits,3]的形状"
+        },
+        "num_qubits": {
+          "type": "string",
+          "description": "量子比特数。"
+        },
+        "depth": {
+          "type": "integer",
+          "description": "子电路的深度。 Example:: from pyvqnet.qnn.pq3 import ComplexEntangelingTemplate import pyqpanda3.core as pq from pyvqnet.tensor import * depth =3 num_qubits = 8 shape = [depth, num_qubits, 3] weights = tensor.randn(shape) machine = pq.CPUQVM() qubits = range(num_qubits) circuit = ComplexEntangelingTemplate(weights, num_qubits=num_qubits,depth=depth) result = circuit.create_circuit(qubits) circuit.print_circuit(qubits)"
+        }
+      },
+      "required": [
+        "weights",
+        "num_qubits",
+        "depth"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.Quantum_Embedding",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "qubits": {
+          "type": "string",
+          "description": "使用pyqpanda 申请的量子比特。"
+        },
+        "machine": {
+          "type": "string",
+          "description": "使用pyqpanda 申请的量子虚拟机。"
+        },
+        "num_repetitions_input": {
+          "type": "string",
+          "description": "在子模块中对输入进行编码的重复次数。"
+        },
+        "depth_input": {
+          "type": "string",
+          "description": "输入数据的特征维度。"
+        },
+        "num_unitary_layers": {
+          "type": "string",
+          "description": "每个子模块中变分量子门的重复次数。"
+        },
+        "num_repetitions": {
+          "type": "integer",
+          "description": "子模块的重复次数。 Example:: from pyvqnet.qnn.pq3 import QpandaQCircuitVQCLayerLite,Quantum_Embedding from pyvqnet.tensor import tensor import pyqpanda3.core as pq depth_input = 2 num_repetitions = 2 num_repetitions_input = 2 num_unitary_layers = 2 loacl_machine = pq.CPUQVM() nq = depth_input * num_repetitions_input qubits = range(nq) cubits = range(nq) data_in = tensor.ones([12, depth_input]) data_in.requires_grad = True qe = Quantum_Embedding(nq, loacl_machine, num_repetitions_input, depth_input, num_unitary_layers, num_repetitions) qlayer = QpandaQCircuitVQCLayerLite(qe.compute_circuit, qe.param_num) data_in.requires_grad = True y = qlayer.forward(data_in) y.backward() print(data_in.grad)"
+        }
+      },
+      "required": [
+        "qubits",
+        "machine",
+        "num_repetitions_input",
+        "depth_input",
+        "num_unitary_layers",
+        "num_repetitions"
+      ]
+    }
+  },
+  {
     "name": "pyvqnet.qnn.pq3.measure.expval",
     "description": "",
     "inputSchema": {
@@ -2527,6 +2902,136 @@
         "machine",
         "prog",
         "measure_qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.measure.ProbsMeasure",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "machine": {
+          "type": "string",
+          "description": "pyQPanda分配的量子虚拟机。"
+        },
+        "prog": {
+          "type": "string",
+          "description": "qpanda创建的量子工程。"
+        },
+        "measure_qubits": {
+          "type": "array",
+          "description": "列表包含测量比特索引"
+        },
+        "shots": {
+          "type": "integer",
+          "description": "测量次数,默认为1,计算理论值。 Example:: from pyqpanda3.core import * from pyvqnet.qnn.pq3.measure import probs_measure circuit = QCircuit(3) circuit << H(0) circuit << P(2, 0.2) circuit << RX(1, 0.9) circuit << RX(0, 0.6) circuit << RX(1, 0.3) circuit << RY(1, 0.3) circuit << RY(2, 2.7) circuit << RX(0, 1.5) prog = QProg() prog.append(circuit) prog.append(measure(0, 0)) prog.append(measure(1, 1)) prog.append(measure(2, 2)) machine = CPUQVM() measure_result = probs_measure(machine,prog,[2,0]) print(measure_result) #[0.04796392899146941, 0, 0.4760180355042653, 0.4760180355042653]",
+          "default": 1
+        }
+      },
+      "required": [
+        "machine",
+        "prog",
+        "measure_qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.measure.DensityMatrixFromQstate",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "array",
+          "description": "一维列表状态向量。 这个列表的大小应该是 ``(2**N,)`` 对于量子比特个数 ``N`` ,qstate 应该从 000 ->111 开始。"
+        },
+        "indices": {
+          "type": "integer",
+          "description": "所考虑子系统中的量子比特索引列表。 Example:: from pyvqnet.qnn.pq3.measure import DensityMatrixFromQstate qstate = [(0.9306699299765968+0j), (0.18865613455240968+0j), (0.1886561345524097+0j), (0.03824249173404786+0j), -0.048171819846746615j, -0.00976491131165138j, -0.23763904794287155j, -0.048171819846746615j] print(DensityMatrixFromQstate(qstate,[0,1])) # [[0.86846704+0.j 0.1870241 +0.j 0.17604699+0.j 0.03791166+0.j] #  [0.1870241 +0.j 0.09206345+0.j 0.03791166+0.j 0.01866219+0.j] #  [0.17604699+0.j 0.03791166+0.j 0.03568649+0.j 0.00768507+0.j] #  [0.03791166+0.j 0.01866219+0.j 0.00768507+0.j 0.00378301+0.j]]"
+        }
+      },
+      "required": [
+        "state",
+        "indices"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.measure.VN_Entropy",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "array",
+          "description": "一维列表状态向量。 这个列表的大小应该是 ``(2**N,)`` 对于量子比特个数 ``N`` ,qstate 应该从 000 ->111 开始。"
+        },
+        "indices": {
+          "type": "array",
+          "description": "所考虑子系统中的量子比特索引列表。"
+        },
+        "base": {
+          "type": "integer",
+          "description": "对数的底。 如果没有,则使用自然对数。 Example:: from pyvqnet.qnn.pq3.measure import VN_Entropy qstate = [(0.9022961387408862 + 0j), -0.06676534788028633j, (0.18290448232350312 + 0j), -0.3293638014158896j, (0.03707657410649268 + 0j), -0.06676534788028635j, (0.18290448232350312 + 0j), -0.013534006039561714j] print(VN_Entropy(qstate, [0, 1])) #0.14592917648464448",
+          "default": null
+        }
+      },
+      "required": [
+        "state",
+        "indices"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.measure.Mutal_Info",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "array",
+          "description": "一维列表状态向量。 这个列表的大小应该是 ``(2**N,)`` 对于量子比特个数 ``N`` , qstate 应该从 000 ->111 开始。"
+        },
+        "indices0": {
+          "type": "array",
+          "description": "第一个子系统中的量子比特索引列表。"
+        },
+        "indices1": {
+          "type": "array",
+          "description": "第二个子系统中的量子比特索引列表。"
+        },
+        "base": {
+          "type": "integer",
+          "description": "对数的底。 如果为None,则使用自然对数,默认为None。 Example:: from pyvqnet.qnn.pq3.measure import Mutal_Info qstate = [(0.9022961387408862 + 0j), -0.06676534788028633j, (0.18290448232350312 + 0j), -0.3293638014158896j, (0.03707657410649268 + 0j), -0.06676534788028635j, (0.18290448232350312 + 0j), -0.013534006039561714j] print(Mutal_Info(qstate, [0], [2], 2)) #0.13763425302805887",
+          "default": null
+        }
+      },
+      "required": [
+        "state",
+        "indices0",
+        "indices1"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.measure.Purity",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "string",
+          "description": "从pyqpanda get_qstate()获取的量子态"
+        },
+        "qubits_idx": {
+          "type": "integer",
+          "description": "要计算纯度的量子比特位索引 纯度 Examples:: from pyvqnet.qnn.pq3.measure import Purity qstate = [(0.9306699299765968 + 0j), (0.18865613455240968 + 0j), (0.1886561345524097 + 0j), (0.03824249173404786 + 0j), -0.048171819846746615j, -0.00976491131165138j, -0.23763904794287155j, -0.048171819846746615j] pp = Purity(qstate, [1]) print(pp) #0.902503479761881"
+        }
+      },
+      "required": [
+        "state",
+        "qubits_idx"
       ]
     }
   },
@@ -3649,6 +4154,32 @@
         "q_machine",
         "wire",
         "params"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.QuantumLayerAdjoint",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "general_module": {
+          "type": "string",
+          "description": "一个仅使用 ``pyvqnet.qnn.vqc`` 下量子线路接口搭建的 `pyvqnet.nn.Module` 实例。"
+        },
+        "use_qpanda": {
+          "type": "string",
+          "description": "是否使用qpanda线路进行前传,默认:False。",
+          "default": "False"
+        },
+        "name": {
+          "type": "string",
+          "description": "该层名字,默认为\"\"。 .. warning:: Module 默认处于 `eval` 模式,如果需要训练参数，需要运行 `train()` 接口进入训练模式。 general_module 的 QMachine 应设置 grad_method = \"adjoint\". 当前支持由如下含参逻辑门 `RX`, `RY`, `RZ`, `PhaseShift`, `RXX`, `RYY`, `RZZ`, `RZX`, `U1`, `U2`, `U3` 以及其他不含参逻辑门构成的变分线路。 Example:: import pyvqnet from pyvqnet import tensor from pyvqnet.qnn.vqc import QuantumLayerAdjoint, QMachine, RX, RY, CNOT, PauliX, qmatrix, PauliZ, T, MeasureAll, RZ, VQC_RotCircuit, VQC_HardwareEfficientAnsatz from pyvqnet.utils import set_random_seed set_random_seed(42) class QModel(pyvqnet.nn.Module): def __init__(self, num_wires, dtype, grad_mode=\"\"): super(QModel, self).__init__() self._num_wires = num_wires self._dtype = dtype self.qm = QMachine(num_wires, dtype=dtype, grad_mode=grad_mode) self.rx_layer = RX(has_params=True, trainable=False, wires=0) self.ry_layer = RY(has_params=True, trainable=False, wires=1) self.rz_layer = RZ(has_params=True, trainable=False, wires=1) self.rz_layer2 = RZ(has_params=True, trainable=True, wires=1) self.rot = VQC_HardwareEfficientAnsatz(6, [\"rx\", \"RY\", \"rz\"], entangle_gate=\"cnot\", entangle_rules=\"linear\", depth=5) self.tlayer = T(wires=1) self.cnot = CNOT(wires=[0, 1]) self.measure = MeasureAll(obs = { \"Z1\":1 }) def forward(self, x, *args, **kwargs): self.qm.reset_states(x.shape[0]) self.rx_layer(params=x[:, [0]], q_machine=self.qm) self.cnot(q_machine=self.qm) self.ry_layer(params=x[:, [1]], q_machine=self.qm) self.tlayer(q_machine=self.qm) self.rz_layer(params=x[:, [2]], q_machine=self.qm) self.rz_layer2(q_machine=self.qm) self.rot(q_machine=self.qm) rlt = self.measure(q_machine=self.qm) return rlt input_x = tensor.QTensor([[0.1, 0.2, 0.3]]) input_x = tensor.broadcast_to(input_x, [4, 3]) input_x.requires_grad = True qunatum_model = QModel(num_wires=6, dtype=pyvqnet.kcomplex64, grad_mode=\"adjoint\") adjoint_model = QuantumLayerAdjoint(qunatum_model) adjoint_model.train() batch_y = adjoint_model(input_x) batch_y.backward() print(batch_y)",
+          "default": ""
+        }
+      },
+      "required": [
+        "general_module"
       ]
     }
   },
