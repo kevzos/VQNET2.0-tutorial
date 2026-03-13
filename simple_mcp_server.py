@@ -4967,6 +4967,1971 @@ class SimpleMCPServer:
                 "parameters": arguments,
                 "note": "这是基于pyVQNet Purity API生成的真实代码，计算子系统的纯度。"
             }
+        # =====================  NN Module Missing Implementations =====================
+        elif "pyvqnet.nn.BatchNorm1d" in tool_name:
+            # BatchNorm1d 一维批量归一化层
+            num_features = arguments.get('num_features')
+            eps = arguments.get('eps', 1e-05)
+            momentum = arguments.get('momentum', 0.1)
+            affine = arguments.get('affine', True)
+            track_running_stats = arguments.get('track_running_stats', True)
+
+            generated_code = f"""
+            from pyvqnet.nn import BatchNorm1d
+            from pyvqnet.tensor import tensor
+
+            # 创建BatchNorm1d层
+            bn = BatchNorm1d(
+                num_features={num_features if num_features else 3},
+                eps={eps},
+                momentum={momentum},
+                affine={affine},
+                track_running_stats={track_running_stats}
+            )
+
+            # 测试输入
+            x = tensor.randn([2, 3, 10])
+            y = bn(x)
+            print("输出形状:", y.shape)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成BatchNorm1d一维批量归一化层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet BatchNorm1d API生成的真实代码，创建一维批量归一化层。"
+            }
+        elif "pyvqnet.nn.HardSigmoid" in tool_name or "HardSigmoid" in tool_name:
+            # HardSigmoid 激活函数
+            generated_code = f"""
+            from pyvqnet.nn import HardSigmoid
+            from pyvqnet.tensor import tensor
+
+            # 创建HardSigmoid激活函数
+            act = HardSigmoid()
+
+            # 测试输入
+            x = tensor.randn([2, 3])
+            y = act(x)
+            print("输入:", x)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成HardSigmoid激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet HardSigmoid API生成的真实代码，HardSigmoid是Sigmoid的分段线性近似，计算更快。"
+            }
+        elif "pyvqnet.nn.LeakyReLu" in tool_name:
+            # LeakyReLu 激活函数
+            alpha = arguments.get('alpha', 0.01)
+
+            generated_code = f"""
+            from pyvqnet.nn import LeakyReLu
+            from pyvqnet.tensor import tensor
+
+            # 创建LeakyReLu激活函数
+            act = LeakyReLu(alpha={alpha})
+
+            # 测试输入
+            x = tensor.randn([2, 3])
+            y = act(x)
+            print("输入:", x)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成LeakyReLu激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet LeakyReLu API生成的真实代码，带泄露的ReLU激活函数。"
+            }
+        elif "pyvqnet.nn.Softplus" in tool_name or "Softplus" in tool_name:
+            # Softplus 激活函数
+            generated_code = f"""
+            from pyvqnet.nn import Softplus
+            from pyvqnet.tensor import tensor
+
+            # 创建Softplus激活函数
+            act = Softplus()
+
+            # 测试输入
+            x = tensor.randn([2, 3])
+            y = act(x)
+            print("输入:", x)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Softplus激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Softplus API生成的真实代码，Softplus是平滑的ReLU近似。"
+            }
+        elif "pyvqnet.nn.Softsign" in tool_name or "Softsign" in tool_name:
+            # Softsign 激活函数
+            generated_code = f"""
+            from pyvqnet.nn import Softsign
+            from pyvqnet.tensor import tensor
+
+            # 创建Softsign激活函数
+            act = Softsign()
+
+            # 测试输入
+            x = tensor.randn([2, 3])
+            y = act(x)
+            print("输入:", x)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Softsign激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Softsign API生成的真实代码，Softsign是x / (1 + |x|)的激活函数。"
+            }
+        elif "pyvqnet.nn.Tanh" in tool_name or "Tanh" in tool_name:
+            # Tanh 激活函数
+            generated_code = f"""
+            from pyvqnet.nn import Tanh
+            from pyvqnet.tensor import tensor
+
+            # 创建Tanh激活函数
+            act = Tanh()
+
+            # 测试输入
+            x = tensor.randn([2, 3])
+            y = act(x)
+            print("输入:", x)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Tanh激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Tanh API生成的真实代码，双曲正切激活函数。"
+            }
+        elif "pyvqnet.nn.dropout.DropPath" in tool_name or "DropPath" in tool_name:
+            # DropPath 随机丢弃路径
+            drop_prob = arguments.get('drop_prob', 0.0)
+
+            generated_code = f"""
+            from pyvqnet.nn.dropout import DropPath
+            from pyvqnet.tensor import tensor
+
+            # 创建DropPath层
+            dp = DropPath(drop_prob={drop_prob})
+
+            # 测试输入
+            x = tensor.randn([2, 3, 4, 4])
+            y = dp(x)
+            print("输入形状:", x.shape)
+            print("输出形状:", y.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成DropPath随机丢弃路径代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet DropPath API生成的真实代码，随机丢弃整个样本路径用于正则化。"
+            }
+        elif "pyvqnet.nn.group_norm.GroupNorm" in tool_name:
+            # GroupNorm 组归一化层
+            num_groups = arguments.get('num_groups')
+            num_channels = arguments.get('num_channels')
+            eps = arguments.get('eps', 1e-05)
+            affine = arguments.get('affine', True)
+
+            generated_code = f"""
+            from pyvqnet.nn.group_norm import GroupNorm
+            from pyvqnet.tensor import tensor
+
+            # 创建GroupNorm层
+            gn = GroupNorm(
+                num_groups={num_groups if num_groups else 2},
+                num_channels={num_channels if num_channels else 4},
+                eps={eps},
+                affine={affine}
+            )
+
+            # 测试输入
+            x = tensor.randn([2, 4, 10, 10])
+            y = gn(x)
+            print("输出形状:", y.shape)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成GroupNorm组归一化层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet GroupNorm API生成的真实代码，创建组归一化层。"
+            }
+        elif "pyvqnet.nn.layer_norm.LayerNorm1d" in tool_name:
+            # LayerNorm1d 一维层归一化
+            normalized_shape = arguments.get('normalized_shape')
+            eps = arguments.get('eps', 1e-05)
+            elementwise_affine = arguments.get('elementwise_affine', True)
+
+            generated_code = f"""
+            from pyvqnet.nn.layer_norm import LayerNorm1d
+            from pyvqnet.tensor import tensor
+
+            # 创建LayerNorm1d层
+            ln = LayerNorm1d(
+                normalized_shape={normalized_shape if normalized_shape else 10},
+                eps={eps},
+                elementwise_affine={elementwise_affine}
+            )
+
+            # 测试输入
+            x = tensor.randn([2, 10])
+            y = ln(x)
+            print("输出形状:", y.shape)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成LayerNorm1d一维层归一化代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet LayerNorm1d API生成的真实代码，创建一维层归一化层。"
+            }
+        elif "pyvqnet.nn.layer_norm.LayerNorm2d" in tool_name:
+            # LayerNorm2d 二维层归一化
+            normalized_shape = arguments.get('normalized_shape')
+            eps = arguments.get('eps', 1e-05)
+            elementwise_affine = arguments.get('elementwise_affine', True)
+
+            generated_code = f"""
+            from pyvqnet.nn.layer_norm import LayerNorm2d
+            from pyvqnet.tensor import tensor
+
+            # 创建LayerNorm2d层
+            ln = LayerNorm2d(
+                normalized_shape={normalized_shape if normalized_shape else 3},
+                eps={eps},
+                elementwise_affine={elementwise_affine}
+            )
+
+            # 测试输入
+            x = tensor.randn([2, 3, 10, 10])
+            y = ln(x)
+            print("输出形状:", y.shape)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成LayerNorm2d二维层归一化代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet LayerNorm2d API生成的真实代码，创建二维层归一化层。"
+            }
+        elif "pyvqnet.nn.layer_norm.LayerNormNd" in tool_name:
+            # LayerNormNd N维层归一化
+            normalized_shape = arguments.get('normalized_shape')
+            eps = arguments.get('eps', 1e-05)
+            elementwise_affine = arguments.get('elementwise_affine', True)
+
+            generated_code = f"""
+            from pyvqnet.nn.layer_norm import LayerNormNd
+            from pyvqnet.tensor import tensor
+
+            # 创建LayerNormNd层
+            ln = LayerNormNd(
+                normalized_shape={normalized_shape if normalized_shape else 3},
+                eps={eps},
+                elementwise_affine={elementwise_affine}
+            )
+
+            # 测试输入
+            x = tensor.randn([2, 3, 10, 10])
+            y = ln(x)
+            print("输出形状:", y.shape)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成LayerNormNd N维层归一化代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet LayerNormNd API生成的真实代码，创建N维层归一化层。"
+            }
+        elif "pyvqnet.nn.gru.GRU" in tool_name or "GRU" in tool_name:
+            # GRU 门控循环单元
+            input_size = arguments.get('input_size')
+            hidden_size = arguments.get('hidden_size')
+            num_layers = arguments.get('num_layers', 1)
+            bias = arguments.get('bias', True)
+            batch_first = arguments.get('batch_first', True)
+            dropout = arguments.get('dropout', 0.0)
+            bidirectional = arguments.get('bidirectional', False)
+
+            generated_code = f"""
+            from pyvqnet.nn.gru import GRU
+            from pyvqnet.tensor import tensor
+
+            # 创建GRU层
+            gru = GRU(
+                input_size={input_size if input_size else 10},
+                hidden_size={hidden_size if hidden_size else 20},
+                num_layers={num_layers},
+                bias={bias},
+                batch_first={batch_first},
+                dropout={dropout},
+                bidirectional={bidirectional}
+            )
+
+            # 测试输入
+            x = tensor.randn([32, 10, 10])  # [batch, seq_len, input_size]
+            output, hidden = gru(x)
+            print("输出形状:", output.shape)
+            print("隐藏状态形状:", hidden.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成GRU门控循环单元代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet GRU API生成的真实代码，创建门控循环单元层。"
+            }
+        elif "pyvqnet.nn.lstm.LSTM" in tool_name or "LSTM" in tool_name:
+            # LSTM 长短期记忆网络
+            input_size = arguments.get('input_size')
+            hidden_size = arguments.get('hidden_size')
+            num_layers = arguments.get('num_layers', 1)
+            bias = arguments.get('bias', True)
+            batch_first = arguments.get('batch_first', True)
+            dropout = arguments.get('dropout', 0.0)
+            bidirectional = arguments.get('bidirectional', False)
+
+            generated_code = f"""
+            from pyvqnet.nn.lstm import LSTM
+            from pyvqnet.tensor import tensor
+
+            # 创建LSTM层
+            lstm = LSTM(
+                input_size={input_size if input_size else 10},
+                hidden_size={hidden_size if hidden_size else 20},
+                num_layers={num_layers},
+                bias={bias},
+                batch_first={batch_first},
+                dropout={dropout},
+                bidirectional={bidirectional}
+            )
+
+            # 测试输入
+            x = tensor.randn([32, 10, 10])  # [batch, seq_len, input_size]
+            output, (hidden, cell) = lstm(x)
+            print("输出形状:", output.shape)
+            print("隐藏状态形状:", hidden.shape)
+            print("细胞状态形状:", cell.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成LSTM长短期记忆网络代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet LSTM API生成的真实代码，创建长短期记忆网络层。"
+            }
+        elif "pyvqnet.nn.rnn.RNN" in tool_name or "RNN" in tool_name:
+            # RNN 循环神经网络
+            input_size = arguments.get('input_size')
+            hidden_size = arguments.get('hidden_size')
+            num_layers = arguments.get('num_layers', 1)
+            nonlinearity = arguments.get('nonlinearity', 'tanh')
+            bias = arguments.get('bias', True)
+            batch_first = arguments.get('batch_first', True)
+            dropout = arguments.get('dropout', 0.0)
+            bidirectional = arguments.get('bidirectional', False)
+
+            generated_code = f"""
+            from pyvqnet.nn.rnn import RNN
+            from pyvqnet.tensor import tensor
+
+            # 创建RNN层
+            rnn = RNN(
+                input_size={input_size if input_size else 10},
+                hidden_size={hidden_size if hidden_size else 20},
+                num_layers={num_layers},
+                nonlinearity="{nonlinearity}",
+                bias={bias},
+                batch_first={batch_first},
+                dropout={dropout},
+                bidirectional={bidirectional}
+            )
+
+            # 测试输入
+            x = tensor.randn([32, 10, 10])  # [batch, seq_len, input_size]
+            output, hidden = rnn(x)
+            print("输出形状:", output.shape)
+            print("隐藏状态形状:", hidden.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成RNN循环神经网络代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet RNN API生成的真实代码，创建循环神经网络层。"
+            }
+        elif "pyvqnet.nn.Interpolate" in tool_name or "Interpolate" in tool_name:
+            # Interpolate 上采样/下采样
+            size = arguments.get('size')
+            scale_factor = arguments.get('scale_factor')
+            mode = arguments.get('mode', 'nearest')
+            align_corners = arguments.get('align_corners', None)
+
+            size_str = str(size) if size is not None else 'None'
+            scale_str = str(scale_factor) if scale_factor is not None else 'None'
+            align_str = str(align_corners) if align_corners is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.nn import Interpolate
+            from pyvqnet.tensor import tensor
+
+            # 创建Interpolate层
+            interp = Interpolate(
+                size={size_str},
+                scale_factor={scale_str},
+                mode="{mode}",
+                align_corners={align_str}
+            )
+
+            # 测试输入
+            x = tensor.randn([2, 3, 16, 16])
+            y = interp(x)
+            print("输入形状:", x.shape)
+            print("输出形状:", y.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Interpolate上采样/下采样代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Interpolate API生成的真实代码，创建上采样或下采样层。"
+            }
+        elif "pyvqnet.nn.SoftmaxCrossEntropy" in tool_name or "SoftmaxCrossEntropy" in tool_name:
+            # SoftmaxCrossEntropy 损失函数
+            generated_code = f"""
+            from pyvqnet.nn import SoftmaxCrossEntropy
+            from pyvqnet.tensor import tensor
+
+            # 创建损失函数
+            loss_fn = SoftmaxCrossEntropy()
+
+            # 测试输入
+            logits = tensor.randn([2, 10])  # 预测值
+            labels = tensor.tensor([3, 7])   # 标签
+            loss = loss_fn(logits, labels)
+            print("损失值:", loss)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成SoftmaxCrossEntropy损失函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet SoftmaxCrossEntropy API生成的真实代码，Softmax和交叉熵组合损失函数。"
+            }
+        # =====================  Optim Module Missing Implementations =====================
+        elif "pyvqnet.optim.adadelta.Adadelta" in tool_name or "Adadelta" in tool_name:
+            # Adadelta 优化器
+            lr = arguments.get('lr', 1.0)
+            rho = arguments.get('rho', 0.9)
+            eps = arguments.get('eps', 1e-06)
+            weight_decay = arguments.get('weight_decay', 0.0)
+
+            generated_code = f"""
+            from pyvqnet.optim.adadelta import Adadelta
+            from pyvqnet.nn import Linear
+            from pyvqnet.tensor import tensor
+
+            # 创建模型和优化器
+            model = Linear(10, 2)
+            optimizer = Adadelta(
+                model.parameters(),
+                lr={lr},
+                rho={rho},
+                eps={eps},
+                weight_decay={weight_decay}
+            )
+
+            # 训练步骤示例
+            x = tensor.randn([32, 10])
+            y = model(x)
+            loss = y.sum()
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+
+            print("优化器已创建并执行一步更新")
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Adadelta优化器代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Adadelta API生成的真实代码，创建Adadelta优化器。"
+            }
+        elif "pyvqnet.optim.adagrad.Adagrad" in tool_name or "Adagrad" in tool_name:
+            # Adagrad 优化器
+            lr = arguments.get('lr', 0.01)
+            lr_decay = arguments.get('lr_decay', 0.0)
+            weight_decay = arguments.get('weight_decay', 0.0)
+            initial_accumulator_value = arguments.get('initial_accumulator_value', 0.0)
+            eps = arguments.get('eps', 1e-10)
+
+            generated_code = f"""
+            from pyvqnet.optim.adagrad import Adagrad
+            from pyvqnet.nn import Linear
+            from pyvqnet.tensor import tensor
+
+            # 创建模型和优化器
+            model = Linear(10, 2)
+            optimizer = Adagrad(
+                model.parameters(),
+                lr={lr},
+                lr_decay={lr_decay},
+                weight_decay={weight_decay},
+                initial_accumulator_value={initial_accumulator_value},
+                eps={eps}
+            )
+
+            # 训练步骤示例
+            x = tensor.randn([32, 10])
+            y = model(x)
+            loss = y.sum()
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+
+            print("优化器已创建并执行一步更新")
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Adagrad优化器代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Adagrad API生成的真实代码，创建Adagrad优化器。"
+            }
+        elif "pyvqnet.optim.adam.AdamW" in tool_name or "AdamW" in tool_name:
+            # AdamW 优化器
+            lr = arguments.get('lr', 0.001)
+            betas = arguments.get('betas', (0.9, 0.999))
+            eps = arguments.get('eps', 1e-08)
+            weight_decay = arguments.get('weight_decay', 0.01)
+            amsgrad = arguments.get('amsgrad', False)
+
+            betas_str = str(betas) if betas else '(0.9, 0.999)'
+
+            generated_code = f"""
+            from pyvqnet.optim.adam import AdamW
+            from pyvqnet.nn import Linear
+            from pyvqnet.tensor import tensor
+
+            # 创建模型和优化器
+            model = Linear(10, 2)
+            optimizer = AdamW(
+                model.parameters(),
+                lr={lr},
+                betas={betas_str},
+                eps={eps},
+                weight_decay={weight_decay},
+                amsgrad={amsgrad}
+            )
+
+            # 训练步骤示例
+            x = tensor.randn([32, 10])
+            y = model(x)
+            loss = y.sum()
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+
+            print("优化器已创建并执行一步更新")
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成AdamW优化器代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet AdamW API生成的真实代码，创建带权重衰减的Adam优化器。"
+            }
+        elif "pyvqnet.optim.adamax.Adamax" in tool_name or "Adamax" in tool_name:
+            # Adamax 优化器
+            lr = arguments.get('lr', 0.002)
+            betas = arguments.get('betas', (0.9, 0.999))
+            eps = arguments.get('eps', 1e-08)
+            weight_decay = arguments.get('weight_decay', 0.0)
+
+            betas_str = str(betas) if betas else '(0.9, 0.999)'
+
+            generated_code = f"""
+            from pyvqnet.optim.adamax import Adamax
+            from pyvqnet.nn import Linear
+            from pyvqnet.tensor import tensor
+
+            # 创建模型和优化器
+            model = Linear(10, 2)
+            optimizer = Adamax(
+                model.parameters(),
+                lr={lr},
+                betas={betas_str},
+                eps={eps},
+                weight_decay={weight_decay}
+            )
+
+            # 训练步骤示例
+            x = tensor.randn([32, 10])
+            y = model(x)
+            loss = y.sum()
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+
+            print("优化器已创建并执行一步更新")
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Adamax优化器代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet Adamax API生成的真实代码，创建Adamax优化器。"
+            }
+        elif "pyvqnet.optim.rmsprop.RMSProp" in tool_name or "RMSProp" in tool_name:
+            # RMSProp 优化器
+            lr = arguments.get('lr', 0.01)
+            alpha = arguments.get('alpha', 0.99)
+            eps = arguments.get('eps', 1e-08)
+            weight_decay = arguments.get('weight_decay', 0.0)
+            momentum = arguments.get('momentum', 0.0)
+            centered = arguments.get('centered', False)
+
+            generated_code = f"""
+            from pyvqnet.optim.rmsprop import RMSProp
+            from pyvqnet.nn import Linear
+            from pyvqnet.tensor import tensor
+
+            # 创建模型和优化器
+            model = Linear(10, 2)
+            optimizer = RMSProp(
+                model.parameters(),
+                lr={lr},
+                alpha={alpha},
+                eps={eps},
+                weight_decay={weight_decay},
+                momentum={momentum},
+                centered={centered}
+            )
+
+            # 训练步骤示例
+            x = tensor.randn([32, 10])
+            y = model(x)
+            loss = y.sum()
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+
+            print("优化器已创建并执行一步更新")
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成RMSProp优化器代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet RMSProp API生成的真实代码，创建RMSProp优化器。"
+            }
+        # =====================  VQC Module Missing Implementations =====================
+        elif "pyvqnet.qnn.vqc.VQC_RotCircuit" in tool_name or "VQC_RotCircuit" in tool_name:
+            # VQC_RotCircuit 旋转电路模板
+            wires = arguments.get('wires')
+            params = arguments.get('params')
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import VQC_RotCircuit, QMachine
+            from pyvqnet.tensor import QTensor
+
+            # 创建量子虚拟机
+            qm = QMachine(3)
+            qm.reset_states(3)
+
+            # 创建旋转电路
+            wires = {wires if wires else '[0, 1, 2]'}
+            params = {params if params else 'QTensor([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])'}
+            VQC_RotCircuit(q_machine=qm, wires=wires, params=params)
+
+            print("VQC_RotCircuit已应用到量子线路")
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成VQC_RotCircuit旋转电路代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet VQC_RotCircuit API生成的真实代码，创建VQC旋转电路模板。"
+            }
+        elif "pyvqnet.qnn.vqc.VQC_VarMeasure" in tool_name or "VQC_VarMeasure" in tool_name:
+            # VQC_VarMeasure 变分测量
+            wires = arguments.get('wires')
+            observable = arguments.get('observable')
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import VQC_VarMeasure, QMachine, PauliZ
+            from pyvqnet.tensor import QTensor
+
+            # 创建量子虚拟机
+            qm = QMachine(2)
+            qm.reset_states(2)
+
+            # 创建量子线路
+            from pyvqnet.qnn.vqc import hadamard
+            hadamard(q_machine=qm, wires=0)
+            hadamard(q_machine=qm, wires=1)
+
+            # 执行变分测量
+            measure = VQC_VarMeasure(
+                q_machine=qm,
+                wires={wires if wires else '[0, 1]'},
+                observable={observable if observable else '[PauliZ(0), PauliZ(1)]'}
+            )
+            print("测量结果:", measure)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成VQC_VarMeasure变分测量代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet VQC_VarMeasure API生成的真实代码，执行变分量子测量。"
+            }
+        elif "pyvqnet.qnn.vqc.X1" in tool_name or "X1" in tool_name:
+            # X1 门 (X的平方根)
+            wires = arguments.get('wires')
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import X1, QMachine, MeasureAll
+            from pyvqnet.tensor import QTensor
+
+            # 创建量子虚拟机
+            qm = QMachine(1)
+            qm.reset_states(1)
+
+            # 应用X1门
+            X1(q_machine=qm, wires={wires if wires else 0})
+
+            # 测量
+            result = MeasureAll(q_machine=qm, shots=1024)
+            print("X1门应用后测量结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成X1门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet X1 API生成的真实代码，X1门是Pauli X门的平方根。"
+            }
+        elif "pyvqnet.qnn.vqc.x1" in tool_name or "x1" in tool_name:
+            # x1 函数式门
+            wires = arguments.get('wires')
+
+            generated_code = f"""
+            from pyvqnet.qnn.vqc import x1, QMachine, MeasureAll
+            from pyvqnet.tensor import QTensor
+
+            # 创建量子虚拟机
+            qm = QMachine(1)
+            qm.reset_states(1)
+
+            # 应用x1门（函数式）
+            x1(q_machine=qm, wires={wires if wires else 0})
+
+            # 测量
+            result = MeasureAll(q_machine=qm, shots=1024)
+            print("x1门应用后测量结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成x1函数式门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet x1 API生成的真实代码，函数式X1门。"
+            }
+        elif "pyvqnet.qnn.pq3.measure.QuantumMeasure" in tool_name or "QuantumMeasure" in tool_name:
+            # QuantumMeasure 量子测量
+            measure_qubits = arguments.get('measure_qubits')
+            shots = arguments.get('shots', 1000)
+
+            generated_code = f"""
+            from pyqpanda3.core import *
+            from pyvqnet.qnn.pq3.measure import QuantumMeasure
+
+            # 创建量子线路
+            circuit = QCircuit(3)
+            circuit << H(0)
+            circuit << H(1)
+            circuit << CNOT(0, 2)
+
+            prog = QProg()
+            prog.append(circuit)
+
+            # 创建量子虚拟机
+            machine = CPUQVM()
+
+            # 执行量子测量
+            measure_result = QuantumMeasure(
+                machine,
+                prog,
+                measure_qubits={measure_qubits if measure_qubits else '[2, 0]'},
+                shots={shots}
+            )
+            print("量子测量结果:", measure_result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成QuantumMeasure量子测量代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet QuantumMeasure API生成的真实代码，执行量子线路测量。"
+            }
+        # =====================  QTensor Module Missing Implementations =====================
+        elif "pyvqnet.tensor.bitwise_and" in tool_name or "bitwise_and" in tool_name:
+            # bitwise_and 按位与
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import bitwise_and, tensor
+
+            # 创建输入张量
+            t1 = {t1 if t1 else 'tensor([1, 2, 3, 4], dtype="int32")'}
+            t2 = {t2 if t2 else 'tensor([3, 1, 4, 2], dtype="int32")'}
+
+            # 按位与操作
+            result = bitwise_and(t1, t2)
+            print("输入1:", t1)
+            print("输入2:", t2)
+            print("按位与结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成bitwise_and按位与代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet bitwise_and API生成的真实代码，执行按位与操作。"
+            }
+        elif "pyvqnet.tensor.broadcast" in tool_name or "broadcast" in tool_name:
+            # broadcast 广播
+            t = arguments.get('t')
+            shape = arguments.get('shape')
+
+            generated_code = f"""
+            from pyvqnet.tensor import broadcast, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([1, 2, 3])'}
+            shape = {shape if shape else '(2, 3)'}
+
+            # 广播操作
+            result = broadcast(t, shape)
+            print("输入:", t)
+            print("目标形状:", shape)
+            print("广播结果:", result)
+            print("结果形状:", result.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成broadcast广播代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet broadcast API生成的真实代码，执行张量广播。"
+            }
+        elif "pyvqnet.tensor.broadcast_to" in tool_name or "broadcast_to" in tool_name:
+            # broadcast_to 广播到指定形状
+            t = arguments.get('t')
+            shape = arguments.get('shape')
+
+            generated_code = f"""
+            from pyvqnet.tensor import broadcast_to, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([1, 2, 3])'}
+            shape = {shape if shape else '(2, 3)'}
+
+            # 广播操作
+            result = broadcast_to(t, shape)
+            print("输入:", t)
+            print("目标形状:", shape)
+            print("广播结果:", result)
+            print("结果形状:", result.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成broadcast_to广播代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet broadcast_to API生成的真实代码，广播张量到指定形状。"
+            }
+        elif "pyvqnet.tensor.clip" in tool_name or "clip" in tool_name:
+            # clip 截断
+            t = arguments.get('t')
+            min_val = arguments.get('min_val')
+            max_val = arguments.get('max_val')
+
+            generated_code = f"""
+            from pyvqnet.tensor import clip, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([-1, 2, -3, 4, -5])'}
+            min_val = {min_val if min_val is not None else '-2'}
+            max_val = {max_val if max_val is not None else '3'}
+
+            # 截断操作
+            result = clip(t, min_val, max_val)
+            print("输入:", t)
+            print(f"截断到[{min_val}, {max_val}]")
+            print("结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成clip截断代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet clip API生成的真实代码，截断张量值到指定范围。"
+            }
+        elif "pyvqnet.tensor.equal" in tool_name or "equal" in tool_name:
+            # equal 元素相等比较
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import equal, tensor
+
+            # 创建输入张量
+            t1 = {t1 if t1 else 'tensor([1, 2, 3, 4])'}
+            t2 = {t2 if t2 else 'tensor([1, 3, 3, 5])'}
+
+            # 相等比较
+            result = equal(t1, t2)
+            print("输入1:", t1)
+            print("输入2:", t2)
+            print("相等比较结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成equal元素相等比较代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet equal API生成的真实代码，逐元素比较张量是否相等。"
+            }
+        elif "pyvqnet.tensor.flip" in tool_name or "flip" in tool_name:
+            # flip 翻转
+            t = arguments.get('t')
+            dims = arguments.get('dims')
+
+            dims_str = str(dims) if dims is not None else '0'
+
+            generated_code = f"""
+            from pyvqnet.tensor import flip, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]])'}
+            dims = {dims_str}
+
+            # 翻转操作
+            result = flip(t, dims)
+            print("输入:", t)
+            print(f"翻转维度: {dims}")
+            print("翻转结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成flip翻转代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet flip API生成的真实代码，沿指定维度翻转张量。"
+            }
+        elif "pyvqnet.tensor.full_like" in tool_name or "full_like" in tool_name:
+            # full_like 生成同形状张量
+            t = arguments.get('t')
+            fill_value = arguments.get('fill_value')
+            dtype = arguments.get('dtype', None)
+            device = arguments.get('device', None)
+
+            dtype_str = dtype if dtype is not None else 'None'
+            device_str = device if device is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.tensor import full_like, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([[1, 2, 3], [4, 5, 6]])'}
+            fill_value = {fill_value if fill_value is not None else 5}
+
+            # 生成同形状张量
+            result = full_like(t, fill_value, dtype={dtype_str}, device={device_str})
+            print("输入张量:", t)
+            print("输入形状:", t.shape)
+            print("填充值:", fill_value)
+            print("结果:", result)
+            print("结果形状:", result.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成full_like生成同形状张量代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet full_like API生成的真实代码，生成与输入同形状的填充张量。"
+            }
+        elif "pyvqnet.tensor.gather" in tool_name or "gather" in tool_name:
+            # gather 收集
+            t = arguments.get('t')
+            indices = arguments.get('indices')
+            dim = arguments.get('dim', 0)
+
+            generated_code = f"""
+            from pyvqnet.tensor import gather, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([[1, 2], [3, 4], [5, 6]])'}
+            indices = {indices if indices else 'tensor([0, 2])'}
+            dim = {dim}
+
+            # 收集操作
+            result = gather(t, indices, dim)
+            print("输入张量:", t)
+            print("索引:", indices)
+            print(f"维度: {dim}")
+            print("收集结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成gather收集代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet gather API生成的真实代码，沿指定维度收集元素。"
+            }
+        elif "pyvqnet.tensor.greater_equal" in tool_name or "greater_equal" in tool_name:
+            # greater_equal 大于等于比较
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import greater_equal, tensor
+
+            # 创建输入张量
+            t1 = {t1 if t1 else 'tensor([1, 3, 2, 4])'}
+            t2 = {t2 if t2 else 'tensor([2, 2, 2, 3])'}
+
+            # 大于等于比较
+            result = greater_equal(t1, t2)
+            print("输入1:", t1)
+            print("输入2:", t2)
+            print("大于等于比较结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成greater_equal大于等于比较代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet greater_equal API生成的真实代码，逐元素比较大于等于。"
+            }
+        elif "pyvqnet.tensor.isfinite" in tool_name or "isfinite" in tool_name:
+            # isfinite 检查有限值
+            t = arguments.get('t')
+
+            generated_code = f"""
+            from pyvqnet.tensor import isfinite, tensor
+            import numpy as np
+
+            # 创建输入张量（包含inf和nan）
+            t = {t if t else 'tensor([1.0, np.inf, np.nan, -np.inf, 5.0])'}
+
+            # 检查有限值
+            result = isfinite(t)
+            print("输入:", t)
+            print("是否有限:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成isfinite检查有限值代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet isfinite API生成的真实代码，逐元素检查是否为有限值。"
+            }
+        elif "pyvqnet.tensor.isinf" in tool_name or "isinf" in tool_name:
+            # isinf 检查无穷值
+            t = arguments.get('t')
+
+            generated_code = f"""
+            from pyvqnet.tensor import isinf, tensor
+            import numpy as np
+
+            # 创建输入张量（包含inf和nan）
+            t = {t if t else 'tensor([1.0, np.inf, np.nan, -np.inf, 5.0])'}
+
+            # 检查无穷值
+            result = isinf(t)
+            print("输入:", t)
+            print("是否无穷:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成isinf检查无穷值代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet isinf API生成的真实代码，逐元素检查是否为无穷值。"
+            }
+        elif "pyvqnet.tensor.isnan" in tool_name or "isnan" in tool_name:
+            # isnan 检查NaN
+            t = arguments.get('t')
+
+            generated_code = f"""
+            from pyvqnet.tensor import isnan, tensor
+            import numpy as np
+
+            # 创建输入张量（包含inf和nan）
+            t = {t if t else 'tensor([1.0, np.inf, np.nan, -np.inf, 5.0])'}
+
+            # 检查NaN
+            result = isnan(t)
+            print("输入:", t)
+            print("是否NaN:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成isnan检查NaN代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet isnan API生成的真实代码，逐元素检查是否为NaN。"
+            }
+        elif "pyvqnet.tensor.isneginf" in tool_name or "isneginf" in tool_name:
+            # isneginf 检查负无穷
+            t = arguments.get('t')
+
+            generated_code = f"""
+            from pyvqnet.tensor import isneginf, tensor
+            import numpy as np
+
+            # 创建输入张量（包含inf和nan）
+            t = {t if t else 'tensor([1.0, np.inf, np.nan, -np.inf, 5.0])'}
+
+            # 检查负无穷
+            result = isneginf(t)
+            print("输入:", t)
+            print("是否负无穷:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成isneginf检查负无穷代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet isneginf API生成的真实代码，逐元素检查是否为负无穷。"
+            }
+        elif "pyvqnet.tensor.isposinf" in tool_name or "isposinf" in tool_name:
+            # isposinf 检查正无穷
+            t = arguments.get('t')
+
+            generated_code = f"""
+            from pyvqnet.tensor import isposinf, tensor
+            import numpy as np
+
+            # 创建输入张量（包含inf和nan）
+            t = {t if t else 'tensor([1.0, np.inf, np.nan, -np.inf, 5.0])'}
+
+            # 检查正无穷
+            result = isposinf(t)
+            print("输入:", t)
+            print("是否正无穷:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成isposinf检查正无穷代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet isposinf API生成的真实代码，逐元素检查是否为正无穷。"
+            }
+        elif "pyvqnet.tensor.less" in tool_name or "less" in tool_name:
+            # less 小于比较
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import less, tensor
+
+            # 创建输入张量
+            t1 = {t1 if t1 else 'tensor([1, 3, 2, 4])'}
+            t2 = {t2 if t2 else 'tensor([2, 2, 2, 3])'}
+
+            # 小于比较
+            result = less(t1, t2)
+            print("输入1:", t1)
+            print("输入2:", t2)
+            print("小于比较结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成less小于比较代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet less API生成的真实代码，逐元素比较小于。"
+            }
+        elif "pyvqnet.tensor.less_equal" in tool_name or "less_equal" in tool_name:
+            # less_equal 小于等于比较
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import less_equal, tensor
+
+            # 创建输入张量
+            t1 = {t1 if t1 else 'tensor([1, 3, 2, 4])'}
+            t2 = {t2 if t2 else 'tensor([2, 2, 2, 3])'}
+
+            # 小于等于比较
+            result = less_equal(t1, t2)
+            print("输入1:", t1)
+            print("输入2:", t2)
+            print("小于等于比较结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成less_equal小于等于比较代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet less_equal API生成的真实代码，逐元素比较小于等于。"
+            }
+        elif "pyvqnet.tensor.linspace" in tool_name or "linspace" in tool_name:
+            # linspace 生成等间距序列
+            start = arguments.get('start')
+            end = arguments.get('end')
+            steps = arguments.get('steps')
+            dtype = arguments.get('dtype', None)
+            device = arguments.get('device', None)
+
+            dtype_str = dtype if dtype is not None else 'None'
+            device_str = device if device is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.tensor import linspace
+
+            # 生成等间距序列
+            start = {start if start is not None else 0}
+            end = {end if end is not None else 10}
+            steps = {steps if steps is not None else 5}
+
+            result = linspace(start, end, steps, dtype={dtype_str}, device={device_str})
+            print(f"生成从{start}到{end}共{steps}个点的等间距序列:")
+            print(result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成linspace等间距序列代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet linspace API生成的真实代码，生成等间距序列。"
+            }
+        elif "pyvqnet.tensor.logical_and" in tool_name or "logical_and" in tool_name:
+            # logical_and 逻辑与
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import logical_and, tensor
+
+            # 创建输入张量
+            t1 = {t1 if t1 else 'tensor([True, False, True, False])'}
+            t2 = {t2 if t2 else 'tensor([True, True, False, False])'}
+
+            # 逻辑与操作
+            result = logical_and(t1, t2)
+            print("输入1:", t1)
+            print("输入2:", t2)
+            print("逻辑与结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成logical_and逻辑与代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet logical_and API生成的真实代码，逐元素逻辑与操作。"
+            }
+        elif "pyvqnet.tensor.logical_not" in tool_name or "logical_not" in tool_name:
+            # logical_not 逻辑非
+            t = arguments.get('t')
+
+            generated_code = f"""
+            from pyvqnet.tensor import logical_not, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([True, False, 1, 0])'}
+
+            # 逻辑非操作
+            result = logical_not(t)
+            print("输入:", t)
+            print("逻辑非结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成logical_not逻辑非代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet logical_not API生成的真实代码，逐元素逻辑非操作。"
+            }
+        elif "pyvqnet.tensor.logical_or" in tool_name or "logical_or" in tool_name:
+            # logical_or 逻辑或
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import logical_or, tensor
+
+            # 创建输入张量
+            t1 = {t1 if t1 else 'tensor([True, False, True, False])'}
+            t2 = {t2 if t2 else 'tensor([True, True, False, False])'}
+
+            # 逻辑或操作
+            result = logical_or(t1, t2)
+            print("输入1:", t1)
+            print("输入2:", t2)
+            print("逻辑或结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成logical_or逻辑或代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet logical_or API生成的真实代码，逐元素逻辑或操作。"
+            }
+        elif "pyvqnet.tensor.logical_xor" in tool_name or "logical_xor" in tool_name:
+            # logical_xor 逻辑异或
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import logical_xor, tensor
+
+            # 创建输入张量
+            t1 = {t1 if t1 else 'tensor([True, False, True, False])'}
+            t2 = {t2 if t2 else 'tensor([True, True, False, False])'}
+
+            # 逻辑异或操作
+            result = logical_xor(t1, t2)
+            print("输入1:", t1)
+            print("输入2:", t2)
+            print("逻辑异或结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成logical_xor逻辑异或代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet logical_xor API生成的真实代码，逐元素逻辑异或操作。"
+            }
+        elif "pyvqnet.tensor.logspace" in tool_name or "logspace" in tool_name:
+            # logspace 生成对数间距序列
+            start = arguments.get('start')
+            end = arguments.get('end')
+            steps = arguments.get('steps')
+            base = arguments.get('base', 10.0)
+            dtype = arguments.get('dtype', None)
+            device = arguments.get('device', None)
+
+            dtype_str = dtype if dtype is not None else 'None'
+            device_str = device if device is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.tensor import logspace
+
+            # 生成对数间距序列
+            start = {start if start is not None else 0}
+            end = {end if end is not None else 3}
+            steps = {steps if steps is not None else 4}
+            base = {base}
+
+            result = logspace(start, end, steps, base=base, dtype={dtype_str}, device={device_str})
+            print(f"生成从10^{start}到10^{end}共{steps}个点的对数间距序列:")
+            print(result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成logspace对数间距序列代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet logspace API生成的真实代码，生成对数间距序列。"
+            }
+        elif "pyvqnet.tensor.masked_fill" in tool_name or "masked_fill" in tool_name:
+            # masked_fill 掩码填充
+            t = arguments.get('t')
+            mask = arguments.get('mask')
+            value = arguments.get('value')
+
+            generated_code = f"""
+            from pyvqnet.tensor import masked_fill, tensor
+
+            # 创建输入张量和掩码
+            t = {t if t else 'tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]])'}
+            mask = {mask if mask else 'tensor([[True, False, True], [False, True, False], [True, False, True]])'}
+            value = {value if value is not None else 0}
+
+            # 掩码填充
+            result = masked_fill(t, mask, value)
+            print("输入张量:", t)
+            print("掩码:", mask)
+            print(f"填充值: {value}")
+            print("结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成masked_fill掩码填充代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet masked_fill API生成的真实代码，根据掩码填充张量。"
+            }
+        elif "pyvqnet.tensor.minimum" in tool_name or "minimum" in tool_name:
+            # minimum 逐元素最小值
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import minimum, tensor
+
+            # 创建输入张量
+            t1 = {t1 if t1 else 'tensor([1, 3, 5, 7])'}
+            t2 = {t2 if t2 else 'tensor([2, 2, 6, 6])'}
+
+            # 逐元素最小值
+            result = minimum(t1, t2)
+            print("输入1:", t1)
+            print("输入2:", t2)
+            print("逐元素最小值:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成minimum逐元素最小值代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet minimum API生成的真实代码，逐元素取最小值。"
+            }
+        elif "pyvqnet.tensor.moveaxis" in tool_name or "moveaxis" in tool_name:
+            # moveaxis 移动轴
+            t = arguments.get('t')
+            source = arguments.get('source')
+            destination = arguments.get('destination')
+
+            source_str = str(source) if source is not None else '0'
+            dest_str = str(destination) if destination is not None else '-1'
+
+            generated_code = f"""
+            from pyvqnet.tensor import moveaxis, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor.randn([2, 3, 4, 5])'}
+            source = {source_str}
+            destination = {dest_str}
+
+            # 移动轴
+            result = moveaxis(t, source, destination)
+            print("输入形状:", t.shape)
+            print(f"移动轴 {source} 到 {destination}")
+            print("输出形状:", result.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成moveaxis移动轴代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet moveaxis API生成的真实代码，移动张量轴到指定位置。"
+            }
+        elif "pyvqnet.tensor.nonzero" in tool_name or "nonzero" in tool_name:
+            # nonzero 获取非零元素索引
+            t = arguments.get('t')
+
+            generated_code = f"""
+            from pyvqnet.tensor import nonzero, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([[0, 1, 0], [2, 0, 3], [0, 4, 0]])'}
+
+            # 获取非零索引
+            indices = nonzero(t)
+            print("输入张量:", t)
+            print("非零元素索引:", indices)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成nonzero非零元素索引代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet nonzero API生成的真实代码，获取非零元素的索引。"
+            }
+        elif "pyvqnet.tensor.not_equal" in tool_name or "not_equal" in tool_name:
+            # not_equal 不相等比较
+            t1 = arguments.get('t1')
+            t2 = arguments.get('t2')
+
+            generated_code = f"""
+            from pyvqnet.tensor import not_equal, tensor
+
+            # 创建输入张量
+            t1 = {t1 if t1 else 'tensor([1, 2, 3, 4])'}
+            t2 = {t2 if t2 else 'tensor([1, 3, 3, 5])'}
+
+            # 不相等比较
+            result = not_equal(t1, t2)
+            print("输入1:", t1)
+            print("输入2:", t2)
+            print("不相等比较结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成not_equal不相等比较代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet not_equal API生成的真实代码，逐元素比较不相等。"
+            }
+        elif "pyvqnet.tensor.ones_like" in tool_name or "ones_like" in tool_name:
+            # ones_like 生成同形状全1张量
+            t = arguments.get('t')
+            dtype = arguments.get('dtype', None)
+            device = arguments.get('device', None)
+
+            dtype_str = dtype if dtype is not None else 'None'
+            device_str = device if device is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.tensor import ones_like, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([[1, 2, 3], [4, 5, 6]])'}
+
+            # 生成同形状全1张量
+            result = ones_like(t, dtype={dtype_str}, device={device_str})
+            print("输入张量:", t)
+            print("输入形状:", t.shape)
+            print("结果:", result)
+            print("结果形状:", result.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成ones_like同形状全1张量代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet ones_like API生成的真实代码，生成与输入同形状的全1张量。"
+            }
+        elif "pyvqnet.tensor.pack_pad_sequence" in tool_name or "pack_pad_sequence" in tool_name:
+            # pack_pad_sequence 打包填充序列
+            sequences = arguments.get('sequences')
+            batch_first = arguments.get('batch_first', False)
+            padding_value = arguments.get('padding_value', 0.0)
+
+            sequences_str = str(sequences) if sequences else '[tensor([1, 2]), tensor([3, 4, 5]), tensor([6])]'
+            generated_code = f"""
+            from pyvqnet.tensor import pack_pad_sequence, tensor
+
+            # 创建序列列表
+            sequences = {sequences_str}
+
+            # 打包填充序列
+            packed_seq, lengths = pack_pad_sequence(
+                sequences,
+                batch_first={batch_first},
+                padding_value={padding_value}
+            )
+            print("打包后的序列:", packed_seq)
+            print("序列长度:", lengths)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成pack_pad_sequence打包填充序列代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet pack_pad_sequence API生成的真实代码，打包填充可变长度序列。"
+            }
+        elif "pyvqnet.tensor.pad_packed_sequence" in tool_name or "pad_packed_sequence" in tool_name:
+            # pad_packed_sequence 解包填充序列
+            packed_seq = arguments.get('packed_seq')
+            lengths = arguments.get('lengths')
+            batch_first = arguments.get('batch_first', False)
+            padding_value = arguments.get('padding_value', 0.0)
+            total_length = arguments.get('total_length', None)
+
+            total_len_str = str(total_length) if total_length is not None else 'None'
+            generated_code = f"""
+            from pyvqnet.tensor import pack_pad_sequence, pad_packed_sequence, tensor
+
+            # 先创建打包序列
+            sequences = [tensor([1, 2]), tensor([3, 4, 5]), tensor([6])]
+            packed_seq, lengths = pack_pad_sequence(sequences)
+
+            # 解包填充序列
+            padded_seq, _ = pad_packed_sequence(
+                packed_seq,
+                lengths,
+                batch_first={batch_first},
+                padding_value={padding_value},
+                total_length={total_len_str}
+            )
+            print("解包后的填充序列:", padded_seq)
+            print("形状:", padded_seq.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成pad_packed_sequence解包填充序列代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet pad_packed_sequence API生成的真实代码，解包填充打包的序列。"
+            }
+        elif "pyvqnet.tensor.pad_sequence" in tool_name or "pad_sequence" in tool_name:
+            # pad_sequence 填充序列
+            sequences = arguments.get('sequences')
+            batch_first = arguments.get('batch_first', False)
+            padding_value = arguments.get('padding_value', 0.0)
+
+            sequences_str = str(sequences) if sequences else '[tensor([1, 2]), tensor([3, 4, 5]), tensor([6])]'
+            generated_code = f"""
+            from pyvqnet.tensor import pad_sequence, tensor
+
+            # 创建序列列表
+            sequences = {sequences_str}
+
+            # 填充序列
+            padded_seq = pad_sequence(
+                sequences,
+                batch_first={batch_first},
+                padding_value={padding_value}
+            )
+            print("填充后的序列:", padded_seq)
+            print("形状:", padded_seq.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成pad_sequence填充序列代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet pad_sequence API生成的真实代码，填充可变长度序列到相同长度。"
+            }
+        elif "pyvqnet.tensor.scatter" in tool_name or "scatter" in tool_name:
+            # scatter 散布
+            t = arguments.get('t')
+            dim = arguments.get('dim', 0)
+            index = arguments.get('index')
+            src = arguments.get('src')
+
+            generated_code = f"""
+            from pyvqnet.tensor import scatter, tensor, zeros
+
+            # 创建输入张量
+            t = {t if t else 'zeros([3, 5])'}
+            dim = {dim}
+            index = {index if index else 'tensor([[0, 1, 2], [0, 1, 2]])'}
+            src = {src if src else 'tensor([[1, 2, 3], [4, 5, 6]])'}
+
+            # 散布操作
+            result = scatter(t, dim, index, src)
+            print("输入张量:", t)
+            print("索引:", index)
+            print("源张量:", src)
+            print(f"维度: {dim}")
+            print("散布结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成scatter散布代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet scatter API生成的真实代码，沿指定维度散布源张量值到输入张量。"
+            }
+        elif "pyvqnet.tensor.select" in tool_name or "select" in tool_name:
+            # select 选择
+            t = arguments.get('t')
+            dim = arguments.get('dim', 0)
+            index = arguments.get('index')
+
+            generated_code = f"""
+            from pyvqnet.tensor import select, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]])'}
+            dim = {dim}
+            index = {index if index is not None else 1}
+
+            # 选择操作
+            result = select(t, dim, index)
+            print("输入张量:", t)
+            print(f"选择维度 {dim} 的索引 {index}")
+            print("选择结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成select选择代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet select API生成的真实代码，沿指定维度选择元素。"
+            }
+        elif "pyvqnet.tensor.stack" in tool_name or "stack" in tool_name:
+            # stack 堆叠
+            tensors = arguments.get('tensors')
+            dim = arguments.get('dim', 0)
+
+            tensors_str = str(tensors) if tensors else '[tensor([1, 2]), tensor([3, 4]), tensor([5, 6])]'
+            generated_code = f"""
+            from pyvqnet.tensor import stack, tensor
+
+            # 创建张量列表
+            tensors = {tensors_str}
+
+            # 堆叠操作
+            result = stack(tensors, dim={dim})
+            print("输入张量:", tensors)
+            print(f"堆叠维度: {dim}")
+            print("堆叠结果:", result)
+            print("结果形状:", result.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成stack堆叠代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet stack API生成的真实代码，沿新维度堆叠张量列表。"
+            }
+        elif "pyvqnet.tensor.swapaxis" in tool_name or "swapaxis" in tool_name:
+            # swapaxis 交换轴
+            t = arguments.get('t')
+            axis1 = arguments.get('axis1', 0)
+            axis2 = arguments.get('axis2', 1)
+
+            generated_code = f"""
+            from pyvqnet.tensor import swapaxis, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor.randn([2, 3, 4, 5])'}
+            axis1 = {axis1}
+            axis2 = {axis2}
+
+            # 交换轴
+            result = swapaxis(t, axis1, axis2)
+            print("输入形状:", t.shape)
+            print(f"交换轴 {axis1} 和 {axis2}")
+            print("输出形状:", result.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成swapaxis交换轴代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet swapaxis API生成的真实代码，交换张量的两个轴。"
+            }
+        elif "pyvqnet.tensor.tile" in tool_name or "tile" in tool_name:
+            # tile 平铺
+            t = arguments.get('t')
+            reps = arguments.get('reps')
+
+            reps_str = str(reps) if reps else '(2, 3)'
+            generated_code = f"""
+            from pyvqnet.tensor import tile, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([[1, 2], [3, 4]])'}
+            reps = {reps_str}
+
+            # 平铺操作
+            result = tile(t, reps)
+            print("输入张量:", t)
+            print("输入形状:", t.shape)
+            print(f"平铺倍数: {reps}")
+            print("结果:", result)
+            print("结果形状:", result.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成tile平铺代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet tile API生成的真实代码，按指定倍数平铺张量。"
+            }
+        elif "pyvqnet.tensor.to_tensor" in tool_name or "to_tensor" in tool_name:
+            # to_tensor 转换为张量
+            data = arguments.get('data')
+            dtype = arguments.get('dtype', None)
+            device = arguments.get('device', None)
+            requires_grad = arguments.get('requires_grad', False)
+
+            dtype_str = dtype if dtype is not None else 'None'
+            device_str = device if device is not None else 'None'
+            data_str = str(data) if data else '[1, 2, 3, 4, 5]'
+
+            generated_code = f"""
+            from pyvqnet.tensor import to_tensor
+
+            # 转换为张量
+            data = {data_str}
+            t = to_tensor(
+                data,
+                dtype={dtype_str},
+                device={device_str},
+                requires_grad={requires_grad}
+            )
+            print("输入数据:", data)
+            print("转换后的张量:", t)
+            print("张量形状:", t.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成to_tensor转换代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet to_tensor API生成的真实代码，将Python列表或numpy数组转换为QTensor。"
+            }
+        elif "pyvqnet.tensor.unsqueeze" in tool_name or "unsqueeze" in tool_name:
+            # unsqueeze 增加维度
+            t = arguments.get('t')
+            dim = arguments.get('dim', 0)
+
+            generated_code = f"""
+            from pyvqnet.tensor import unsqueeze, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([1, 2, 3])'}
+            dim = {dim}
+
+            # 增加维度
+            result = unsqueeze(t, dim)
+            print("输入张量:", t)
+            print("输入形状:", t.shape)
+            print(f"在维度 {dim} 增加新轴")
+            print("结果:", result)
+            print("结果形状:", result.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成unsqueeze增加维度代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet unsqueeze API生成的真实代码，在指定位置增加新维度。"
+            }
+        elif "pyvqnet.tensor.where" in tool_name or "where" in tool_name:
+            # where 条件选择
+            condition = arguments.get('condition')
+            x = arguments.get('x')
+            y = arguments.get('y')
+
+            generated_code = f"""
+            from pyvqnet.tensor import where, tensor
+
+            # 创建输入
+            condition = {condition if condition else 'tensor([True, False, True, False])'}
+            x = {x if x else 'tensor([1, 2, 3, 4])'}
+            y = {y if y else 'tensor([10, 20, 30, 40])'}
+
+            # 条件选择
+            result = where(condition, x, y)
+            print("条件:", condition)
+            print("x:", x)
+            print("y:", y)
+            print("条件选择结果:", result)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成where条件选择代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet where API生成的真实代码，根据条件选择x或y中的元素。"
+            }
+        elif "pyvqnet.tensor.zeros_like" in tool_name or "zeros_like" in tool_name:
+            # zeros_like 生成同形状全0张量
+            t = arguments.get('t')
+            dtype = arguments.get('dtype', None)
+            device = arguments.get('device', None)
+
+            dtype_str = dtype if dtype is not None else 'None'
+            device_str = device if device is not None else 'None'
+
+            generated_code = f"""
+            from pyvqnet.tensor import zeros_like, tensor
+
+            # 创建输入张量
+            t = {t if t else 'tensor([[1, 2, 3], [4, 5, 6]])'}
+
+            # 生成同形状全0张量
+            result = zeros_like(t, dtype={dtype_str}, device={device_str})
+            print("输入张量:", t)
+            print("输入形状:", t.shape)
+            print("结果:", result)
+            print("结果形状:", result.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成zeros_like同形状全0张量代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "这是基于pyVQNet zeros_like API生成的真实代码，生成与输入同形状的全0张量。"
+            }
         else:
             return {
                 "status": "success",
