@@ -2349,6 +2349,27 @@
     }
   },
   {
+    "name": "pyvqnet.qnn.pq3.template.BasicEmbeddingCircuit",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "input_feat": {
+          "type": "string",
+          "description": "``(n)`` 大小的二进制输入。"
+        },
+        "qlist": {
+          "type": "integer",
+          "description": "构建该模板线路量子比特。 Example:: from pyvqnet.qnn.pq3.template import BasicEmbeddingCircuit import pyqpanda3.core as pq from pyvqnet import tensor input_feat = tensor.QTensor([1,1,0]) qlist = range(3) circuit = BasicEmbeddingCircuit(input_feat,qlist) print(circuit)"
+        }
+      },
+      "required": [
+        "input_feat",
+        "qlist"
+      ]
+    }
+  },
+  {
     "name": "pyvqnet.qnn.pq3.template.AngleEmbeddingCircuit",
     "description": "",
     "inputSchema": {
@@ -2371,6 +2392,141 @@
       "required": [
         "input_feat",
         "qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.template.IQPEmbeddingCircuits",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "input_feat": {
+          "type": "string",
+          "description": "表示参数的numpy数组。"
+        },
+        "qubits": {
+          "type": "array",
+          "description": "量子比特索引列表。"
+        },
+        "rep": {
+          "type": "integer",
+          "description": "重复量子线路块,默认次数1。 Example:: import numpy as np from pyvqnet.qnn.pq3.template import IQPEmbeddingCircuits input_feat = np.arange(1,100) qlist = range(3) circuit = IQPEmbeddingCircuits(input_feat,qlist,rep = 3) print(circuit)",
+          "default": 1
+        }
+      },
+      "required": [
+        "input_feat",
+        "qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.template.RotCircuit",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "para": {
+          "type": "string",
+          "description": "表示参数  :math:`[\\phi, \\theta, \\omega]` 的numpy数组。"
+        },
+        "qubits": {
+          "type": "integer",
+          "description": "量子比特索引,只接受单个量子比特。 Example:: from pyvqnet.qnn.pq3.template import RotCircuit import pyqpanda3.core as pq from pyvqnet import tensor m_qlist = 1 param =tensor.QTensor([3,4,5]) c = RotCircuit(param,m_qlist) print(c)"
+        }
+      },
+      "required": [
+        "para",
+        "qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.template.CRotCircuit",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "para": {
+          "type": "string",
+          "description": "表示参数  :math:`[\\phi, \\theta, \\omega]` 的numpy数组。"
+        },
+        "control_qubits": {
+          "type": "string",
+          "description": "量子比特索引,量子比特的数量应为1。"
+        },
+        "rot_qubits": {
+          "type": "integer",
+          "description": "Rot量子比特索引,量子比特的数量应为1。 Example:: from pyvqnet.qnn.pq3.template import CRotCircuit import pyqpanda3.core as pq import numpy as np m_qlist = range(1) control_qlist = [1] param = np.array([3,4,5]) cir = CRotCircuit(param,control_qlist,m_qlist) print(cir)"
+        }
+      },
+      "required": [
+        "para",
+        "control_qubits",
+        "rot_qubits"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.measure.expval",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "machine": {
+          "type": "string",
+          "description": "由pyQPanda创建的量子虚拟机。"
+        },
+        "prog": {
+          "type": "string",
+          "description": "pyQPanda创建的量子工程。"
+        },
+        "pauli_str_dict": {
+          "type": "object",
+          "description": "哈密顿量观测值。 Example:: import pyqpanda3.core as pq from pyvqnet.qnn.pq3.measure import expval input = [0.56, 0.1] m_machine = pq.CPUQVM() m_qlist = range(3) cir = pq.QCircuit(3) cir<<pq.RZ(m_qlist[0],input[0]) cir<<pq.CNOT(m_qlist[0],m_qlist[1]) cir<<pq.RY(m_qlist[1],input[1]) cir<<pq.CNOT(m_qlist[0],m_qlist[2]) m_prog = pq.QProg(cir) pauli_dict  = {'Z0 X1':10,'Y2':-0.543} exp2 = expval(m_machine,m_prog,pauli_dict) print(exp2)"
+        }
+      },
+      "required": [
+        "machine",
+        "prog",
+        "pauli_str_dict"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.pq3.measure.QuantumMeasure",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "machine": {
+          "type": "string",
+          "description": "pyQPanda分配的量子虚拟机。"
+        },
+        "prog": {
+          "type": "string",
+          "description": "pyQPanda创建的量子工程。"
+        },
+        "measure_qubits": {
+          "type": "array",
+          "description": "列表包含测量比特索引。"
+        },
+        "shots": {
+          "type": "integer",
+          "description": "测量次数,默认值为1000次。",
+          "default": 1000
+        },
+        "qcloud_option": {
+          "type": "integer",
+          "description": "设置 qcloud 配置,默认为“”,可以传入一个QCloudOptions类,只在使用qcloud 下有用。 Example:: from pyqpanda3.core import * circuit = QCircuit(3) circuit << H(0) circuit << P(2, 0.2) circuit << RX(1, 0.9) circuit << RX(0, 0.6) circuit << RX(1, 0.3) circuit << RY(1, 0.3) circuit << RY(2, 2.7) circuit << RX(0, 1.5) prog = QProg() prog.append(circuit) machine = CPUQVM() from pyvqnet.qnn.pq3.measure import probs_measure,quantum_measure measure_result = quantum_measure(machine,prog,[2,0]) print(measure_result)",
+          "default": ""
+        }
+      },
+      "required": [
+        "machine",
+        "prog",
+        "measure_qubits"
       ]
     }
   },
@@ -2406,6 +2562,46 @@
     }
   },
   {
+    "name": "pyvqnet.qnn.vqc.I",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import I,QMachine device = QMachine(4) layer = I(wires=0) batchsize = 1 device.reset_states(1) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
     "name": "pyvqnet.qnn.vqc.hadamard",
     "description": "",
     "inputSchema": {
@@ -2434,6 +2630,472 @@
         "q_machine",
         "wires"
       ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.Hadamard",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import Hadamard,QMachine device = QMachine(4) layer = Hadamard(wires=0) batchsize = 1 device.reset_states(1) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.t",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import t,QMachine qm  = QMachine(4) t(q_machine=qm, wires=1,) print(qm.states) # [[[[[1.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]] # # #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.T",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import T,QMachine device = QMachine(4) layer = T(wires=0) batchsize = 1 device.reset_states(1) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.s",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import s,QMachine qm  = QMachine(4) s(q_machine=qm, wires=1,) print(qm.states) # [[[[[1.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]] # # #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.S",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import S,QMachine device = QMachine(4) layer = S(wires=0) batchsize = 1 device.reset_states(1) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.paulix",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import paulix,QMachine qm  = QMachine(4) paulix(q_machine=qm, wires=1,) print(qm.states) # [[[[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[1.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]] # # #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.PauliX",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import PauliX,QMachine device = QMachine(4) layer = PauliX(wires=0) batchsize = 1 device.reset_states(1) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.pauliy",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import pauliy,QMachine qm  = QMachine(4) pauliy(q_machine=qm, wires=1,) print(qm.states) # [[[[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+1.j 0.+0.j] #     [0.+0.j 0.+0.j]]] # # #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.PauliY",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import PauliY,QMachine device = QMachine(4) layer = PauliY(wires=0) batchsize = 1 device.reset_states(1) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.pauliz",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import pauliz,QMachine qm  = QMachine(4) pauliz(q_machine=qm, wires=1,) print(qm.states) # [[[[[1.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]] # # #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.PauliZ",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import PauliZ,QMachine device = QMachine(4) layer = PauliZ(wires=0) batchsize = 1 device.reset_states(1) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.x1",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import x1,QMachine qm  = QMachine(4) x1(q_machine=qm, wires=1,) print(qm.states) # [[[[[0.7071068+0.j        0.       +0.j       ] #     [0.       +0.j        0.       +0.j       ]] # #    [[0.       -0.7071068j 0.       +0.j       ] #     [0.       +0.j        0.       +0.j       ]]] # # #   [[[0.       +0.j        0.       +0.j       ] #     [0.       +0.j        0.       +0.j       ]] # #    [[0.       +0.j        0.       +0.j       ] #     [0.       +0.j        0.       +0.j       ]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.X1",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import X1,QMachine device = QMachine(4) layer = X1(wires=0) batchsize = 1 device.reset_states(1) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
     }
   },
   {
@@ -2468,6 +3130,46 @@
     }
   },
   {
+    "name": "pyvqnet.qnn.vqc.RX",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import RX,QMachine device = QMachine(4) layer = RX(has_params= True, trainable= True, wires=0) batchsize = 2 device.reset_states(batchsize) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
     "name": "pyvqnet.qnn.vqc.ry",
     "description": "",
     "inputSchema": {
@@ -2499,6 +3201,46 @@
     }
   },
   {
+    "name": "pyvqnet.qnn.vqc.RY",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import RY,QMachine device = QMachine(4) layer = RY(has_params= True, trainable= True, wires=0) batchsize = 2 device.reset_states(batchsize) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
     "name": "pyvqnet.qnn.vqc.rz",
     "description": "",
     "inputSchema": {
@@ -2527,6 +3269,46 @@
         "q_machine",
         "wires"
       ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.RZ",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import RZ,QMachine device = QMachine(4) layer = RZ(has_params= True, trainable= True, wires=0) batchsize = 2 device.reset_states(batchsize) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
     }
   },
   {
@@ -2650,6 +3432,27 @@
       "required": [
         "q_machine",
         "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.VQC_VarMeasure",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "从pyqpanda get_qstate()获取的量子态"
+        },
+        "obs": {
+          "type": "integer",
+          "description": "测量观测量,当前支持Hadamard,I,PauliX,PauliY,PauliZ 几种Observable. 测量结果一般为[b,1],其中b为 q_machine.reset_states(b)的批处理数量b。 Example:: from pyvqnet.tensor import QTensor from pyvqnet.qnn.vqc import VQC_VarMeasure, rx, cnot, hadamard, QMachine,PauliY x = QTensor([[0.5]], requires_grad=True) qm = QMachine(3) rx(q_machine=qm, wires=0, params=x) var_result = VQC_VarMeasure(q_machine= qm, obs=PauliY(wires=0)) var_result.backward() print(var_result) # [[0.7701511]]"
+        }
+      },
+      "required": [
+        "q_machine",
+        "obs"
       ]
     }
   },
@@ -2820,6 +3623,32 @@
         "input_feat",
         "wires",
         "q_machine"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.VQC_RotCircuit",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wire": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "integer",
+          "description": "表示参数  :math:`[\\phi, \\theta, \\omega]`。 Example:: from pyvqnet.qnn.vqc import VQC_RotCircuit, QMachine from pyvqnet.tensor import QTensor qm  = QMachine(3) VQC_RotCircuit(q_machine=qm, wire=[1],params=QTensor([2.0,1.5,2.1])) print(qm.states) # [[[[-0.3373617-0.6492732j  0.       +0.j       ] #    [ 0.6807868-0.0340677j  0.       +0.j       ]] # #   [[ 0.       +0.j         0.       +0.j       ] #    [ 0.       +0.j         0.       +0.j       ]]]]"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wire",
+        "params"
       ]
     }
   },

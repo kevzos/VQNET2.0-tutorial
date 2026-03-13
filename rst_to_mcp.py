@@ -484,21 +484,53 @@ def main():
         # vqc.rst
         "QMachine",
         "reset_states",
+        # 基础量子门 - 函数式接口
         "hadamard",
+        "t",
+        "s",
+        "paulix",
+        "pauliy",
+        "pauliz",
+        "x1",
+        # 基础量子门 - 类接口
+        "I",
+        "Hadamard",
+        "T",
+        "S",
+        "PauliX",
+        "PauliY",
+        "PauliZ",
+        "X1",
+        # 测量操作
         "Measure",
         "Probability",
         "Samples",
         "HermitianExpval",
         "MeasureAll",
+        # 双量子比特门
         "cnot",
         "swap",
         "toffoli",
         "cz",
+        # 单量子比特参数门
         "rx",
         "ry",
         "rz",
+        "RX",
+        "RY",
+        "RZ",
+        # VQC模板
         "VQC_HardwareEfficientAnsatz",
         "VQC_AngleEmbedding",
+        "VQC_RotCircuit",
+        "VQC_VarMeasure",
+        # qnn_pq3.rst - 扩展
+        "BasicEmbeddingCircuit",
+        "IQPEmbeddingCircuits",
+        "RotCircuit",
+        "CRotCircuit",
+        "expval",
+        "QuantumMeasure",
         # nn.rst - 神经网络层
         "Linear",
         "Conv1d",
