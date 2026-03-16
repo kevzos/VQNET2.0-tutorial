@@ -3665,7 +3665,7 @@ class SimpleMCPServer:
                 "parameters": arguments,
                 "note": "这是基于pyVQNet PauliY API生成的真实代码。"
             }
-        elif "pyvqnet.qnn.vqc.I" in tool_name or "identity" in tool_name or "i" in tool_name:
+        elif "pyvqnet.qnn.vqc.I" in tool_name or "identity" in tool_name or (tool_name == "i"):
             # Identity 门生成
             wires = arguments.get('wires', 0)
             trainable = arguments.get('trainable', False)
@@ -3688,7 +3688,7 @@ class SimpleMCPServer:
                 "parameters": arguments,
                 "note": "这是基于pyVQNet Identity API生成的真实代码，不对量子态做任何改变，常用于占位或噪声模拟。"
             }
-        elif "pyvqnet.qnn.vqc.T" in tool_name or "t_gate" in tool_name or "t" in tool_name:
+        elif "pyvqnet.qnn.vqc.T" in tool_name or "t_gate" in tool_name or (tool_name == "t"):
             # T 门生成（π/4相位门）
             wires = arguments.get('wires', 0)
             trainable = arguments.get('trainable', False)
@@ -3713,7 +3713,7 @@ class SimpleMCPServer:
                 "parameters": arguments,
                 "note": "这是基于pyVQNet T API生成的真实代码。T门对量子态施加π/4的Z轴相位旋转，use_dagger=True时使用共轭版本（-π/4相位）。"
             }
-        elif "pyvqnet.qnn.vqc.S" in tool_name or "s_gate" in tool_name or "s" in tool_name:
+        elif "pyvqnet.qnn.vqc.S" in tool_name or "s_gate" in tool_name or (tool_name == "s"):
             # S 门生成（π/2相位门）
             wires = arguments.get('wires', 0)
             trainable = arguments.get('trainable', False)
@@ -3762,7 +3762,7 @@ class SimpleMCPServer:
                 "note": "这是基于pyVQNet PauliZ API生成的真实代码，用于翻转量子态相位。"
             }
         # ==================== 新增: nn模块 神经网络层 ====================
-        elif "pyvqnet.nn.Linear" in tool_name or "Linear" in tool_name:
+        elif "pyvqnet.nn.Linear" in tool_name or (tool_name == "Linear"):
             # Linear 全连接层生成
             input_channels = arguments.get('input_channels')
             output_channels = arguments.get('output_channels')
@@ -4032,7 +4032,7 @@ class SimpleMCPServer:
                 "note": "这是基于pyVQNet MaxPool2D API生成的真实代码，对二维输入进行最大池化操作。"
             }
         # ==================== 新增: nn模块 激活函数 ====================
-        elif "pyvqnet.nn.ReLu" in tool_name or "ReLu" in tool_name:
+        elif "pyvqnet.nn.ReLu" in tool_name or (tool_name == "ReLu"):
             # ReLu 激活函数生成
             name = arguments.get('name', "")
 
@@ -4092,7 +4092,7 @@ class SimpleMCPServer:
                 "parameters": arguments,
                 "note": "这是基于pyVQNet Gelu API生成的真实代码，实现高斯误差线性单元激活函数。"
             }
-        elif "pyvqnet.nn.Sigmoid" in tool_name or "Sigmoid" in tool_name:
+        elif "pyvqnet.nn.Sigmoid" in tool_name or (tool_name == "Sigmoid"):
             # Sigmoid 激活函数生成
             name = arguments.get('name', "")
 
@@ -4122,7 +4122,7 @@ class SimpleMCPServer:
                 "note": "这是基于pyVQNet Sigmoid API生成的真实代码，实现1/(1+exp(-x))的S型激活函数。"
             }
         # ==================== 新增: nn模块 损失函数 ====================
-        elif "pyvqnet.nn.CrossEntropyLoss" in tool_name or "CrossEntropyLoss" in tool_name:
+        elif "pyvqnet.nn.CrossEntropyLoss" in tool_name or (tool_name == "CrossEntropyLoss"):
             # CrossEntropyLoss 交叉熵损失函数生成
             name = arguments.get('name', "")
 
@@ -6931,6 +6931,576 @@ class SimpleMCPServer:
                 "generated_code": generated_code,
                 "parameters": arguments,
                 "note": "这是基于pyVQNet zeros_like API生成的真实代码，生成与输入同形状的全0张量。"
+            }
+        # Torch API 处理逻辑
+        if "pyvqnet.backends.set_backend" in tool_name:
+            backend_name = arguments.get('backend_name', 'pyvqnet')
+            generated_code = f"""
+            import pyvqnet
+
+            # 设置计算后端
+            pyvqnet.backends.set_backend("{backend_name}")
+            print("后端已设置为: {backend_name}")
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成set_backend代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "set_backend用于切换计算后端，支持'pyvqnet'、'pyvqnet-ad'、'torch'、'torch-native'。"
+            }
+        elif "pyvqnet.backends.get_backend" in tool_name:
+            generated_code = """
+            import pyvqnet
+
+            # 获取当前计算后端
+            backend = pyvqnet.backends.get_backend()
+            print("当前后端:", backend)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成get_backend代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "get_backend用于获取当前计算后端。"
+            }
+        elif "pyvqnet.nn.torch.TorchModule" in tool_name:
+            generated_code = """
+            from pyvqnet.nn.torch import TorchModule
+            import pyvqnet
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 定义自定义模块
+            class MyModule(TorchModule):
+                def __init__(self):
+                    super(MyModule, self).__init__()
+                    # 在这里初始化你的层
+
+                def forward(self, x):
+                    # 在这里实现前向传播
+                    return x
+
+            # 创建模块实例
+            model = MyModule()
+            print("TorchModule子类已创建")
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成TorchModule代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "TorchModule是使用torch后端时所有模块的基类。"
+            }
+        elif "pyvqnet.nn.torch.Linear" in tool_name:
+            input_channels = arguments.get('input_channels', 784)
+            output_channels = arguments.get('output_channels', 10)
+            use_bias = arguments.get('use_bias', True)
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.tensor import QTensor
+            import pyvqnet
+            from pyvqnet.nn.torch import Linear
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建线性层
+            linear = Linear({input_channels}, {output_channels}, use_bias={use_bias})
+
+            # 创建输入张量
+            x = QTensor(np.random.randn(2, {input_channels}), requires_grad=True)
+
+            # 前向传播
+            y = linear(x)
+            print("输入形状:", x.shape)
+            print("输出形状:", y.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Linear层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "Linear层实现全连接变换: y = x @ A.T + b"
+            }
+        elif "pyvqnet.nn.torch.Conv2D" in tool_name:
+            input_channels = arguments.get('input_channels', 1)
+            output_channels = arguments.get('output_channels', 32)
+            kernel_size = arguments.get('kernel_size', [3, 3])
+            stride = arguments.get('stride', [1, 1])
+            padding = arguments.get('padding', 'valid')
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.tensor import QTensor
+            import pyvqnet
+            from pyvqnet.nn.torch import Conv2D
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建2D卷积层
+            conv = Conv2D({input_channels}, {output_channels}, kernel_size={kernel_size},
+                         stride={stride}, padding="{padding}")
+
+            # 创建输入张量 (batch_size, channels, height, width)
+            x = QTensor(np.random.randn(2, {input_channels}, 28, 28), requires_grad=True)
+
+            # 前向传播
+            y = conv(x)
+            print("输入形状:", x.shape)
+            print("输出形状:", y.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Conv2D层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "Conv2D层实现2D卷积运算。"
+            }
+        elif "pyvqnet.nn.torch.Dropout" in tool_name:
+            dropout_rate = arguments.get('dropout_rate', 0.5)
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.tensor import QTensor
+            import pyvqnet
+            from pyvqnet.nn.torch import Dropout
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建Dropout层
+            dropout = Dropout({dropout_rate})
+
+            # 创建输入张量
+            x = QTensor(np.random.randn(2, 10), requires_grad=True)
+
+            # 前向传播
+            y = dropout(x)
+            print("输入形状:", x.shape)
+            print("输出形状:", y.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Dropout层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "Dropout层用于正则化，随机将输入元素置零。"
+            }
+        elif "pyvqnet.nn.torch.BatchNorm2d" in tool_name:
+            channel_num = arguments.get('channel_num', 64)
+            momentum = arguments.get('momentum', 0.1)
+            epsilon = arguments.get('epsilon', 1e-5)
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.tensor import QTensor
+            import pyvqnet
+            from pyvqnet.nn.torch import BatchNorm2d
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建2D批归一化层
+            bn = BatchNorm2d({channel_num}, momentum={momentum}, epsilon={epsilon})
+
+            # 创建输入张量 (batch_size, channels, height, width)
+            x = QTensor(np.random.randn(2, {channel_num}, 28, 28), requires_grad=True)
+
+            # 前向传播
+            y = bn(x)
+            print("输入形状:", x.shape)
+            print("输出形状:", y.shape)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成BatchNorm2d层代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "BatchNorm2d层实现2D批归一化。"
+            }
+        elif "pyvqnet.nn.torch.ReLu" in tool_name:
+            generated_code = """
+            import numpy as np
+            from pyvqnet.tensor import QTensor
+            import pyvqnet
+            from pyvqnet.nn.torch import ReLu
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建ReLU激活函数
+            relu = ReLu()
+
+            # 创建输入张量
+            x = QTensor(np.array([-2.0, -1.0, 0.0, 1.0, 2.0]), requires_grad=True)
+
+            # 前向传播
+            y = relu(x)
+            print("输入:", x)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成ReLu激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "ReLu激活函数: max(0, x)"
+            }
+        elif "pyvqnet.nn.torch.Sigmoid" in tool_name:
+            generated_code = """
+            import numpy as np
+            from pyvqnet.tensor import QTensor
+            import pyvqnet
+            from pyvqnet.nn.torch import Sigmoid
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建Sigmoid激活函数
+            sigmoid = Sigmoid()
+
+            # 创建输入张量
+            x = QTensor(np.array([-2.0, -1.0, 0.0, 1.0, 2.0]), requires_grad=True)
+
+            # 前向传播
+            y = sigmoid(x)
+            print("输入:", x)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Sigmoid激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "Sigmoid激活函数: 1 / (1 + exp(-x))"
+            }
+        elif "pyvqnet.nn.torch.Softmax" in tool_name:
+            axis = arguments.get('axis', -1)
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.tensor import QTensor
+            import pyvqnet
+            from pyvqnet.nn.torch import Softmax
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建Softmax激活函数
+            softmax = Softmax(axis={axis})
+
+            # 创建输入张量
+            x = QTensor(np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]), requires_grad=True)
+
+            # 前向传播
+            y = softmax(x)
+            print("输入:", x)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Softmax激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "Softmax激活函数在指定轴上计算概率分布。"
+            }
+        elif "pyvqnet.nn.torch.Tanh" in tool_name:
+            generated_code = """
+            import numpy as np
+            from pyvqnet.tensor import QTensor
+            import pyvqnet
+            from pyvqnet.nn.torch import Tanh
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建Tanh激活函数
+            tanh = Tanh()
+
+            # 创建输入张量
+            x = QTensor(np.array([-2.0, -1.0, 0.0, 1.0, 2.0]), requires_grad=True)
+
+            # 前向传播
+            y = tanh(x)
+            print("输入:", x)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Tanh激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "Tanh激活函数: tanh(x)"
+            }
+        elif "pyvqnet.nn.torch.Gelu" in tool_name:
+            approximate = arguments.get('approximate', 'tanh')
+
+            generated_code = f"""
+            import numpy as np
+            from pyvqnet.tensor import QTensor
+            import pyvqnet
+            from pyvqnet.nn.torch import Gelu
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建GELU激活函数
+            gelu = Gelu(approximate="{approximate}")
+
+            # 创建输入张量
+            x = QTensor(np.array([-2.0, -1.0, 0.0, 1.0, 2.0]), requires_grad=True)
+
+            # 前向传播
+            y = gelu(x)
+            print("输入:", x)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Gelu激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "GELU激活函数。"
+            }
+        elif "pyvqnet.nn.torch.Softplus" in tool_name:
+            generated_code = """
+            import numpy as np
+            from pyvqnet.tensor import QTensor
+            import pyvqnet
+            from pyvqnet.nn.torch import Softplus
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建Softplus激活函数
+            softplus = Softplus()
+
+            # 创建输入张量
+            x = QTensor(np.array([-2.0, -1.0, 0.0, 1.0, 2.0]), requires_grad=True)
+
+            # 前向传播
+            y = softplus(x)
+            print("输入:", x)
+            print("输出:", y)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Softplus激活函数代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "Softplus激活函数: log(1 + exp(x))"
+            }
+        elif "pyvqnet.nn.torch.CrossEntropyLoss" in tool_name:
+            generated_code = """
+            import numpy as np
+            from pyvqnet.tensor import QTensor
+            import pyvqnet
+            from pyvqnet.nn.torch import CrossEntropyLoss
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建交叉熵损失函数
+            criterion = CrossEntropyLoss()
+
+            # 创建预测和标签
+            predictions = QTensor(np.array([[0.7, 0.2, 0.1], [0.1, 0.8, 0.1]]), requires_grad=True)
+            labels = QTensor(np.array([0, 1]))
+
+            # 计算损失
+            loss = criterion(predictions, labels)
+            print("预测:", predictions)
+            print("标签:", labels)
+            print("损失:", loss)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成CrossEntropyLoss代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "CrossEntropyLoss用于分类任务的交叉熵损失。"
+            }
+        elif "pyvqnet.nn.torch.MeanSquaredError" in tool_name:
+            generated_code = """
+            import numpy as np
+            from pyvqnet.tensor import QTensor
+            import pyvqnet
+            from pyvqnet.nn.torch import MeanSquaredError
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建均方误差损失函数
+            criterion = MeanSquaredError()
+
+            # 创建预测和目标
+            predictions = QTensor(np.array([1.0, 2.0, 3.0]), requires_grad=True)
+            targets = QTensor(np.array([1.5, 2.5, 3.5]))
+
+            # 计算损失
+            loss = criterion(predictions, targets)
+            print("预测:", predictions)
+            print("目标:", targets)
+            print("损失:", loss)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成MeanSquaredError代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "MeanSquaredError用于回归任务的均方误差损失。"
+            }
+        elif "pyvqnet.qnn.vqc.torch.QMachine" in tool_name:
+            qubit_num = arguments.get('qubit_num', 4)
+
+            generated_code = f"""
+            import pyvqnet
+            from pyvqnet.qnn.vqc.torch import QMachine
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建量子虚拟机
+            qm = QMachine({qubit_num})
+            print("量子虚拟机已创建，量子比特数:", {qubit_num})
+            print("量子态:", qm.states)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成QMachine代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "QMachine是量子虚拟机，用于量子电路模拟。"
+            }
+        elif "pyvqnet.qnn.vqc.torch.vqc_basis_embedding" in tool_name:
+            basis_state = arguments.get('basis_state', [1, 0, 1, 1])
+
+            generated_code = f"""
+            import pyvqnet
+            from pyvqnet.qnn.vqc.torch import vqc_basis_embedding, QMachine
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建量子虚拟机
+            qm = QMachine({len(basis_state)})
+
+            # 应用基态编码
+            vqc_basis_embedding(basis_state={basis_state}, q_machine=qm)
+            print("基态编码已应用")
+            print("量子态:", qm.states)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成vqc_basis_embedding代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "vqc_basis_embedding将二进制特征编码到量子比特的基态。"
+            }
+        elif "pyvqnet.qnn.vqc.torch.vqc_angle_embedding" in tool_name:
+            input_feat = arguments.get('input_feat', [2.2, 1.0])
+            wires = arguments.get('wires', [0, 1])
+            rotation = arguments.get('rotation', 'X')
+
+            generated_code = f"""
+            import pyvqnet
+            from pyvqnet.qnn.vqc.torch import vqc_angle_embedding, QMachine
+            from pyvqnet.tensor import QTensor
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建量子虚拟机
+            qm = QMachine({len(wires)})
+
+            # 应用角度编码
+            vqc_angle_embedding(QTensor({input_feat}), {wires}, q_machine=qm, rotation="{rotation}")
+            print("角度编码已应用")
+            print("量子态:", qm.states)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成vqc_angle_embedding代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "vqc_angle_embedding将特征编码为量子比特的旋转角度。"
+            }
+        elif "pyvqnet.qnn.vqc.torch.RX" in tool_name:
+            wire = arguments.get('wire', 0)
+            theta = arguments.get('theta', 1.57)
+
+            generated_code = f"""
+            import pyvqnet
+            from pyvqnet.qnn.vqc.torch import RX, QMachine
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建量子虚拟机
+            qm = QMachine(1)
+
+            # 应用RX门
+            rx_gate = RX(wires={wire}, params={theta})
+            rx_gate(qm)
+            print("RX门已应用，角度:", {theta})
+            print("量子态:", qm.states)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成RX门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "RX门绕X轴旋转指定角度。"
+            }
+        elif "pyvqnet.qnn.vqc.torch.Hadamard" in tool_name:
+            wire = arguments.get('wire', 0)
+
+            generated_code = f"""
+            import pyvqnet
+            from pyvqnet.qnn.vqc.torch import Hadamard, QMachine
+
+            # 设置torch后端
+            pyvqnet.backends.set_backend("torch")
+
+            # 创建量子虚拟机
+            qm = QMachine(1)
+
+            # 应用Hadamard门
+            h_gate = Hadamard(wires={wire})
+            h_gate(qm)
+            print("Hadamard门已应用")
+            print("量子态:", qm.states)
+            """
+
+            return {
+                "status": "success",
+                "message": f"已生成Hadamard门代码",
+                "generated_code": generated_code,
+                "parameters": arguments,
+                "note": "Hadamard门创建叠加态。"
             }
         else:
             return {
