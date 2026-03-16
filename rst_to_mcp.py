@@ -139,8 +139,12 @@ class RSTParser:
                 # 检查是否是新节标题
                 if self.current_line + 1 < len(self.lines):
                     next_line = self.lines[self.current_line + 1].rstrip()
-                    if re.match(r'^[=*-]{3,}$', next_line):
+                    # 简单的节标题检测：如果下一行是等号、星号或减号组成的行
+                    if next_line and all(c in '=-*' for c in next_line.strip()) and len(next_line.strip()) >= 3:
                         break
+                # 如果是新的定义行，直接停止
+                if line.strip().startswith('.. py:class::') or line.strip().startswith('.. py:function::') or line.strip().startswith('.. py:method::'):
+                    break
 
             # 处理参数文档
             if ':param ' in line:
@@ -370,7 +374,8 @@ def main():
         "source/rst/QTensor.rst",
         "source/rst/qnn_pq3.rst",
         "source/rst/vqc.rst",
-        "source/rst/nn.rst"
+        "source/rst/nn.rst",
+        "source/rst/torch_api.rst"
     ]
 
     # 要提取的目标API列表
@@ -605,7 +610,33 @@ def main():
         "Adagrad",
         "RMSProp",
         "SGD",
-        "Rotosolve"
+        "Rotosolve",
+        # torch_api.rst - 后端配置
+        "set_backend",
+        "get_backend",
+        # torch_api.rst - 基类
+        "TorchModule",
+        # torch_api.rst - 神经网络层
+        "Linear",
+        "Conv2D",
+        # torch_api.rst - 激活函数
+        "ReLu",
+        "Sigmoid",
+        "Softmax",
+        "Tanh",
+        "Gelu",
+        "Softplus",
+        # torch_api.rst - 损失函数
+        "CrossEntropyLoss",
+        "MeanSquaredError",
+        # torch_api.rst - 其他层
+        "Dropout",
+        "BatchNorm2d",
+        # torch_api.rst - VQC
+        "QMachine",
+        "vqc_basis_embedding",
+        "vqc_angle_embedding",
+        "vqc_controlled_hadamard"
     ]
 
     all_tools = []
