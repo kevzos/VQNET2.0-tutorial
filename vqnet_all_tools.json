@@ -3906,6 +3906,219 @@
     }
   },
   {
+    "name": "pyvqnet.qnn.vqc.crx",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import QMachine import pyvqnet.qnn.vqc as vqc from pyvqnet.tensor import QTensor qm = QMachine(4) vqc.crx(q_machine=qm,wires=[0,2], params=QTensor([0.5]),) print(qm.states) # [[[[[1.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]] # # #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.CRX",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import CRX,QMachine device = QMachine(4) layer = CRX(has_params= True, trainable= True, wires=[0,2]) batchsize = 2 device.reset_states(batchsize) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.cry",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import QMachine import pyvqnet.qnn.vqc as vqc from pyvqnet.tensor import QTensor qm = QMachine(4) vqc.cry(q_machine=qm,wires=[0,2], params=QTensor([0.5])) print(qm.states) # [[[[[1.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]] # # #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.CRY",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import CRY,QMachine device = QMachine(4) layer = CRY(has_params= True, trainable= True, wires=[0,2]) batchsize = 2 device.reset_states(batchsize) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.crz",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机设备。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "量子比特索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "参数矩阵,默认为None,对于含p个参数的逻辑门操作函数,入参的维度需要为[1,p],或[p]。",
+          "default": null
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否共轭转置,默认为False。 Example:: from pyvqnet.qnn.vqc import QMachine import pyvqnet.qnn.vqc as vqc from pyvqnet.tensor import QTensor qm = QMachine(4) vqc.crz(q_machine=qm,wires=[0,2], params=QTensor([0.5])) print(qm.states) # [[[[[1.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]] # # #   [[[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]] # #    [[0.+0.j 0.+0.j] #     [0.+0.j 0.+0.j]]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.CRZ",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None,如果为p个参数的含参逻辑门,入参的数据维度需要为[1,p]或者[p]。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc import CRZ,QMachine device = QMachine(4) layer = CRZ(has_params= True, trainable= True, wires=[0,2]) batchsize = 2 device.reset_states(batchsize) layer(q_machine = device) print(device.states)",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
     "name": "pyvqnet.qnn.vqc.cnot",
     "description": "",
     "inputSchema": {
@@ -4247,6 +4460,369 @@
     }
   },
   {
+    "name": "pyvqnet.qnn.vqc.VQC_AllSinglesDoubles",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "weights": {
+          "type": "string",
+          "description": "大小为 ``(len(singles) + len(doubles),)`` 的QTensor,包含按顺序进入 vqc.qCircuit.single_excitation 和 vqc.qCircuit.double_excitation 操作的角度"
+        },
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机。"
+        },
+        "hf_state": {
+          "type": "string",
+          "description": "代表 Hartree-Fock 状态的长度 ``len(wires)`` 占用数向量, ``hf_state`` 用于初始化线路。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "作用的量子位。"
+        },
+        "singles": {
+          "type": "array",
+          "description": "具有single_exitation操作所作用的两个量子位索引的列表序列。",
+          "default": null
+        },
+        "doubles": {
+          "type": "integer",
+          "description": "具有double_exitation操作所作用的两个量子位索引的列表序列。 例如,两个电子和六个量子位情况下的量子电路如下图所示: .. image:: ./images/all_singles_doubles.png :width: 600 px :align: center | Example:: from pyvqnet.qnn.vqc import VQC_AllSinglesDoubles, QMachine from pyvqnet.tensor import QTensor qubits = 4 qm = QMachine(qubits) VQC_AllSinglesDoubles(q_machine=qm, weights=QTensor([0.55, 0.11, 0.53]), hf_state = QTensor([1,1,0,0]), singles=[[0, 2], [1, 3]], doubles=[[0, 1, 2, 3]], wires=[0,1,2,3]) print(qm.states) # [ 0.        +0.j  0.        +0.j  0.        +0.j -0.23728043+0.j #   0.        +0.j  0.        +0.j -0.27552837+0.j  0.        +0.j #   0.        +0.j -0.12207296+0.j  0.        +0.j  0.        +0.j #   0.9235152 +0.j  0.        +0.j  0.        +0.j  0.        +0.j]",
+          "default": null
+        }
+      },
+      "required": [
+        "weights",
+        "q_machine",
+        "hf_state",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.VQC_BasisRotation",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "量子虚拟机。"
+        },
+        "wires": {
+          "type": "string",
+          "description": "作用的量子位。"
+        },
+        "unitary_matrix": {
+          "type": "string",
+          "description": "指定基础变换的矩阵。"
+        },
+        "check": {
+          "type": "integer",
+          "description": "检测 `unitary_matrix` 是否为酉矩阵。 Example:: from pyvqnet.qnn.vqc import VQC_BasisRotation, QMachine, hadamard, isingzz from pyvqnet.tensor import QTensor import numpy as np V = np.array([[0.73678+0.27511j, -0.5095 +0.10704j, -0.06847+0.32515j], [0.73678+0.27511j, -0.5095 +0.10704j, -0.06847+0.32515j], [-0.21271+0.34938j, -0.38853+0.36497j,  0.61467-0.41317j]]) eigen_vals, eigen_vecs = np.linalg.eigh(V) umat = eigen_vecs.T wires = range(len(umat)) qm = QMachine(len(umat)) for i in range(len(umat)): hadamard(q_machine=qm, wires=i) isingzz(q_machine=qm, params=QTensor([0.55]), wires=[0,2]) VQC_BasisRotation(q_machine=qm, wires=wires,unitary_matrix=QTensor(umat,dtype=qm.state.dtype)) print(qm.states) # [[[[ 0.3402686-0.0960063j  0.4140436-0.3069579j] #    [ 0.1206574+0.1982292j  0.5662895-0.0949503j]] # #   [[-0.1715559-0.1614315j  0.1624039-0.0598041j] #    [ 0.0608986-0.1078906j -0.305845 +0.1773662j]]]]",
+          "default": "False"
+        }
+      },
+      "required": [
+        "q_machine",
+        "wires",
+        "unitary_matrix"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.VQC_QuantumPoolingCircuit",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "ignored_wires": {
+          "type": "string",
+          "description": ""
+        },
+        "sinks_wires": {
+          "type": "string",
+          "description": "将保留的目标量子位索引。"
+        },
+        "params": {
+          "type": "string",
+          "description": "输入参数,形状应该为[ len(ignored_wires) + len(sinks_wires) // 2 * 3]。"
+        },
+        "q_machine": {
+          "type": "integer",
+          "description": "量子虚拟机设备。 Examples:: from pyvqnet.qnn.vqc import VQC_QuantumPoolingCircuit, QMachine, MeasureAll from pyvqnet import tensor p = tensor.full([6], 0.35) qm = QMachine(4) VQC_QuantumPoolingCircuit(q_machine=qm, ignored_wires=[0, 1], sinks_wires=[2, 3], params=p) m = MeasureAll(obs={\"Z1\": 1}) exp = m(q_machine=qm) print(exp)"
+        }
+      },
+      "required": [
+        "ignored_wires",
+        "sinks_wires",
+        "params",
+        "q_machine"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.vqc_qft_add_to_register",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q_machine": {
+          "type": "string",
+          "description": "用于模拟的量子机。"
+        },
+        "m": {
+          "type": "integer",
+          "description": "嵌入寄存器的经典整数。"
+        },
+        "k": {
+          "type": "integer",
+          "description": "添加到寄存器的经典整数。 :retrun: 返回目标和的二进制表示。 请注意 ``q_machine`` 使用的比特数量需要足够使用X基态编码结果和的二进制值。 Example:: import numpy as np from pyvqnet.qnn.vqc import QMachine,Samples, vqc_qft_add_to_register dev = QMachine(4) vqc_qft_add_to_register(dev,3, 7) ma = Samples() y = ma(q_machine=dev) print(y) #[[1,0,1,0]]"
+        }
+      },
+      "required": [
+        "q_machine",
+        "m",
+        "k"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.VQC_FABLE",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "wires": {
+          "type": "number",
+          "description": "运算符作用的 qlist 索引。 Examples:: from pyvqnet.qnn.vqc import VQC_FABLE from pyvqnet.qnn.vqc import QMachine from pyvqnet.dtype import float_dtype_to_complex_dtype import numpy as np from pyvqnet import QTensor A = QTensor(np.array([[0.1, 0.2 ], [0.3, 0.4 ]]) ) qf = VQC_FABLE(list(range(3))) qm = QMachine(3,dtype=float_dtype_to_complex_dtype(A.dtype)) qm.reset_states(1) z1 = qf(qm,A,0.001) \"\"\" [[[[0.05     +0.j,0.15     +0.j], [0.05     +0.j,0.15     +0.j]], [[0.4974937+0.j,0.4769696+0.j], [0.4974937+0.j,0.4769696+0.j]]]] \"\"\""
+        }
+      },
+      "required": [
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.VQC_LCU",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "wires": {
+          "type": "array",
+          "description": "运算符作用的 qlist 索引,可能需要辅助量子位。"
+        }
+      },
+      "required": [
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.VQC_QSVT",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "A": {
+          "type": "string",
+          "description": "要编码的一般 :math:`(n \\times m)` 矩阵。"
+        },
+        "angles": {
+          "type": "string",
+          "description": "构建QSVT多项式的偏移系数。"
+        },
+        "wires": {
+          "type": "integer",
+          "description": "A 作用于的量子比特索引。 Example:: from pyvqnet import DEV_GPU from pyvqnet.qnn.vqc import QMachine,VQC_QSVT from pyvqnet.dtype import float_dtype_to_complex_dtype,kfloat64 import numpy as np from pyvqnet import QTensor A = QTensor([[0.1, 0.2], [0.3, 0.4]]) angles = QTensor([0.1, 0.2, 0.3]) qm = QMachine(4,dtype=float_dtype_to_complex_dtype(A.dtype)) qm.reset_states(1) qf = VQC_QSVT(A,angles,wires=[2,1,3]) z1 = qf(qm) print(z1) \"\"\" [[[[[ 0.9645935+0.2352667j,-0.0216623+0.0512362j], [-0.0062613+0.0308878j,-0.0199871+0.0985996j]], [[ 0.       +0.j       , 0.       +0.j       ], [ 0.       +0.j       , 0.       +0.j       ]]], [[[ 0.       +0.j       , 0.       +0.j       ], [ 0.       +0.j       , 0.       +0.j       ]], [[ 0.       +0.j       , 0.       +0.j       ], [ 0.       +0.j       , 0.       +0.j       ]]]]] \"\"\""
+        }
+      },
+      "required": [
+        "A",
+        "angles",
+        "wires"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.qcnn.Quanvolution",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "params_shape": {
+          "type": "string",
+          "description": "参数的形状，应为二维。"
+        },
+        "strides": {
+          "type": "string",
+          "description": "切片窗口的步长，默认为 (1,1)。",
+          "default": "(1, 1)"
+        },
+        "kernel_initializer": {
+          "type": "string",
+          "description": "参数的卷积核初始化器。",
+          "default": "quantum_uniform"
+        },
+        "machine_type_or_cloud_token": {
+          "type": "integer",
+          "description": "机器类型字符串或 Qcloud 令牌，默认为“cpu”。 Examples:: from pyvqnet.qnn.qcnn import Quanvolution import pyvqnet.tensor as tensor qlayer = Quanvolution([4,2],(3,3)) x = tensor.arange(1,25*25*3+1).reshape([3,1,25,25]) y = qlayer(x) print(y.shape) y.backward() print(qlayer.m_para) print(qlayer.m_para.grad) #[3, 4, 8, 8] #[4.0270405,4.3587413,2.4935627,2.8155506,0.3314773,0.8889271,3.7357519, 0.9196261] #<Parameter [8] DEV_CPU kfloat32> #[ -0.2364242, -0.6942478, -8.445061 , -0.0558891, -0.       ,-49.498577 ,40.339344 , 40.339344 ] #<QTensor [8] DEV_CPU kfloat32>",
+          "default": "cpu"
+        }
+      },
+      "required": [
+        "params_shape"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.qdrl_vqc.QDRL",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "nq": {
+          "type": "integer",
+          "description": "量子电路中所使用的量子比特（qubits的数量）。这决定了模型将要处理的量子系统的规模。 Example:: import numpy as np from pyvqnet.dtype import kfloat32 from pyvqnet.qnn.qdrl_vqc import QDRL import pyvqnet.tensor as tensor # Set the number of quantum bits (qubits) nq = 1 # Initialize the model model = QDRL(nq) # Create an example input (assume the input is a (batch_size, 3) shaped data) # Suppose we have a batch_size of 4 and each input has 3 features x_input = tensor.QTensor(np.random.randn(4, 3), dtype=kfloat32) # Pass the input through the model output = model(x_input) output.backward() # Output the result print(\"Model output:\") print(output)"
+        }
+      },
+      "required": [
+        "nq"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.qgru.QGRU",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "para_num": {
+          "type": "integer",
+          "description": "量子电路中的参数数量。"
+        },
+        "num_of_qubits": {
+          "type": "string",
+          "description": "量子比特的数量。"
+        },
+        "input_size": {
+          "type": "string",
+          "description": "输入数据的特征维度。"
+        },
+        "hidden_size": {
+          "type": "string",
+          "description": "隐藏单元的维度。"
+        },
+        "batch_first": {
+          "type": "integer",
+          "description": "输入的第一维是否为批次数量。 Example:: import numpy as np from pyvqnet.tensor import tensor from pyvqnet.qnn.qgru import QGRU from pyvqnet.dtype import kfloat32 # Example usage # Set parameters para_num = 8 num_of_qubits = 8 input_size = 4 hidden_size = 4 batch_size = 1 seq_length = 1 # Create QGRU model qgru = QGRU(para_num, num_of_qubits, input_size, hidden_size, batch_first=True) # Create input data x = tensor.QTensor(np.random.randn(batch_size, seq_length, input_size), dtype=kfloat32) # Call the model output, h_t = qgru(x) output.backward() print(\"Output shape:\", output.shape)  # Output shape print(\"h_t shape:\", h_t.shape)  # Final hidden state shape",
+          "default": "True"
+        }
+      },
+      "required": [
+        "para_num",
+        "num_of_qubits",
+        "input_size",
+        "hidden_size"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.qlstm.QLSTM",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "para_num": {
+          "type": "integer",
+          "description": "量子电路中的参数数量。"
+        },
+        "num_of_qubits": {
+          "type": "string",
+          "description": "量子比特的数量。"
+        },
+        "input_size": {
+          "type": "string",
+          "description": "输入数据的特征维度。"
+        },
+        "hidden_size": {
+          "type": "string",
+          "description": "隐藏单元的维度。"
+        },
+        "batch_first": {
+          "type": "integer",
+          "description": "输入的第一维是否为批次数量。 Example:: import numpy as np from pyvqnet.tensor import tensor from pyvqnet.qnn.qlstm import QLSTM from pyvqnet.dtype import * para_num = 4 num_of_qubits = 4 input_size = 4 hidden_size = 20 batch_size = 3 seq_length = 5 qlstm = QLSTM(para_num, num_of_qubits, input_size, hidden_size, batch_first=True) x = tensor.QTensor(np.random.randn(batch_size, seq_length, input_size), dtype=kfloat32) output, (h_t, c_t) = qlstm(x) print(\"Output shape:\", output.shape) print(\"h_t shape:\", h_t.shape) print(\"c_t shape:\", c_t.shape)",
+          "default": "True"
+        }
+      },
+      "required": [
+        "para_num",
+        "num_of_qubits",
+        "input_size",
+        "hidden_size"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.qrl.QRLModel",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "num_qubits": {
+          "type": "string",
+          "description": "量子电路中所使用的量子比特的数量。"
+        },
+        "n_layers": {
+          "type": "integer",
+          "description": "变分量子电路中的层数。 Example:: from pyvqnet.tensor import tensor, QTensor from pyvqnet.qnn.qrl import QRLModel num_qubits = 4 model = QRLModel(num_qubits=num_qubits, n_layers=2) batch_size = 3 x = QTensor([[1.1, 0.3, 1.2, 0.6], [0.2, 1.1, 0, 1.1], [1.3, 1.3, 0.3, 0.3]]) output = model(x) output.backward() print(\"Model output:\", output)"
+        }
+      },
+      "required": [
+        "num_qubits",
+        "n_layers"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.qrnn.QRNN",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "para_num": {
+          "type": "integer",
+          "description": "量子电路中的参数数量。"
+        },
+        "num_of_qubits": {
+          "type": "string",
+          "description": "量子比特的数量。",
+          "default": "4"
+        },
+        "input_size": {
+          "type": "string",
+          "description": "输入数据的特征维度。",
+          "default": "100"
+        },
+        "hidden_size": {
+          "type": "string",
+          "description": "隐藏单元的维度。",
+          "default": "100"
+        },
+        "batch_first": {
+          "type": "integer",
+          "description": "输入的第一维是否为批次数量,默认为True。 Example:: from pyvqnet.dtype import kfloat32 from pyvqnet.qnn.qrnn import QRNN from pyvqnet.tensor import tensor, QTensor import numpy as np para_num = 8 num_of_qubits = 8 input_size = 4 hidden_size = 4 batch_size = 1 seq_length = 1 qrnn = QRNN(para_num, num_of_qubits, input_size, hidden_size, batch_first=True) x = tensor.QTensor(np.random.randn(batch_size, seq_length, input_size), dtype=kfloat32) output, h_t = qrnn(x) print(\"Output shape:\", output.shape) print(\"h_t shape:\", h_t.shape)",
+          "default": "True"
+        }
+      },
+      "required": [
+        "para_num"
+      ]
+    }
+  },
+  {
     "name": "pyvqnet.qnn.vqc.QuantumLayerAdjoint",
     "description": "",
     "inputSchema": {
@@ -4269,6 +4845,22 @@
       },
       "required": [
         "general_module"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.wrapper_single_qubit_op_fuse",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "f": {
+          "type": "string",
+          "description": ""
+        }
+      },
+      "required": [
+        "f"
       ]
     }
   },
@@ -6942,6 +7534,126 @@
     }
   },
   {
+    "name": "pyvqnet.qnn.vqc.torch.CRX",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc.torch import CRX,QMachine import pyvqnet pyvqnet.backends.set_backend(\"torch\") device = QMachine(4) layer = CRX(has_params= True, trainable= True, wires=[0,2]) batchsize = 2 device.reset_states(batchsize) layer(q_machine = device) print(device.states) CRY \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.torch.CRY",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc.torch import CRY,QMachine import pyvqnet pyvqnet.backends.set_backend(\"torch\") device = QMachine(4) layer = CRY(has_params= True, trainable= True, wires=[0,2]) batchsize = 2 device.reset_states(batchsize) layer(q_machine = device) print(device.states) CRZ \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.torch.CRZ",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc.torch import CRZ,QMachine import pyvqnet pyvqnet.backends.set_backend(\"torch\") device = QMachine(4) layer = CRZ(has_params= True, trainable= True, wires=[0,2]) batchsize = 2 device.reset_states(batchsize) layer(q_machine = device) print(device.states) U1 \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
     "name": "pyvqnet.qnn.vqc.torch.Probability",
     "description": "",
     "inputSchema": {
@@ -7610,6 +8322,126 @@
         "use_dagger": {
           "type": "integer",
           "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc.tn import RZ,TNQMachine,TNQModule,MeasureAll, rx import pyvqnet pyvqnet.backends.set_backend(\"torch\") class QModel(TNQModule): def __init__(self, num_wires, dtype,batch_size=2): super(QModel, self).__init__() self.device = TNQMachine(num_wires) self.layer = RZ(wires=0,has_params=True) self.batch_size = batch_size self.num_wires = num_wires def forward(self, x, *args, **kwargs): self.device.reset_states(batchsize=self.batch_size) for i in range(self.num_wires): rx(self.device, wires=i, params=x[i]) self.layer(q_machine = self.device) y = MeasureAll(obs={'Z0': 1})(self.device) return y x = pyvqnet.tensor.QTensor([[1,0,0,1],[1,1,0,1]],dtype=pyvqnet.kfloat32,requires_grad=True) model = QModel(4,pyvqnet.kcomplex64,2) y = model(x) print(y) CRX ^^^^^^^^^^^^^^^^^^^^^^^^",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.tn.CRX",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc.tn import CRX,TNQMachine,TNQModule,MeasureAll, rx import pyvqnet pyvqnet.backends.set_backend(\"torch\") class QModel(TNQModule): def __init__(self, num_wires, dtype,batch_size=2): super(QModel, self).__init__() self.device = TNQMachine(num_wires) self.layer = CRX(has_params= True, trainable= True, wires=[0,2]) self.batch_size = batch_size self.num_wires = num_wires def forward(self, x, *args, **kwargs): self.device.reset_states(batchsize=self.batch_size) for i in range(self.num_wires): rx(self.device, wires=i, params=x[i]) self.layer(q_machine = self.device) y = MeasureAll(obs={'Z0': 1})(self.device) return y x = pyvqnet.tensor.QTensor([[1,0,0,1],[1,1,0,1]],dtype=pyvqnet.kfloat32,requires_grad=True) model = QModel(4,pyvqnet.kcomplex64,2) y = model(x) print(y) CRY ^^^^^^^^^^^^^^^^^^^^^^^^",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.tn.CRY",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc.tn import CRY,TNQMachine,TNQModule,MeasureAll, rx import pyvqnet pyvqnet.backends.set_backend(\"torch\") class QModel(TNQModule): def __init__(self, num_wires, dtype,batch_size=2): super(QModel, self).__init__() self.device = TNQMachine(num_wires) self.layer = CRY(has_params= True, trainable= True, wires=[0,2]) self.batch_size = batch_size self.num_wires = num_wires def forward(self, x, *args, **kwargs): self.device.reset_states(batchsize=self.batch_size) for i in range(self.num_wires): rx(self.device, wires=i, params=x[i]) self.layer(q_machine = self.device) y = MeasureAll(obs={'Z0': 1})(self.device) return y x = pyvqnet.tensor.QTensor([[1,0,0,1],[1,1,0,1]],dtype=pyvqnet.kfloat32,requires_grad=True) model = QModel(4,pyvqnet.kcomplex64,2) y = model(x) print(y) CRZ ^^^^^^^^^^^^^^^^^^^^^^^^",
+          "default": "False"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.qnn.vqc.tn.CRZ",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "has_params": {
+          "type": "string",
+          "description": "是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。",
+          "default": "False"
+        },
+        "trainable": {
+          "type": "string",
+          "description": "是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。",
+          "default": "False"
+        },
+        "init_params": {
+          "type": "string",
+          "description": "初始化参数,用来编码经典数据QTensor,默认为None。",
+          "default": null
+        },
+        "wires": {
+          "type": "string",
+          "description": "线路作用的比特索引,默认为None。",
+          "default": null
+        },
+        "dtype": {
+          "type": "string",
+          "description": "逻辑门内部矩阵的数据精度,可以设置为pyvqnet.kcomplex64,或pyvqnet.kcomplex128,分别对应float输入或者double入参。",
+          "default": "pyvqnet.kcomplex64"
+        },
+        "use_dagger": {
+          "type": "integer",
+          "description": "是否使用该门的转置共轭版本,默认为False。 Example:: from pyvqnet.qnn.vqc.tn import CRZ,TNQMachine,TNQModule,MeasureAll, rx import pyvqnet pyvqnet.backends.set_backend(\"torch\") class QModel(TNQModule): def __init__(self, num_wires, dtype,batch_size=2): super(QModel, self).__init__() self.device = TNQMachine(num_wires) self.layer = CRZ(has_params= True, trainable= True, wires=[0,2]) self.batch_size = batch_size self.num_wires = num_wires def forward(self, x, *args, **kwargs): self.device.reset_states(batchsize=self.batch_size) for i in range(self.num_wires): rx(self.device, wires=i, params=x[i]) self.layer(q_machine = self.device) y = MeasureAll(obs={'Z0': 1})(self.device) return y x = pyvqnet.tensor.QTensor([[1,0,0,1],[1,1,0,1]],dtype=pyvqnet.kfloat32,requires_grad=True) model = QModel(4,pyvqnet.kcomplex64,2) y = model(x) print(y) U1 ^^^^^^^^^^^^^^^^^^^^^^^^",
           "default": "False"
         }
       },
