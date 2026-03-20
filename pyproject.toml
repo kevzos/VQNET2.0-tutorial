@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vqnet-mcp-server"
+version = "0.1.0"
+description = "VQNET Quantum ML MCP Server - Provides 359+ VQNET 2.0 API interfaces via Model Context Protocol"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [
+  {name = "VQNET Developers", email = "dev@vqnet.org"}
+]
+keywords = ["vqnet", "quantum", "machine-learning", "mcp", "model-context-protocol"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Quantum Computing",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    # VQNET 需要用户自行安装，这里不强制依赖
+]
+
+[project.scripts]
+vqnet-mcp = "vqnet_mcp_server.server:main"
+
+[tool.setuptools]
+packages = ["vqnet_mcp_server"]
+
+[tool.setuptools.package-data]
+"vqnet_mcp_server" = ["*.json"]
