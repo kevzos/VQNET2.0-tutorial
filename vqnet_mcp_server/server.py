@@ -7579,12 +7579,13 @@ class SimpleMCPServer:
 
 def main():
     """主函数"""
-    # 检查工具文件
+    # 从命令行获取工具文件路径（可选）
     tools_file = "vqnet_all_tools.json"
-    if not os.path.exists(tools_file):
-        print(f"错误: 工具文件 {tools_file} 不存在", file=sys.stderr)
-        print("请先运行: python rst_to_mcp.py", file=sys.stderr)
-        sys.exit(1)
+    if len(sys.argv) > 1:
+        tools_file = sys.argv[1]
+        if not os.path.exists(tools_file):
+            print(f"错误: 工具文件 {tools_file} 不存在", file=sys.stderr)
+            sys.exit(1)
 
     # 创建并运行服务器
     server = SimpleMCPServer(tools_file)
