@@ -1,0 +1,9 @@
+*.md
+build
+vqnet_mcp_server.egg-info/dependency_links.txt
+vqnet_mcp_server.egg-info/entry_points.txt
+vqnet_mcp_server.egg-info/PKG-INFO
+vqnet_mcp_server.egg-info/SOURCES.txt
+vqnet_mcp_server.egg-info/top_level.txt
+vqnet_mcp_server/__pycache__/__init__.cpython-313.pyc
+vqnet_mcp_server/__pycache__/server.cpython-313.pyc
