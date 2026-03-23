@@ -34,7 +34,13 @@ def test_tool_call(tool_name, arguments=None):
 
     # 导入服务器
     sys.path.insert(0, '.')
-    from simple_mcp_server import SimpleMCPServer
+    # Try to import from packaged version first, fallback to simple version
+    try:
+        from vqnet_mcp_server.server import SimpleMCPServer
+        print("Using packaged MCP server")
+    except ImportError:
+        from simple_mcp_server import SimpleMCPServer
+        print("Using simple MCP server (fallback)")
 
     server = SimpleMCPServer()
 

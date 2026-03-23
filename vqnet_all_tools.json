@@ -41,7 +41,7 @@
     }
   },
   {
-    "name": ".zero_grad",
+    "name": "pyvqnet.tensor.tensor.QTensor.zero_grad",
     "description": "",
     "inputSchema": {
       "type": "object",
@@ -50,7 +50,7 @@
     }
   },
   {
-    "name": ".backward",
+    "name": "pyvqnet.tensor.tensor.QTensor.backward",
     "description": "",
     "inputSchema": {
       "type": "object",
@@ -65,7 +65,7 @@
     }
   },
   {
-    "name": ".to_numpy",
+    "name": "pyvqnet.tensor.tensor.QTensor.to_numpy",
     "description": "",
     "inputSchema": {
       "type": "object",
@@ -74,7 +74,7 @@
     }
   },
   {
-    "name": ".item",
+    "name": "pyvqnet.tensor.tensor.QTensor.item",
     "description": "",
     "inputSchema": {
       "type": "object",
@@ -83,7 +83,152 @@
     }
   },
   {
-    "name": ".transpose",
+    "name": "pyvqnet.tensor.tensor.QTensor.contiguous",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.tensor.QTensor.argmax",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "*kargs": {
+          "type": "string",
+          "description": ""
+        }
+      },
+      "required": [
+        "*kargs"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.tensor.QTensor.argmin",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "*kargs": {
+          "type": "string",
+          "description": ""
+        }
+      },
+      "required": [
+        "*kargs"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.tensor.QTensor.fill_",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "type": "integer",
+          "description": "填充值。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor shape = [2, 3] value = 42 t = tensor.zeros(shape) t.fill_(value) print(t) # [ # [42., 42., 42.], # [42., 42., 42.] # ]"
+        }
+      },
+      "required": [
+        "v"
+      ]
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.tensor.QTensor.all",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.tensor.QTensor.any",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.tensor.QTensor.fill_rand_binary_",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "type": "integer",
+          "description": "二值化阈值, 默认0.5。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor import numpy as np a = np.arange(6).reshape(2, 3).astype(np.float32) t = QTensor(a) t.fill_rand_binary_(2) print(t) # [ # [1., 1., 1.], # [1., 1., 1.] # ]",
+          "default": "0.5"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.tensor.QTensor.fill_rand_signed_uniform_",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "type": "integer",
+          "description": "缩放因子, 默认1。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor import numpy as np a = np.arange(6).reshape(2, 3).astype(np.float32) t = QTensor(a) value = 42 t.fill_rand_signed_uniform_(value) print(t) # [ # [12.8852444, 4.4327269, 4.8489408], # [-24.3309803, 26.8036957, 39.4903450] # ]",
+          "default": 1
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.tensor.QTensor.fill_rand_uniform_",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "v": {
+          "type": "integer",
+          "description": "缩放因子, 默认1。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor import numpy as np a = np.arange(6).reshape(2, 3).astype(np.float32) t = QTensor(a) value = 42 t.fill_rand_uniform_(value) print(t) # [ # [20.0404720, 14.4064417, 40.2955666], # [5.5692234, 26.2520485, 35.3326073] # ]",
+          "default": 1
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.tensor.QTensor.fill_rand_normal_",
+    "description": "",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "m": {
+          "type": "string",
+          "description": "均值, 默认0。",
+          "default": "0"
+        },
+        "s": {
+          "type": "string",
+          "description": "方差, 默认1。",
+          "default": "1"
+        },
+        "fast_math": {
+          "type": "integer",
+          "description": "是否使用快速方法产生高斯分布, 默认True。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor import numpy as np a = np.arange(6).reshape(2, 3).astype(np.float32) t = QTensor(a) t.fill_rand_normal_(2, 10, True) print(t) # [ # [-10.4446531    4.9158096   2.9204607], # [ -7.2682705   8.1267328    6.2758742 ], # ]",
+          "default": "True"
+        }
+      },
+      "required": null
+    }
+  },
+  {
+    "name": "pyvqnet.tensor.tensor.QTensor.transpose",
     "description": "",
     "inputSchema": {
       "type": "object",
@@ -98,7 +243,7 @@
     }
   },
   {
-    "name": ".reshape",
+    "name": "pyvqnet.tensor.tensor.QTensor.reshape",
     "description": "",
     "inputSchema": {
       "type": "object",
@@ -3140,7 +3285,7 @@
     }
   },
   {
-    "name": ".reset_states",
+    "name": "pyvqnet.qnn.vqc.QMachine.reset_states",
     "description": "",
     "inputSchema": {
       "type": "object",
@@ -7078,7 +7223,7 @@
     }
   },
   {
-    "name": ".reset_states",
+    "name": "pyvqnet.qnn.vqc.torch.QMachine.reset_states",
     "description": "",
     "inputSchema": {
       "type": "object",
@@ -8679,7 +8824,7 @@
     }
   },
   {
-    "name": ".broadcast",
+    "name": "pyvqnet.distributed.ControlComm.CommController.broadcast",
     "description": "",
     "inputSchema": {
       "type": "object",

@@ -14,6 +14,7 @@ class RSTParser:
     def __init__(self):
         self.current_line = 0
         self.lines = []
+        self.current_class_full_name = None  # Track current class context for methods
 
     def parse_file(self, file_path: str) -> List[Dict[str, Any]]:
         """解析RST文件，提取所有类/函数定义"""
@@ -27,40 +28,49 @@ class RSTParser:
 
         while self.current_line < len(self.lines):
             line = self.lines[self.current_line]
+            stripped = line.strip()
 
             # 查找类定义
-            if line.strip().startswith('.. py:class::'):
+            if stripped.startswith('.. py:class::'):
                 class_def = self._parse_class_definition()
                 if class_def:
                     definitions.append(class_def)
 
             # 查找函数定义
-            elif line.strip().startswith('.. py:function::'):
+            elif stripped.startswith('.. py:function::'):
                 func_def = self._parse_function_definition()
                 if func_def:
                     definitions.append(func_def)
 
             # 查找方法定义
-            elif line.strip().startswith('.. py:method::'):
+            elif stripped.startswith('.. py:method::'):
                 method_def = self._parse_method_definition()
                 if method_def:
                     definitions.append(method_def)
+
+            # 查找属性定义
+            elif stripped.startswith('.. py:attribute::'):
+                # Treat attribute as a method with no parameters
+                attr_def = self._parse_class_definition(def_type='attribute')
+                if attr_def:
+                    definitions.append(attr_def)
 
             self.current_line += 1
 
         return definitions
 
-    def _parse_class_definition(self) -> Optional[Dict[str, Any]]:
+    def _parse_class_definition(self, def_type: str = "class") -> Optional[Dict[str, Any]]:
         """解析类定义"""
         start_line = self.current_line
         line = self.lines[self.current_line].rstrip()
 
-        # 提取类/函数/方法签名
+        # 提取类/函数/方法/属性签名
         # 格式: .. py:class:: module.path.ClassName(param1, param2=default, ...)
         # 格式: .. py:function:: module.path.func_name(param1, param2=default, ...)
         # 格式: .. py:method:: module.path.method_name(param1, param2=default, ...)
+        # 格式: .. py:attribute:: attribute_name
         # 可能有多行，先获取完整签名
-        signature = line.replace('.. py:class::', '', 1).replace('.. py:function::', '', 1).replace('.. py:method::', '', 1).strip()
+        signature = line.replace('.. py:class::', '', 1).replace('.. py:function::', '', 1).replace('.. py:method::', '', 1).replace('.. py:attribute::', '', 1).strip()
 
         # 如果签名不完整（没有括号），检查下一行
         if '(' not in signature and self.current_line + 1 < len(self.lines):
@@ -195,26 +205,41 @@ class RSTParser:
 
         description = ' '.join(description_lines)
 
-        return {
-            'type': 'class',
+        # If we're parsing a method and inside a class, prepend class full name
+        if def_type == 'method' and self.current_class_full_name and (not module_path or module_path == ""):
+            # Method inside an existing class - combine full names
+            full_name = f'{self.current_class_full_name}.{class_name}'
+        elif module_path:
+            full_name = f'{module_path}.{class_name}'
+        else:
+            full_name = class_name
+
+        result = {
+            'type': def_type,
             'module': module_path,
             'name': class_name,
-            'full_name': f'{module_path}.{class_name}',
+            'full_name': full_name,
             'params': params,
             'description': description.strip(),
             'param_docs': param_docs,
             'return_doc': return_doc.strip()
         }
 
+        # If this is a new class, update current_class_full_name
+        if def_type == 'class' and full_name:
+            self.current_class_full_name = full_name
+
+        return result
+
     def _parse_function_definition(self) -> Optional[Dict[str, Any]]:
         """解析函数定义"""
         # 函数定义与类定义类似，使用相同的解析逻辑
-        return self._parse_class_definition()
+        return self._parse_class_definition(def_type='function')
 
     def _parse_method_definition(self) -> Optional[Dict[str, Any]]:
         """解析方法定义"""
         # 方法定义与类定义类似，使用相同的解析逻辑
-        return self._parse_class_definition()
+        return self._parse_class_definition(def_type='method')
 
     def _parse_parameter_string(self, params_str: str) -> List[str]:
         """解析参数字符串，返回参数列表"""
@@ -382,10 +407,22 @@ def main():
     target_apis = [
         # QTensor.rst
         "QTensor",
+        "is_dense",
+        "is_contiguous",
         "zero_grad",
         "backward",
         "to_numpy",
         "item",
+        "contiguous",
+        "argmax",
+        "argmin",
+        "fill_",
+        "all",
+        "any",
+        "fill_rand_binary_",
+        "fill_rand_signed_uniform_",
+        "fill_rand_uniform_",
+        "fill_rand_normal_",
         "ones",
         "ones_like",
         "zeros",
