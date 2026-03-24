@@ -2521,7 +2521,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.quantumlayer.QpandaQProgVQCLayer",
-    "description": "",
+    "description": "生成QpandaQProgVQCLayer量子变分电路层的Python代码。别名QuantumLayerV3。\n\n用途：\n- 创建量子神经网络层\n- 生成参数化量子电路\n- 用于量子机器学习模型\n\n触发关键词：QpandaQProgVQCLayer, QuantumLayerV3, 量子层, 变分量子电路, VQC layer, pyqpanda3\n\n使用场景：\n- 用户请求生成量子层代码\n- 需要创建参数化量子电路\n- 构建量子神经网络\n\norigin_qprog_func 是用户使用 pyqpanda3 定义的量子电路函数，必须包含输入和参数两个参数作为函数入参，输出为pyqpanda3.core.QProg类型数据。",
     "inputSchema": {
       "type": "object",
       "properties": {
