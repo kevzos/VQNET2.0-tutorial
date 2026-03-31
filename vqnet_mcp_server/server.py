@@ -156,8 +156,30 @@ class SimpleMCPServer:
                 }
             }
 
-        # 模拟工具调用
-        result = self.simulate_tool_call(tool_name, arguments)
+        # 检查是否有 example_code，优先使用
+        example_code = tool_def.get("example_code", "")
+        if example_code and len(example_code) > 20:
+            # 直接返回 rst 文档中的示例代码
+            return {
+                "jsonrpc": "2.0",
+                "id": request_id,
+                "result": {
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": json.dumps({
+                                "status": "success",
+                                "message": f"示例代码: {tool_name}",
+                                "generated_code": example_code,
+                                "note": "这是来自VQNET官方文档的示例代码，可直接运行。"
+                            }, indent=2, ensure_ascii=False)
+                        }
+                    ]
+                }
+            }
+
+        # 如果没有 example_code，使用现有的 simulate_tool_call
+        result = self.simulate_tool_call(tool_name, arguments, tool_def)
 
         return {
             "jsonrpc": "2.0",
@@ -172,7 +194,7 @@ class SimpleMCPServer:
             }
         }
 
-    def simulate_tool_call(self, tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    def simulate_tool_call(self, tool_name: str, arguments: Dict[str, Any], tool_def: Dict[str, Any] = None) -> Dict[str, Any]:
         """模拟工具调用"""
         if "QpandaQProgVQCLayer" in tool_name:
             # 生成 Python 代碼片段

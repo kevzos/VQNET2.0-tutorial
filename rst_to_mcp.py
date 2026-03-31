@@ -11,6 +11,83 @@ from typing import Dict, List, Optional, Any
 class RSTParser:
     """RST文档解析器"""
 
+    # 工具关键词增强映射 - 提高Claude发现工具的能力
+    TOOL_KEYWORD_ENHANCEMENTS = {
+        # VQC 量子电路相关
+        "QMachine": "pyvqnet.qnn.vqc.QMachine, quantum circuit simulator, quantum gates, Hadamard, RX, RY, RZ, PauliX, PauliY, PauliZ, CNOT, quantum state, statevector, variational quantum circuit",
+        "Hadamard": "pyvqnet.qnn.vqc.Hadamard, quantum gate, H gate, superposition, single qubit gate, create quantum circuit",
+        "PauliX": "pyvqnet.qnn.vqc.PauliX, quantum gate, X gate, NOT gate, single qubit gate, bit flip",
+        "PauliY": "pyvqnet.qnn.vqc.PauliY, quantum gate, Y gate, single qubit gate",
+        "PauliZ": "pyvqnet.qnn.vqc.PauliZ, quantum gate, Z gate, phase flip, single qubit gate",
+        "RX": "pyvqnet.qnn.vqc.RX, quantum gate, rotation gate, rotation X, parametric gate, single qubit",
+        "RY": "pyvqnet.qnn.vqc.RY, quantum gate, rotation gate, rotation Y, parametric gate, single qubit",
+        "RZ": "pyvqnet.qnn.vqc.RZ, quantum gate, rotation gate, rotation Z, parametric gate, single qubit",
+        "CRX": "controlled rotation gate, controlled RX, two qubit gate",
+        "CRY": "controlled rotation gate, controlled RY, two qubit gate",
+        "CRZ": "controlled rotation gate, controlled RZ, two qubit gate",
+        "cnot": "CNOT gate, controlled NOT, two qubit gate, entanglement",
+        "swap": "SWAP gate, two qubit gate, quantum circuit",
+        "toffoli": "Toffoli gate, CCX gate, three qubit gate, controlled controlled X",
+        "cz": "controlled Z gate, CZ gate, two qubit gate",
+        "I": "identity gate, quantum gate, single qubit",
+        "T": "T gate, quantum gate, phase gate, single qubit",
+        "S": "S gate, phase gate, quantum gate, single qubit",
+        "Measure": "quantum measurement, measure qubit, quantum circuit output",
+        "MeasureAll": "quantum measurement, measure all qubits, quantum circuit output",
+        "Probability": "quantum probability, measurement probability, quantum circuit output",
+        "Samples": "quantum samples, sampling, quantum measurement",
+        "HermitianExpval": "expectation value, Hamiltonian, quantum measurement",
+        # VQC 模板
+        "VQC_HardwareEfficientAnsatz": "quantum circuit template, variational quantum circuit, ansatz, quantum neural network",
+        "VQC_AngleEmbedding": "quantum embedding, angle embedding, encode data, quantum circuit",
+        "VQC_RotCircuit": "rotation circuit, quantum circuit template, variational quantum circuit",
+        "VQC_AllSinglesDoubles": "quantum chemistry, VQE, excitation, fermionic",
+        # QNN 量子神经网络
+        "QuantumLayer": "pyvqnet.qnn.pq3.QuantumLayer, quantum neural network layer, variational quantum circuit, hybrid quantum classical, how to use, example, usage",
+        "QpandaQProgVQCLayer": "pyvqnet.qnn.pq3.quantumlayer.QpandaQProgVQCLayer, QPanda quantum layer, quantum neural network, QPanda3, variational quantum circuit, parameter shift, how to use, example, usage, tutorial, trainable quantum circuit",
+        "QuantumLayerAdjoint": "pyvqnet.qnn.pq3.QuantumLayerAdjoint, quantum neural network, adjoint method, gradient, variational quantum circuit, how to use, example",
+        "HardwareEfficientAnsatz": "pyvqnet.qnn.pq3.template.HardwareEfficientAnsatz, quantum circuit template, ansatz, variational quantum circuit, quantum neural network, how to use, example",
+        "BasicEntanglerTemplate": "pyvqnet.qnn.pq3.template.BasicEntanglerTemplate, quantum circuit template, entanglement, variational quantum circuit, how to use, example",
+        "StronglyEntanglingTemplate": "pyvqnet.qnn.pq3.template.StronglyEntanglingTemplate, quantum circuit template, entanglement, variational quantum circuit, how to use, example",
+        "AmplitudeEmbeddingCircuit": "pyvqnet.qnn.pq3.embedding.AmplitudeEmbeddingCircuit, quantum embedding, amplitude embedding, encode data, quantum circuit, how to use, example",
+        "AngleEmbeddingCircuit": "pyvqnet.qnn.pq3.embedding.AngleEmbeddingCircuit, quantum embedding, angle embedding, encode data, quantum circuit, how to use, example",
+        # 张量操作
+        "QTensor": "tensor, matrix, array, deep learning, neural network, gradient, autograd",
+        "zeros": "tensor, zero tensor, create tensor, array",
+        "ones": "tensor, ones tensor, create tensor, array",
+        "arange": "tensor, range tensor, sequence, create tensor",
+        "linspace": "tensor, linear space, sequence, create tensor",
+        "matmul": "matrix multiplication, tensor operation, linear algebra",
+        "add": "tensor addition, arithmetic, tensor operation",
+        "sub": "tensor subtraction, arithmetic, tensor operation",
+        "mul": "tensor multiplication, arithmetic, tensor operation",
+        "exp": "exponential, tensor operation, math function",
+        "log": "logarithm, tensor operation, math function",
+        "sqrt": "square root, tensor operation, math function",
+        "reshape": "tensor reshape, change shape, tensor operation",
+        "transpose": "tensor transpose, swap axes, tensor operation",
+        # 神经网络层
+        "Linear": "neural network layer, fully connected, dense layer, perceptron",
+        "Conv2D": "convolutional layer, CNN, neural network, image processing",
+        "Conv2d": "convolutional layer, CNN, neural network, image processing",
+        "BatchNorm2d": "batch normalization, neural network layer, normalization",
+        "Dropout": "dropout layer, regularization, neural network",
+        "ReLu": "activation function, ReLU, neural network activation",
+        "Sigmoid": "activation function, sigmoid, neural network activation",
+        "Softmax": "activation function, softmax, neural network activation, classification",
+        "Tanh": "activation function, tanh, neural network activation",
+        "Gelu": "activation function, GELU, neural network activation",
+        # 损失函数
+        "CrossEntropyLoss": "loss function, cross entropy, classification loss, neural network training",
+        "MSELoss": "loss function, mean squared error, regression loss, neural network training",
+        "BCELoss": "loss function, binary cross entropy, classification loss",
+        # 优化器
+        "Adam": "optimizer, Adam optimizer, gradient descent, neural network training",
+        "AdamW": "optimizer, AdamW optimizer, weight decay, neural network training",
+        "SGD": "optimizer, stochastic gradient descent, neural network training",
+        "RMSProp": "optimizer, RMSprop optimizer, neural network training",
+    }
+
     def __init__(self):
         self.current_line = 0
         self.lines = []
@@ -110,6 +187,7 @@ class RSTParser:
         description_lines = []
         param_docs = {}
         return_doc = ""
+        example_code = ""  # 新增：存储示例代码
 
         # 首先收集描述（在 :param: 之前的所有缩进行）
         # RST文档中，class/function定义后的描述是缩进的
@@ -212,6 +290,9 @@ class RSTParser:
 
         description = ' '.join(description_lines)
 
+        # 提取 Example:: 代码块（从原始内容重新提取）
+        example_code = self._extract_example_code(start_line)
+
         # If we're parsing a method and inside a class, prepend class full name
         if def_type == 'method' and self.current_class_full_name and (not module_path or module_path == ""):
             # Method inside an existing class - combine full names
@@ -229,7 +310,8 @@ class RSTParser:
             'params': params,
             'description': description.strip(),
             'param_docs': param_docs,
-            'return_doc': return_doc.strip()
+            'return_doc': return_doc.strip(),
+            'example_code': example_code  # 新增：示例代码
         }
 
         # If this is a new class, update current_class_full_name
@@ -247,6 +329,46 @@ class RSTParser:
         """解析方法定义"""
         # 方法定义与类定义类似，使用相同的解析逻辑
         return self._parse_class_definition(def_type='method')
+
+    def _extract_example_code(self, start_line: int) -> str:
+        """从原始行中提取 Example:: 代码块"""
+        example_lines = []
+        i = start_line
+
+        # 寻找 Example:: 标记
+        while i < len(self.lines):
+            if self.lines[i].strip().startswith('Example::'):
+                i += 1  # 跳过 Example:: 行
+                # 收集缩进的代码块（通常是 8 个空格或更多）
+                while i < len(self.lines):
+                    line = self.lines[i]
+                    # 代码块通常是空行或高度缩进的行（至少 8 个空格）
+                    if line.strip() == '':
+                        example_lines.append('')
+                        i += 1
+                    elif line.startswith('        ') or (line.startswith('    ') and line.strip().startswith('from ') or line.strip().startswith('import ') or line.strip().startswith('#')):
+                        # 去除代码块的前导缩进（通常是 8 个空格）
+                        if line.startswith('        '):
+                            cleaned_line = line[8:]  # 去除 8 个空格
+                        else:
+                            cleaned_line = line[4:]  # 去除 4 个空格
+                        example_lines.append(cleaned_line.rstrip())
+                        i += 1
+                    elif line.strip().startswith('.. py:') or (line.strip() and not line.startswith(' ')):
+                        # 遇到新的定义或非缩进行，停止
+                        break
+                    else:
+                        # 其他缩进行也可能属于代码块
+                        if line.strip() and line.startswith('    '):
+                            cleaned_line = line[4:].rstrip()
+                            example_lines.append(cleaned_line)
+                        i += 1
+                break
+            i += 1
+
+        # 清理空行和返回
+        code = '\n'.join(example_lines).strip()
+        return code
 
     def _parse_parameter_string(self, params_str: str) -> List[str]:
         """解析参数字符串，返回参数列表"""
@@ -386,14 +508,31 @@ class RSTParser:
             if not has_default and default_value is None:
                 required.append(param_name)
 
+        # Extract simple name for better matching (e.g., "QMachine" from "pyvqnet.qnn.vqc.QMachine")
+        full_name = definition['full_name']
+        simple_name = full_name.split('.')[-1]
+
+        # Get keyword enhancements for this tool
+        keywords = self.TOOL_KEYWORD_ENHANCEMENTS.get(simple_name, "")
+
+        # Create enhanced description with keywords for better discoverability
+        # Format: [SimpleName] Chinese description | Call this tool to get example code | Keywords: ...
+        base_description = definition['description']
+        action_hint = "Call this tool to get example code and usage instructions."
+        if keywords:
+            enhanced_description = f"[{simple_name}] {base_description} | {action_hint} | Keywords: {keywords}"
+        else:
+            enhanced_description = f"[{simple_name}] {base_description} | {action_hint}"
+
         return {
-            "name": definition['full_name'],
-            "description": definition['description'],
+            "name": full_name,
+            "description": enhanced_description,
             "inputSchema": {
                 "type": "object",
                 "properties": properties,
                 "required": required if required else None
-            }
+            },
+            "example_code": definition.get('example_code', '')  # 新增：示例代码
         }
 
 
