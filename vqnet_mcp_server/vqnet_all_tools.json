@@ -1,7 +1,7 @@
 [
   {
     "name": "pyvqnet.tensor.tensor.QTensor",
-    "description": "",
+    "description": "具有动态计算图构造和自动微分的张量。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -42,7 +42,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.zero_grad",
-    "description": "",
+    "description": "将张量的梯度设置为零。将在优化过程中被优化器使用。",
     "inputSchema": {
       "type": "object",
       "properties": {},
@@ -51,7 +51,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.backward",
-    "description": "",
+    "description": "利用反向传播算法, 计算当前张量所在的计算图中的所有需计算梯度的张量的梯度。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -66,7 +66,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.to_numpy",
-    "description": "",
+    "description": "将张量的数据拷贝到一个numpy.ndarray里面。",
     "inputSchema": {
       "type": "object",
       "properties": {},
@@ -75,7 +75,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.item",
-    "description": "",
+    "description": "从只包含单个元素的 QTensor 返回唯一的元素。",
     "inputSchema": {
       "type": "object",
       "properties": {},
@@ -84,7 +84,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.contiguous",
-    "description": "",
+    "description": "返回当前QTensor的contiguous形式 ,如果已经是contiguous, 则返回自身。",
     "inputSchema": {
       "type": "object",
       "properties": {},
@@ -93,7 +93,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.argmax",
-    "description": "",
+    "description": "返回输入 QTensor 中所有元素的最大值的索引, 或返回 QTensor 按某一维度的最大值的索引。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -109,7 +109,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.argmin",
-    "description": "",
+    "description": "返回输入 QTensor 中所有元素的最小值的索引, 或返回 QTensor 按某一维度的最小值的索引。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -125,7 +125,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.fill_",
-    "description": "",
+    "description": "为当前张量填充特定值, 该函数改变原张量的内部数据。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -141,7 +141,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.all",
-    "description": "",
+    "description": "判断张量内数据是否全为全零。",
     "inputSchema": {
       "type": "object",
       "properties": {},
@@ -150,7 +150,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.any",
-    "description": "",
+    "description": "判断张量内数据是否有任意元素不为0。",
     "inputSchema": {
       "type": "object",
       "properties": {},
@@ -159,7 +159,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.fill_rand_binary_",
-    "description": "",
+    "description": "用从二项分布中随机采样的值填充 QTensor 。 如果二项分布后随机生成的数据大于二值化阈值 v , 则设置 QTensor 对应位置的元素值为1, 否则为0。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -174,7 +174,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.fill_rand_signed_uniform_",
-    "description": "",
+    "description": "用从有符号均匀分布中随机采样的值填充 QTensor 。用缩放因子 v 对生成的随机采样的值进行缩放。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -189,7 +189,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.fill_rand_uniform_",
-    "description": "",
+    "description": "用从均匀分布中随机采样的值填充 QTensor 。用缩放因子 v 对生成的随机采样的值进行缩放。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -204,7 +204,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.fill_rand_normal_",
-    "description": "",
+    "description": "生成均值为 m 和方差 s 产生正态分布元素, 并填充到张量中。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -229,7 +229,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.transpose",
-    "description": "",
+    "description": "反转张量的轴。如果 new_dims = None, 则反转所有轴。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -244,7 +244,7 @@
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.reshape",
-    "description": "",
+    "description": "改变 QTensor 的形状, 返回一个新的张量。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -260,7 +260,7 @@
   },
   {
     "name": "pyvqnet.tensor.ones",
-    "description": "",
+    "description": "创建元素全一的 QTensor 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -286,7 +286,7 @@
   },
   {
     "name": "pyvqnet.tensor.ones_like",
-    "description": "",
+    "description": "创建元素全一的 QTensor ,形状和输入的 QTensor 一样。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -312,7 +312,7 @@
   },
   {
     "name": "pyvqnet.tensor.full",
-    "description": "",
+    "description": "创建一个指定形状的 QTensor 并用特定值填充它。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -343,7 +343,7 @@
   },
   {
     "name": "pyvqnet.tensor.full_like",
-    "description": "",
+    "description": "创建一个形状和输入一样的 QTensor,所有元素填充 value 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -374,7 +374,7 @@
   },
   {
     "name": "pyvqnet.tensor.zeros",
-    "description": "",
+    "description": "创建输入形状大小的全零 QTensor 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -400,7 +400,7 @@
   },
   {
     "name": "pyvqnet.tensor.zeros_like",
-    "description": "",
+    "description": "创建一个形状和输入一样的 QTensor,所有元素为0 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -426,7 +426,7 @@
   },
   {
     "name": "pyvqnet.tensor.arange",
-    "description": "",
+    "description": "创建一个在给定间隔内具有均匀间隔值的一维 QTensor 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -467,7 +467,7 @@
   },
   {
     "name": "pyvqnet.tensor.linspace",
-    "description": "",
+    "description": "创建一维 QTensor ,其中的元素为区间 start 和 end 上均匀间隔的共 num 个值。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -508,7 +508,7 @@
   },
   {
     "name": "pyvqnet.tensor.logspace",
-    "description": "",
+    "description": "在对数刻度上创建具有均匀间隔值的一维 QTensor。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -554,7 +554,7 @@
   },
   {
     "name": "pyvqnet.tensor.eye",
-    "description": "",
+    "description": "创建一个 size x size 的 QTensor,对角线上为 1,其他地方为 0。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -585,7 +585,7 @@
   },
   {
     "name": "pyvqnet.tensor.diagonal",
-    "description": "",
+    "description": "返回 :attr:`t` 的部分视图,其对角线元素相对于 :attr:`dim1` 和 :attr:`dim2` 附加为形状末尾的维度。 :attr:`offset` 是主对角线的偏移量。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -616,7 +616,7 @@
   },
   {
     "name": "pyvqnet.tensor.diag",
-    "description": "",
+    "description": "构造对角矩阵。 输入一个 2-D QTensor,则返回一个1D的新张量,包含 选定对角线中的元素。 输入一个 1-D QTensor,则返回一个2D新张量,其选定对角线元素为输入值,其余为0",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -637,7 +637,7 @@
   },
   {
     "name": "pyvqnet.tensor.randu",
-    "description": "",
+    "description": "创建一个具有均匀分布随机值的 QTensor 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -678,7 +678,7 @@
   },
   {
     "name": "pyvqnet.tensor.randn",
-    "description": "",
+    "description": "创建一个具有正态分布随机值的 QTensor 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -719,7 +719,7 @@
   },
   {
     "name": "pyvqnet.tensor.binomial",
-    "description": "",
+    "description": "创建一个由 :attr:`total_count` 和 :attr:`probs` 参数化的二项分布。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -740,7 +740,7 @@
   },
   {
     "name": "pyvqnet.tensor.multinomial",
-    "description": "",
+    "description": "返回一个张量,其中每行包含 num_samples 个索引采样,来自位于张量输入的相应行中的多项式概率分布。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -761,7 +761,7 @@
   },
   {
     "name": "pyvqnet.tensor.triu",
-    "description": "",
+    "description": "返回输入 t 的上三角矩阵,其余部分被设为0。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -782,7 +782,7 @@
   },
   {
     "name": "pyvqnet.tensor.tril",
-    "description": "",
+    "description": "返回输入 t 的下三角矩阵,其余部分被设为0。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -803,7 +803,7 @@
   },
   {
     "name": "pyvqnet.tensor.floor",
-    "description": "",
+    "description": "返回一个新的 QTensor,其中元素为输入 QTensor 的向下取整。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -819,7 +819,7 @@
   },
   {
     "name": "pyvqnet.tensor.ceil",
-    "description": "",
+    "description": "返回一个新的 QTensor,其中元素为输入 QTensor 的向上取整。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -835,7 +835,7 @@
   },
   {
     "name": "pyvqnet.tensor.round",
-    "description": "",
+    "description": "返回一个新的 QTensor,其中元素为输入 QTensor 的四舍五入到最接近的整数.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -851,7 +851,7 @@
   },
   {
     "name": "pyvqnet.tensor.sort",
-    "description": "",
+    "description": "按指定轴对输入 QTensor 进行排序。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -882,7 +882,7 @@
   },
   {
     "name": "pyvqnet.tensor.argsort",
-    "description": "",
+    "description": "对输入变量沿给定轴进行排序,输出排序好的数据的相应索引。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -913,7 +913,7 @@
   },
   {
     "name": "pyvqnet.tensor.topK",
-    "description": "",
+    "description": "返回给定输入张量沿给定维度的 k 个最大元素。 如果 if_descent 为 False,则返回 k 个最小元素。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -944,7 +944,7 @@
   },
   {
     "name": "pyvqnet.tensor.argtopK",
-    "description": "",
+    "description": "返回给定输入张量沿给定维度的 k 个最大元素的索引。 如果 if_descent 为 False,则返回 k 个最小元素的索引。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -975,7 +975,7 @@
   },
   {
     "name": "pyvqnet.tensor.add",
-    "description": "",
+    "description": "两个 QTensor 按元素相加。等价于t1 + t2。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -996,7 +996,7 @@
   },
   {
     "name": "pyvqnet.tensor.sub",
-    "description": "",
+    "description": "两个 QTensor 按元素相减。等价于t1 - t2。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1017,7 +1017,7 @@
   },
   {
     "name": "pyvqnet.tensor.mul",
-    "description": "",
+    "description": "两个 QTensor 按元素相乘。等价于t1 * t2。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1038,7 +1038,7 @@
   },
   {
     "name": "pyvqnet.tensor.divide",
-    "description": "",
+    "description": "两个 QTensor 按元素相除。等价于t1 / t2。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1059,7 +1059,7 @@
   },
   {
     "name": "pyvqnet.tensor.sums",
-    "description": "",
+    "description": "对输入的 QTensor 按 axis 设定的轴计算元素和,如果 axis 是None,则返回所有元素和。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1085,7 +1085,7 @@
   },
   {
     "name": "pyvqnet.tensor.cumsum",
-    "description": "",
+    "description": "返回维度轴中输入元素的累积总和。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1106,7 +1106,7 @@
   },
   {
     "name": "pyvqnet.tensor.mean",
-    "description": "",
+    "description": "对输入的 QTensor 按 axis 设定的轴计算元素的平均,如果 axis 是None,则返回所有元素平均。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1132,7 +1132,7 @@
   },
   {
     "name": "pyvqnet.tensor.median",
-    "description": "",
+    "description": "对输入的 QTensor 按 axis 设定的轴计算元素的平均,如果 axis 是None,则返回所有元素平均。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1158,7 +1158,7 @@
   },
   {
     "name": "pyvqnet.tensor.std",
-    "description": "",
+    "description": "对输入的 QTensor 按 axis 设定的轴计算元素的标准差,如果 axis 是None,则返回所有元素标准差。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1189,7 +1189,7 @@
   },
   {
     "name": "pyvqnet.tensor.var",
-    "description": "",
+    "description": "对输入的 QTensor 按 axis 设定的轴计算元素的方差,如果 axis 是None,则返回所有元素方差。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1220,7 +1220,7 @@
   },
   {
     "name": "pyvqnet.tensor.matmul",
-    "description": "",
+    "description": "二维矩阵点乘或3、4维张量进行批矩阵乘法,或一维向量与二维矩阵矩阵向量积,或两个一维向量点积。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1241,7 +1241,7 @@
   },
   {
     "name": "pyvqnet.tensor.kron",
-    "description": "",
+    "description": "计算 ``t1`` 和  ``t2`` 的 Kronecker 积,用 :math:`\\otimes` 表示。 如果 ``t1`` 是一个 :math:`(a_0 \\times a_1 \\times \\dots \\times a_n)` 张量并且 ``t2`` 是一个 :math:`(b_0 \\times b_1 \\times \\dots \\times b_n)` 张量,结果将是 :math:`(a_0*b_0 \\times a_1*b_1 \\times \\dots \\times a_n*b_n)` 张量,包含以下条目:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1262,7 +1262,7 @@
   },
   {
     "name": "pyvqnet.tensor.einsum",
-    "description": "",
+    "description": "使用基于爱因斯坦求和约定的符号沿指定的维度对输入操作数元素的乘积求和。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1283,7 +1283,7 @@
   },
   {
     "name": "pyvqnet.tensor.reciprocal",
-    "description": "",
+    "description": "计算输入 QTensor 的倒数。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1299,7 +1299,7 @@
   },
   {
     "name": "pyvqnet.tensor.sign",
-    "description": "",
+    "description": "对输入 t 中每个元素进行正负判断,并且输出正负判断值:1代表正,-1代表负,0代表零。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1315,7 +1315,7 @@
   },
   {
     "name": "pyvqnet.tensor.neg",
-    "description": "",
+    "description": "计算输入 t 每个元素的相反数并返回。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1331,7 +1331,7 @@
   },
   {
     "name": "pyvqnet.tensor.trace",
-    "description": "",
+    "description": "返回二维矩阵的迹。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1352,7 +1352,7 @@
   },
   {
     "name": "pyvqnet.tensor.exp",
-    "description": "",
+    "description": "计算输入 t 每个元素的自然数e为底指数。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1368,7 +1368,7 @@
   },
   {
     "name": "pyvqnet.tensor.power",
-    "description": "",
+    "description": "第一个 QTensor 的元素计算第二个 QTensor 的幂指数。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1389,7 +1389,7 @@
   },
   {
     "name": "pyvqnet.tensor.abs",
-    "description": "",
+    "description": "计算输入 QTensor 的每个元素的绝对值。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1405,7 +1405,7 @@
   },
   {
     "name": "pyvqnet.tensor.log",
-    "description": "",
+    "description": "计算输入 QTensor 的每个元素的自然对数值。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1421,7 +1421,7 @@
   },
   {
     "name": "pyvqnet.tensor.log_softmax",
-    "description": "",
+    "description": "顺序计算在轴axis上的softmax函数以及log函数的结果。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1442,7 +1442,7 @@
   },
   {
     "name": "pyvqnet.tensor.sqrt",
-    "description": "",
+    "description": "计算输入 QTensor 的每个元素的平方根值。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1458,7 +1458,7 @@
   },
   {
     "name": "pyvqnet.tensor.square",
-    "description": "",
+    "description": "计算输入 QTensor 的每个元素的平方值。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1474,7 +1474,7 @@
   },
   {
     "name": "pyvqnet.tensor.eigh",
-    "description": "",
+    "description": "返回复厄米矩阵(共轭对称)或实对称矩阵的特征值和特征向量。 返回两个对象,一个包含a的特征值的一维数组, 以及相应特征向量(以列表示)的二维方阵或矩阵(取决于输入类型)。 :param: 输入QTensor。 :param: t的特征值和特征向量。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1490,7 +1490,7 @@
   },
   {
     "name": "pyvqnet.tensor.frobenius_norm",
-    "description": "",
+    "description": "对输入的 QTensor 按 axis 设定的轴计算张量的F范数,如果 axis 是None,则返回所有元素F范数。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1516,7 +1516,7 @@
   },
   {
     "name": "pyvqnet.tensor.maximum",
-    "description": "",
+    "description": "计算两个 QTensor 的逐元素中的较大值。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1537,7 +1537,7 @@
   },
   {
     "name": "pyvqnet.tensor.minimum",
-    "description": "",
+    "description": "计算两个 QTensor 的逐元素中的较小值。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1558,7 +1558,7 @@
   },
   {
     "name": "pyvqnet.tensor.min",
-    "description": "",
+    "description": "对输入的 QTensor 按 axis 设定的轴计算元素的最小值,如果 axis 是None,则返回所有元素的最小值。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1584,7 +1584,7 @@
   },
   {
     "name": "pyvqnet.tensor.max",
-    "description": "",
+    "description": "对输入的 QTensor 按 axis 设定的轴计算元素的最大值,如果 axis 是None,则返回所有元素的最大值。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1610,7 +1610,7 @@
   },
   {
     "name": "pyvqnet.tensor.clip",
-    "description": "",
+    "description": "将输入的所有元素进行剪裁,使得输出元素限制在[min_val, max_val]。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1636,7 +1636,7 @@
   },
   {
     "name": "pyvqnet.tensor.where",
-    "description": "",
+    "description": "根据条件返回从 t1 或 t2 中选择的元素。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1662,7 +1662,7 @@
   },
   {
     "name": "pyvqnet.tensor.nonzero",
-    "description": "",
+    "description": "返回一个包含非零元素索引的 QTensor 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1678,7 +1678,7 @@
   },
   {
     "name": "pyvqnet.tensor.isfinite",
-    "description": "",
+    "description": "逐元素判断输入是否为Finite (既非 +/-INF 也非 +/-NaN )。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1694,7 +1694,7 @@
   },
   {
     "name": "pyvqnet.tensor.isinf",
-    "description": "",
+    "description": "逐元素判断输入的每一个值是否为 +/-INF 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1710,7 +1710,7 @@
   },
   {
     "name": "pyvqnet.tensor.isnan",
-    "description": "",
+    "description": "逐元素判断输入的每一个值是否为 +/-NaN 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1726,7 +1726,7 @@
   },
   {
     "name": "pyvqnet.tensor.isneginf",
-    "description": "",
+    "description": "逐元素判断输入的每一个值是否为 -INF 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1742,7 +1742,7 @@
   },
   {
     "name": "pyvqnet.tensor.isposinf",
-    "description": "",
+    "description": "逐元素判断输入的每一个值是否为 +INF 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1758,7 +1758,7 @@
   },
   {
     "name": "pyvqnet.tensor.logical_and",
-    "description": "",
+    "description": "对两个输入进行逐元素逻辑与操作,其中对应位置元素满足条件时返回True,否则返回False。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1779,7 +1779,7 @@
   },
   {
     "name": "pyvqnet.tensor.logical_or",
-    "description": "",
+    "description": "对两个输入进行逐元素逻辑或操作,其中对应位置元素满足条件时返回True,否则返回False。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1800,7 +1800,7 @@
   },
   {
     "name": "pyvqnet.tensor.logical_not",
-    "description": "",
+    "description": "对输入进行逐元素逻辑非操作,其中对应位置元素满足条件时返回True,否则返回False。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1816,7 +1816,7 @@
   },
   {
     "name": "pyvqnet.tensor.logical_xor",
-    "description": "",
+    "description": "对两个输入进行逐元素逻辑异或操作,其中对应位置元素满足条件时返回True,否则返回False。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1837,7 +1837,7 @@
   },
   {
     "name": "pyvqnet.tensor.greater",
-    "description": "",
+    "description": "逐元素比较 t1 是否大于 t2 ,其中对应位置元素满足条件时返回True,否则返回False。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1858,7 +1858,7 @@
   },
   {
     "name": "pyvqnet.tensor.greater_equal",
-    "description": "",
+    "description": "逐元素比较 t1 是否大于等于 t2 ,其中对应位置元素满足条件时返回True,否则返回False。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1879,7 +1879,7 @@
   },
   {
     "name": "pyvqnet.tensor.less",
-    "description": "",
+    "description": "逐元素比较 t1 是否小于 t2 ,其中对应位置元素满足条件时返回True,否则返回False。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1900,7 +1900,7 @@
   },
   {
     "name": "pyvqnet.tensor.less_equal",
-    "description": "",
+    "description": "逐元素比较 t1 是否小于等于 t2 ,其中对应位置元素满足条件时返回True,否则返回False。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1921,7 +1921,7 @@
   },
   {
     "name": "pyvqnet.tensor.equal",
-    "description": "",
+    "description": "逐元素比较 t1 是否等于 t2 ,其中对应位置元素满足条件时返回True,否则返回False。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1942,7 +1942,7 @@
   },
   {
     "name": "pyvqnet.tensor.not_equal",
-    "description": "",
+    "description": "逐元素比较 t1 是否不等于 t2 ,其中对应位置元素满足条件时返回True,否则返回False。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1963,7 +1963,7 @@
   },
   {
     "name": "pyvqnet.tensor.bitwise_and",
-    "description": "",
+    "description": "逐元素计算两个 QTensor 的按位与。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1984,7 +1984,7 @@
   },
   {
     "name": "pyvqnet.tensor.broadcast",
-    "description": "",
+    "description": "受到某些限制,较小的阵列在整个更大的阵列,以便它们具有兼容的形状。该接口可对入参张量进行自动微分。 参考https://numpy.org/doc/stable/user/basics.broadcasting.html",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2005,7 +2005,7 @@
   },
   {
     "name": "pyvqnet.tensor.select",
-    "description": "",
+    "description": "输入字符串形式的索引位置,获取该索引下的数据切片,返回一个新的 QTensor 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2026,7 +2026,7 @@
   },
   {
     "name": "pyvqnet.tensor.concatenate",
-    "description": "",
+    "description": "对 args 内的多个 QTensor 沿 axis 轴进行联结,返回一个新的 QTensor 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2047,7 +2047,7 @@
   },
   {
     "name": "pyvqnet.tensor.stack",
-    "description": "",
+    "description": "沿新轴 axis 堆叠输入的 QTensors ,返回一个新的 QTensor。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2068,7 +2068,7 @@
   },
   {
     "name": "pyvqnet.tensor.permute",
-    "description": "",
+    "description": "根据输入的 dim 的顺序,改变t 的轴的顺序。如果 dims = None,则按顺序反转 t 的轴。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2089,7 +2089,7 @@
   },
   {
     "name": "pyvqnet.tensor.transpose",
-    "description": "",
+    "description": "根据输入的 dim 的顺序,改变t 的轴的顺序。如果 dims = None,则按顺序反转 t 的轴。该函数功能与 permute 一致。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2110,7 +2110,7 @@
   },
   {
     "name": "pyvqnet.tensor.tile",
-    "description": "",
+    "description": "通过按照 reps 给出的次数复制输入 QTensor 。 如果 reps 的长度为 d,则结果 QTensor 的维度大小为 max(d, t.ndim)。如果 t.ndim < d,则通过从起始维度插入新轴,将 t 扩展为 d 维度。 因此形状 (3,) 数组被提升为 (1, 3) 用于 2-D 复制,或形状 (1, 1, 3) 用于 3-D 复制。如果 t.ndim > d,reps 通过插入 1 扩展为 t.ndim。 因此,对于形状为 (2, 3, 4, 5) 的 t,(4, 3) 的 reps 被视为 (1, 1, 4, 3)。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2131,7 +2131,7 @@
   },
   {
     "name": "pyvqnet.tensor.unsqueeze",
-    "description": "",
+    "description": "在axis 指定的维度上插入一个维度为的1的轴,返回一个新的 QTensor 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2152,7 +2152,7 @@
   },
   {
     "name": "pyvqnet.tensor.moveaxis",
-    "description": "",
+    "description": "将 `t` 的维度从 `source` 中的位置移动到 `destination` 中的位置。 `t` 的其他未明确移动的维度保持其原始顺序,并出现在 `destination` 中未指定的位置。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2178,7 +2178,7 @@
   },
   {
     "name": "pyvqnet.tensor.swapaxis",
-    "description": "",
+    "description": "交换输入 t 的 第 axis1 和 axis 维度。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2204,7 +2204,7 @@
   },
   {
     "name": "pyvqnet.tensor.masked_fill",
-    "description": "",
+    "description": "在 mask == 1 的位置,用值 value 填充输入。 mask的形状必须与输入的 QTensor 的形状是可广播的。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2230,7 +2230,7 @@
   },
   {
     "name": "pyvqnet.tensor.flatten",
-    "description": "",
+    "description": "将输入 t 从 start 到 end 的连续维度展平。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2256,7 +2256,7 @@
   },
   {
     "name": "pyvqnet.tensor.reshape",
-    "description": "",
+    "description": "改变 QTensor 的形状,返回一个新的张量。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2277,7 +2277,7 @@
   },
   {
     "name": "pyvqnet.tensor.flip",
-    "description": "",
+    "description": "沿指定轴反转QTensor,返回一个新的张量。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2298,7 +2298,7 @@
   },
   {
     "name": "pyvqnet.tensor.gather",
-    "description": "",
+    "description": "沿由“dim”指定的轴收集值。 对于 3-D 张量,输出由以下指定:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2324,7 +2324,7 @@
   },
   {
     "name": "pyvqnet.tensor.scatter",
-    "description": "",
+    "description": "将张量 src 中的所有值写入 indices 张量中指定的索引处的 input 中。 对于 3-D 张量,输出由以下指定:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2355,7 +2355,7 @@
   },
   {
     "name": "pyvqnet.tensor.broadcast_to",
-    "description": "",
+    "description": "受到某些约束,数组 t 被“广播”到参考形状,以便它们具有兼容的形状。 https://numpy.org/doc/stable/user/basics.broadcasting.html",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2376,7 +2376,7 @@
   },
   {
     "name": "pyvqnet.tensor.to_tensor",
-    "description": "",
+    "description": "将输入数值或 numpy.ndarray 等转换为 QTensor 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2392,7 +2392,7 @@
   },
   {
     "name": "pyvqnet.tensor.pad_sequence",
-    "description": "",
+    "description": "用 ``padding_value`` 填充可变长度张量列表。 ``pad_sequence`` 沿新维度堆叠张量列表,并将它们填充到相等的长度。 输入是列表大小为 ``L x *`` 的序列。 L 是可变长度。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2418,7 +2418,7 @@
   },
   {
     "name": "pyvqnet.tensor.pad_packed_sequence",
-    "description": "",
+    "description": "填充一批打包的可变长度序列。它是 `pack_pad_sequence` 的逆操作。 当  ``batch_first`` 是 True,它将返回  ``B x T x *`` 形状的张量,否则返回  ``T x B x *``。 其中 `T` 为序列最长长度, `B` 为批处理大小。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2449,7 +2449,7 @@
   },
   {
     "name": "pyvqnet.tensor.pack_pad_sequence",
-    "description": "",
+    "description": "打包一个包含可变长度填充序列的张量。 如果 batch_first 是 True, `input` 的形状应该为 [批大小,长度,*],否则形状 [长度,批大小,*]。 对于未排序的序列,使用 ``enforce_sorted`` 是 False。 如果 :attr:`enforce_sorted` 是 ``True``,序列应该按长度降序排列。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2480,7 +2480,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.quantumlayer.QuantumLayer",
-    "description": "",
+    "description": "变分量子层的抽象计算模块。对一个参数化的量子线路使用pyqpanda3进行仿真,得到测量结果。该变分量子层继承了VQNet框架的梯度计算模块,可以使用参数漂移法等计算线路参数的梯度,训练变分量子线路模型或将变分量子线路嵌入混合量子和经典模型。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2521,7 +2521,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.quantumlayer.QpandaQProgVQCLayer",
-    "description": "生成QpandaQProgVQCLayer量子变分电路层的Python代码。别名QuantumLayerV3。\n\n用途：\n- 创建量子神经网络层\n- 生成参数化量子电路\n- 用于量子机器学习模型\n\n触发关键词：QpandaQProgVQCLayer, QuantumLayerV3, 量子层, 变分量子电路, VQC layer, pyqpanda3\n\n使用场景：\n- 用户请求生成量子层代码\n- 需要创建参数化量子电路\n- 构建量子神经网络\n\norigin_qprog_func 是用户使用 pyqpanda3 定义的量子电路函数，必须包含输入和参数两个参数作为函数入参，输出为pyqpanda3.core.QProg类型数据。",
+    "description": "它将参数化的量子电路提交给 本地QPanda3全振幅模拟器中计算,并训练线路中的参数。 它支持批量数据并使用参数移位规则来估计参数的梯度。 对于 CRX、CRY、CRZ,此层使用 https://iopscience.iop.org/article/10.1088/1367-2630/ac2cb3 中的公式,其余逻辑门采用默认的参数漂移法计算梯度。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2576,7 +2576,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.quantumlayer.QuantumLayerAdjoint",
-    "description": "",
+    "description": "本类使用 pyqpanda3 的 VQCircuit 接口 https://qcloud.originqc.com.cn/document/qpanda-3/d8/d94/tutorial_variational_quantum_circuit.html，通过伴随法计算量子电路中参数相对于哈密顿量的梯度。 本类支持批量输入和多哈密顿量输出。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2607,7 +2607,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.quantumlayer.grad",
-    "description": "",
+    "description": "grad 函数提供了一种对用户设计的含参量子线路参数的梯度使用参数漂移法计算的接口。 用户可按照如下例子,使用pyqpanda设计线路运行函数 ``quantum_prog_func`` ,并作为参数送入grad函数。 grad函数的第二个参数则是想要计算量子逻辑门参数梯度的坐标。 返回值的形状为  [num of parameters,num of output]。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2633,7 +2633,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.AmplitudeEmbeddingCircuit",
-    "description": "",
+    "description": "将 :math:`2^n` 特征编码为 :math:`n` 量子比特的振幅向量。为了表示一个有效的量子态向量, ``features`` 的L2范数必须是1。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2654,7 +2654,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.BasicEmbeddingCircuit",
-    "description": "",
+    "description": "将n个二进制特征编码为n个量子比特的基态。 例如, 对于 ``features=([0, 1, 1])``, 在量子系统下其基态为 :math:`|011 \\rangle`。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2675,7 +2675,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.AngleEmbeddingCircuit",
-    "description": "",
+    "description": "将 :math:`N` 特征编码到 :math:`n` 量子比特的旋转角度中, 其中 :math:`N \\leq n`。 旋转可以选择为 : 'X' , 'Y' , 'Z', 如 ``rotation`` 的参数定义为: * ``rotation='X'`` 将特征用作RX旋转的角度。 * ``rotation='Y'`` 将特征用作RY旋转的角度。 * ``rotation='Z'`` 将特征用作RZ旋转的角度。 ``features`` 的长度必须小于或等于量子比特的数量。如果 ``features`` 中的长度少于量子比特,则线路不应用剩余的旋转门。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2701,7 +2701,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.IQPEmbeddingCircuits",
-    "description": "",
+    "description": "使用IQP线路的对角门将 :math:`n` 特征编码为 :math:`n` 量子比特。 编码是由 `Havlicek et al. (2018) <https://arxiv.org/pdf/1804.11326.pdf>`_ 提出。 通过指定 ``n_repeats`` ,可以重复基本IQP线路。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2727,7 +2727,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.RotCircuit",
-    "description": "",
+    "description": "任意单量子比特旋转。qlist的数量应该是1,参数的数量应该是3。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2748,7 +2748,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.CRotCircuit",
-    "description": "",
+    "description": "受控Rot操作符。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2774,7 +2774,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.CSWAPcircuit",
-    "description": "",
+    "description": "受控SWAP线路。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2790,7 +2790,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.Controlled_Hadamard",
-    "description": "",
+    "description": "受控Hadamard逻辑门",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2806,7 +2806,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.CCZ",
-    "description": "",
+    "description": "受控-受控-Z (controlled-controlled-Z) 逻辑门。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2822,7 +2822,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.FermionicSingleExcitation",
-    "description": "",
+    "description": "对泡利矩阵的张量积求幂的耦合簇单激励算子。矩阵形式下式给出:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2848,7 +2848,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.FermionicDoubleExcitation",
-    "description": "",
+    "description": "对泡利矩阵的张量积求幂的耦合聚类双激励算子,矩阵形式由下式给出:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2879,7 +2879,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.QuantumPoolingCircuit",
-    "description": "",
+    "description": "对数据进行降采样的量子电路。 为了减少电路中的量子位数量,首先在系统中创建成对的量子位。在最初配对所有量子位之后,将广义2量子位酉元应用于每一对量子位上。并在应用这两个量子位酉元之后,在神经网络的其余部分忽略每对量子位中的一个量子位。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2910,7 +2910,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.ansatz.HardwareEfficientAnsatz",
-    "description": "",
+    "description": "论文介绍的Hardware Efficient Ansatz的实现: `Hardware-efficient Variational Quantum Eigensolver for Small Molecules <https://arxiv.org/pdf/1704.05018.pdf>`__ 。 通过其成员函数 ``create_ansatz`` 返回 `pyqpanda3` 的量子线路。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2946,7 +2946,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.BasicEntanglerTemplate",
-    "description": "",
+    "description": "由每个量子位上的单参数单量子位旋转组成的层,后跟一个闭合链或环组合的多个CNOT 门。 CNOT 门环将每个量子位与其邻居连接起来,最后一个量子位被认为是第一个量子位的邻居。 层数 :math:`L` 由参数 ``weights`` 的第一个维度决定。 通过其成员函数 ``create_circuit`` 返回 `pyqpanda3` 的量子线路。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2971,7 +2971,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.template.StronglyEntanglingTemplate",
-    "description": "",
+    "description": "由单个量子比特旋转和纠缠器组成的层,参考 `circuit-centric classifier design <https://arxiv.org/abs/1804.00633>`__ . 参数 ``weights`` 包含每一层的权重。 因此得出层数 :math:`L` 等于 ``weights`` 的第一个维度。 其包含2-qubit CNOT 门,作用于 :math:`M` 个量子比特上,:math:`i = 1,...,M`。 每个门的第二个量子位标号由公式 :math:`(i+r)\\mod M` 给出,其中 :math:`r` 是一个称为 ``range``  的超参数,并且 :math:`0 < r < M`。 通过其成员函数 ``create_circuit`` 返回 `pyqpanda3` 的量子线路。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -2996,7 +2996,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.ComplexEntangelingTemplate",
-    "description": "",
+    "description": "由 U3 门和 CNOT 门组成的强纠缠层。 此线路模板来自以下论文:https://arxiv.org/abs/1804.00633。 通过其成员函数 ``create_circuit`` 返回 `pyqpanda3` 的量子线路。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3022,7 +3022,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.Quantum_Embedding",
-    "description": "",
+    "description": "使用 RZ,RY,RZ 创建变分量子电路,将经典数据编码为量子态。 参考 `Quantum embeddings for machine learning <https://arxiv.org/abs/2001.03622>`_。 在初始化该类后,其成员函数 ``compute_circuit`` 为运行函数,可作为参数输入 ``QpandaQCircuitVQCLayerLite`` 类构成量子机器学习模型的一层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3063,7 +3063,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.measure.expval",
-    "description": "",
+    "description": "提供的哈密顿量观测值的期望值。 如果观测值是 :math:`0.7Z\\otimes X\\otimes I+0.2I\\otimes Z\\otimes I`, 那么 Hamiltonian dict 将是 ``{{'Z0, X1':0.7} ,{'Z1':0.2}}`` 。 expval api现在支持pyqpanda3 的模拟器 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3089,7 +3089,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.measure.QuantumMeasure",
-    "description": "",
+    "description": "计算量子线路测量。返回通过蒙特卡罗方法获得的测量结果。 更多详情请访问  https://pyqpanda-toturial.readthedocs.io/zh/latest/Measure.html?highlight=measure_all 。 QuantumMeasure api现在只支持QPanda ``CPUQVM`` 或 ``QCloud`` 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3125,7 +3125,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.measure.ProbsMeasure",
-    "description": "",
+    "description": "计算线路概率测量。 更多详情请访问 https://pyqpanda-toturial.readthedocs.io/zh/latest/PMeasure.html。 ProbsMeasure api现在只支持pyQPanda ``CPUQVM`` 或 ``QCloud`` 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3156,7 +3156,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.measure.DensityMatrixFromQstate",
-    "description": "",
+    "description": "计算量子态在一组特定量子比特上的密度矩阵。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3177,7 +3177,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.measure.VN_Entropy",
-    "description": "",
+    "description": "根据给定 qubits 列表上的状态向量计算Von Neumann熵 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3203,7 +3203,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.measure.Mutal_Info",
-    "description": "",
+    "description": "根据给定两个子 qubits 列表上的状态向量计算互信息 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3234,7 +3234,7 @@
   },
   {
     "name": "pyvqnet.qnn.pq3.measure.Purity",
-    "description": "",
+    "description": "从态矢中计算特定量子比特上的纯度。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3255,7 +3255,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.QMachine",
-    "description": "",
+    "description": "变分量子计算的模拟器类,包含states属性为量子线路的statevectors。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3286,7 +3286,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.QMachine.reset_states",
-    "description": "",
+    "description": "将模拟器里面初态重新初始化,并且广播为 (batchsize,[2]**num_qubits) 维度从而使得模拟器可以进行批量数据的模型计算。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3302,7 +3302,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.I",
-    "description": "",
+    "description": "定义一个I逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3342,7 +3342,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.hadamard",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 hadamard 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3373,7 +3373,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.Hadamard",
-    "description": "",
+    "description": "定义一个Hadamard逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3413,7 +3413,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.t",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 t 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3444,7 +3444,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.T",
-    "description": "",
+    "description": "定义一个T逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3484,7 +3484,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.s",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 s 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3515,7 +3515,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.S",
-    "description": "",
+    "description": "定义一个S逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3555,7 +3555,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.paulix",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 paulix 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3586,7 +3586,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.PauliX",
-    "description": "",
+    "description": "定义一个PauliX逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3626,7 +3626,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.pauliy",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 pauliy 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3657,7 +3657,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.PauliY",
-    "description": "",
+    "description": "定义一个PauliY逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3697,7 +3697,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.pauliz",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 pauliz 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3728,7 +3728,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.PauliZ",
-    "description": "",
+    "description": "定义一个PauliZ逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3768,7 +3768,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.x1",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 x1 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3799,7 +3799,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.X1",
-    "description": "",
+    "description": "定义一个X1逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3839,7 +3839,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.rx",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 rx",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3870,7 +3870,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.RX",
-    "description": "",
+    "description": "定义一个RX逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3910,7 +3910,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.ry",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 ry 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3941,7 +3941,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.RY",
-    "description": "",
+    "description": "定义一个RY逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -3981,7 +3981,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.rz",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 rz 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4012,7 +4012,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.RZ",
-    "description": "",
+    "description": "定义一个RZ逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4052,7 +4052,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.crx",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 crx 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4083,7 +4083,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.CRX",
-    "description": "",
+    "description": "定义一个CRX逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4123,7 +4123,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.cry",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 cry 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4154,7 +4154,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.CRY",
-    "description": "",
+    "description": "定义一个CRY逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4194,7 +4194,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.crz",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 crz 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4225,7 +4225,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.CRZ",
-    "description": "",
+    "description": "定义一个CRZ逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4265,7 +4265,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.cnot",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 cnot 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4296,7 +4296,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.swap",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 swap 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4327,7 +4327,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.cz",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 cz 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4358,7 +4358,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.toffoli",
-    "description": "",
+    "description": "对q_machine中的态矢作用量子逻辑门 toffoli 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4389,7 +4389,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.VQC_VarMeasure",
-    "description": "",
+    "description": "提供的可观察量 ``obs`` 的方差。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4410,7 +4410,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.Probability",
-    "description": "",
+    "description": "一个计算量子线路在特定比特上概率测量的Module类。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4431,7 +4431,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.MeasureAll",
-    "description": "",
+    "description": "计算量子线路的测量结果,支持输入观测量 ``obs``。其格式可以为字典格式，用于表示一个由多个Pauli算符组合而成的可观测量；列表形式,表示多个期望值的可观测量列表。 例如: {\\'X0\\': 0.23} 表示在量子比特0上作用PauliX,系数为0.23 {\\'X1 Z2\\':2.4,\\'Y2\\':-0.5} 对应于观测量 2.4 * X1 @ Z2 - 0.5 * Y2 [{\\'X1 Z2\\':4,\\'Z1 Z0\\':3},{\\'X1 Y2 Z0\\':3.5}] 对应于两个观测量 4 * X1 @ Z2 + 3 * Z1 @ Z0 以及 3.5 * X1 @ Y2 @ Z0 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4452,7 +4452,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.Samples",
-    "description": "",
+    "description": "获取特定线路 ``wires`` 上的带有 ``shots`` 的观测量 ``obs`` 结果。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4482,7 +4482,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.HermitianExpval",
-    "description": "",
+    "description": "计算量子线路某个厄密特观测量 ``obs`` 的期望。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4503,7 +4503,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.VQC_HardwareEfficientAnsatz",
-    "description": "",
+    "description": "一个含可训练参数的变分量子线路类,实现了论文介绍的Hardware Efficient Ansatz的实现: `Hardware-efficient Variational Quantum Eigensolver for Small Molecules <https://arxiv.org/pdf/1704.05018.pdf>`__ 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4549,7 +4549,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.VQC_AngleEmbedding",
-    "description": "",
+    "description": "将 :math:`N` 特征编码到 ``q_machine`` :math:`n` 量子比特的旋转角度中, 其中 :math:`N \\leq n`。 旋转可以选择为 : 'X' , 'Y' , 'Z', 如 ``rotation`` 的参数定义为: * ``rotation='X'`` 将特征用作RX旋转的角度。 * ``rotation='Y'`` 将特征用作RY旋转的角度。 * ``rotation='Z'`` 将特征用作RZ旋转的角度。 ``wires`` 代表旋转门在量子比特上的idx。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4580,7 +4580,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.VQC_RotCircuit",
-    "description": "",
+    "description": "在 ``q_machine`` 的比特 ``wire`` 上使用 ``params`` 进行单量子比特旋转操作。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4606,7 +4606,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.VQC_AllSinglesDoubles",
-    "description": "",
+    "description": "在这种情况下,我们有四个单激发和双激发来保留 Hartree-Fock 态的总自旋投影。 由此产生的酉矩阵保留了粒子数量,并在初始 Hartree-Fock 状态和编码多激发配置的其他状态的叠加中准备了n量子位系统。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4647,7 +4647,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.VQC_BasisRotation",
-    "description": "",
+    "description": "在 ``q_machine`` 上实现一个电路,执行精确的单体基础旋转。 :class:`~.vqc.VQC_BasisRotation` 执行以下由 `arXiv:1711.04789 <https://arxiv.org/abs/1711.04789>`_\\ 中给出的单粒子费米子确定的酉变换 :math:`U(u)`",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4678,7 +4678,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.VQC_QuantumPoolingCircuit",
-    "description": "",
+    "description": "在 ``q_machine`` 上对数据进行降采样的量子电路。为了减少电路中的量子位数量,首先在系统中创建成对的量子位。在最初配对所有量子位之后,将广义2量子位酉元应用于每一对量子位上。并在应用这两个量子位酉元之后,在神经网络的其余部分忽略每对量子位中的一个量子位。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4709,7 +4709,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.vqc_qft_add_to_register",
-    "description": "",
+    "description": "在 ``q_machine`` 进行如下操作:将无符号整数 `m` 编码到量子比特中,然后将 `k` 加到此量子比特上。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4735,7 +4735,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.VQC_FABLE",
-    "description": "",
+    "description": "使用快速近似块编码方法构建基于 VQC 的 QCircuit。对于特定结构的矩阵 [`arXiv:2205.00081 <https://arxiv.org/abs/2205.00081>`_], FABLE 方法可以简化块编码电路而不降低准确性。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4751,7 +4751,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.VQC_LCU",
-    "description": "",
+    "description": "使用线性组合单元 (LCU) 构建基于 VQC 的 QCircuit,`通过量子比特化进行哈密顿模拟 <https://arxiv.org/abs/1610.06546>`_。 输入 dtype 可以是 kfloat32、kfloat64、kcomplex64、kcomplex128 输入应为 Hermitian。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4767,7 +4767,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.VQC_QSVT",
-    "description": "",
+    "description": "实现 `quantum singular value transformation <https://arxiv.org/abs/1806.01838>`__ (QSVT) 线路.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4793,7 +4793,7 @@
   },
   {
     "name": "pyvqnet.qnn.qcnn.Quanvolution",
-    "description": "",
+    "description": "基于《Quanvolutional Neural Networks: Powering Image Recognition with Quantum Circuits》（https://arxiv.org/abs/1904.04767）实现的量子卷积，用变分量子电路替换经典的卷积滤波器，从而得到具有量子卷积滤波器的量子卷积神经网络。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4824,7 +4824,7 @@
   },
   {
     "name": "pyvqnet.qnn.qdrl_vqc.QDRL",
-    "description": "",
+    "description": "基于《Data re-uploading for a universal quantum classifier》（https://arxiv.org/abs/1907.02085）实现的量子数据重上传(Quantum Data Re-upLoading,QDRL)算法是一种将量子电路与经典神经网络相结合的量子数据重上传模型。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4840,7 +4840,7 @@
   },
   {
     "name": "pyvqnet.qnn.qgru.QGRU",
-    "description": "",
+    "description": "基于量子量子变分线路实现的GRU（门控循环单元），通过利用量子电路来进行状态更新和记忆保持。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4876,7 +4876,7 @@
   },
   {
     "name": "pyvqnet.qnn.qlstm.QLSTM",
-    "description": "",
+    "description": "QLSTM (Quantum Long Short-Term Memory) 是一种结合了量子计算和经典LSTM的混合模型，旨在利用量子计算的并行性和经典LSTM的记忆能力来处理序列数据。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4912,7 +4912,7 @@
   },
   {
     "name": "pyvqnet.qnn.qrl.QRLModel",
-    "description": "",
+    "description": "使用变分量子电路的量子深度强化学习模型,参考 :ref:`QDRL_DEMO` 中的线路实现。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4933,7 +4933,7 @@
   },
   {
     "name": "pyvqnet.qnn.qrnn.QRNN",
-    "description": "",
+    "description": "QRNN（Quantum Recurrent Neural Network）是一种量子循环神经网络，旨在处理序列数据并捕捉序列中的长期依赖关系。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4969,7 +4969,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.QuantumLayerAdjoint",
-    "description": "",
+    "description": "使用伴随矩阵方式进行梯度计算的可自动微分的QuantumLayer层,参考  `Efficient calculation of gradients in classical simulations of variational quantum algorithms <https://arxiv.org/abs/2009.02823>`_ 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -4995,7 +4995,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.wrapper_single_qubit_op_fuse",
-    "description": "",
+    "description": "一个用于将单比特运算融合到 Rot 运算中的装饰器。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5011,7 +5011,7 @@
   },
   {
     "name": "pyvqnet.nn.Conv2D",
-    "description": "",
+    "description": "在输入上进行二维卷积运算。 Conv2D模块的输入具有形状(batch_size, input_channels, height, width)。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5082,7 +5082,7 @@
   },
   {
     "name": "pyvqnet.nn.AvgPool2D",
-    "description": "",
+    "description": "对二维输入进行平均池化。输入具有形状(batch_size, input_channels, height, width)。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5113,7 +5113,7 @@
   },
   {
     "name": "pyvqnet.nn.MaxPool2D",
-    "description": "",
+    "description": "对二维输入进行最大池化。输入具有形状(batch_size, input_channels, height, width)。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5144,7 +5144,7 @@
   },
   {
     "name": "pyvqnet.nn.embedding.Embedding",
-    "description": "",
+    "description": "该模块通常用于存储词嵌入并使用索引检索它们。模块的输入是索引列表,输出是对应的词嵌入。 该层的输入应该是kint64。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5180,7 +5180,7 @@
   },
   {
     "name": "pyvqnet.nn.BatchNorm2d",
-    "description": "",
+    "description": "在 4D 输入(B、C、H、W)上应用批归一化。参照论文 `Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift <https://arxiv.org/abs/1502.03167>`__ 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5231,7 +5231,7 @@
   },
   {
     "name": "pyvqnet.nn.BatchNorm1d",
-    "description": "",
+    "description": "在 2D 输入 (B,C) 上进行批归一化操作。 参照论文 `Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift <https://arxiv.org/abs/1502.03167>`__ 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5282,7 +5282,7 @@
   },
   {
     "name": "pyvqnet.nn.layer_norm.LayerNormNd",
-    "description": "",
+    "description": "在任意输入的后D个维度上进行层归一化。具体方式如论文所述: `Layer Normalization <https://arxiv.org/abs/1607.06450>`__。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5318,7 +5318,7 @@
   },
   {
     "name": "pyvqnet.nn.layer_norm.LayerNorm2d",
-    "description": "",
+    "description": "在 4D 输入上进行层归一化。具体方式如论文所述: `Layer Normalization <https://arxiv.org/abs/1607.06450>`__。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5354,7 +5354,7 @@
   },
   {
     "name": "pyvqnet.nn.layer_norm.LayerNorm1d",
-    "description": "",
+    "description": "在 2D 输入上进行层归一化。具体方式如论文所述: `Layer Normalization <https://arxiv.org/abs/1607.06450>`__。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5390,7 +5390,7 @@
   },
   {
     "name": "pyvqnet.nn.group_norm.GroupNorm",
-    "description": "",
+    "description": "对小批量输入应用组归一化。输入: :math:`(N, C, *)` 其中 :math:`C=\\text{num_channels}` , 输出: :math:`(N, C, *)` 。 此层实现论文 `组归一化 <https://arxiv.org/abs/1803.08494>`__ 中描述的操作。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5431,7 +5431,7 @@
   },
   {
     "name": "pyvqnet.nn.Linear",
-    "description": "",
+    "description": "线性模块(全连接层)。 :math:`y = x@A.T + b`",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5477,7 +5477,7 @@
   },
   {
     "name": "pyvqnet.nn.dropout.Dropout",
-    "description": "",
+    "description": "Dropout 模块。dropout 模块将一些单元的输出随机设置为零,同时根据给定的 dropout_rate 概率升级其他单元。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5492,7 +5492,7 @@
   },
   {
     "name": "pyvqnet.nn.dropout.DropPath",
-    "description": "",
+    "description": "DropPath 模块将逐样本丢弃路径(随机深度)。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5512,7 +5512,7 @@
   },
   {
     "name": "pyvqnet.nn.gru.GRU",
-    "description": "",
+    "description": "门控循环单元 (GRU) 模块。支持多层堆叠,双向配置。单层单向GRU的计算公式如下:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5568,7 +5568,7 @@
   },
   {
     "name": "pyvqnet.nn.rnn.RNN",
-    "description": "",
+    "description": "循环神经网络(RNN)模块,使用 :math:`\\tanh` 或 :math:`\\text{ReLU}` 作为激活函数。支持双向,多层配置。 单层单向RNN计算公式如下:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5624,7 +5624,7 @@
   },
   {
     "name": "pyvqnet.nn.lstm.LSTM",
-    "description": "",
+    "description": "长短期记忆(LSTM)模块。支持双向LSTM, 堆叠多层LSTM等配置。单层单向LSTM计算公式如下:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5675,7 +5675,7 @@
   },
   {
     "name": "pyvqnet.nn.Interpolate",
-    "description": "",
+    "description": "向下/向上对输入进行采样。 目前只支持四维输入数据。 输入尺寸的解释形式为 `B x C x H x W`。 可用于选择的 `mode` 有 ``nearest`` 、``bilinear`` 、``bicubic``.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5715,7 +5715,7 @@
   },
   {
     "name": "pyvqnet.nn.MeanSquaredError",
-    "description": "",
+    "description": "计算输入 :math:`x` 和目标值 :math:`y` 之间的均方根误差。 若平方根误差可由如下函数描述:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5730,7 +5730,7 @@
   },
   {
     "name": "pyvqnet.nn.SoftmaxCrossEntropy",
-    "description": "",
+    "description": "该损失函数将 LogSoftmax 和 NLLLoss 同时计算的平均分类交叉熵,并具有更高的数值稳定性。 损失函数计算方式如下,其中 class 为目标值的对应分类标签:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5745,7 +5745,7 @@
   },
   {
     "name": "pyvqnet.nn.NLL_Loss",
-    "description": "",
+    "description": "平均负对数似然损失。 对C个类别的分类问题很有用。 `x` 是模型给出的概率形式的似然量。其尺寸可以是 :math:`(N, C)` or :math:`(N, C, d_1, d_2, ..., d_K)` 。 `y` 是损失函数期望的真值,包含 :math:`[0, C-1]` 的类别索引。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5760,7 +5760,7 @@
   },
   {
     "name": "pyvqnet.nn.CrossEntropyLoss",
-    "description": "",
+    "description": "该函数计算LogSoftmax以及NLL_Loss在一起的损失。 `x` 是包含未做归一化的输出.它的尺寸可以为 :math:`(C)` , :math:`(N, C)` 二维或 :math:`(N, C, d_1, d_2, ..., d_K)` 多维。 损失函数的公式如下,其中 class 为目标值的对应分类标签:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5775,7 +5775,7 @@
   },
   {
     "name": "pyvqnet.nn.Sigmoid",
-    "description": "",
+    "description": "Sigmoid激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5790,7 +5790,7 @@
   },
   {
     "name": "pyvqnet.nn.Softplus",
-    "description": "",
+    "description": "Softplus激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5805,7 +5805,7 @@
   },
   {
     "name": "pyvqnet.nn.Softsign",
-    "description": "",
+    "description": "Softsign 激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5820,7 +5820,7 @@
   },
   {
     "name": "pyvqnet.nn.Softmax",
-    "description": "",
+    "description": "Softmax 激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5840,7 +5840,7 @@
   },
   {
     "name": "pyvqnet.nn.HardSigmoid",
-    "description": "",
+    "description": "HardSigmoid 激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5855,7 +5855,7 @@
   },
   {
     "name": "pyvqnet.nn.ReLu",
-    "description": "",
+    "description": "ReLu 整流线性单元激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5870,7 +5870,7 @@
   },
   {
     "name": "pyvqnet.nn.LeakyReLu",
-    "description": "",
+    "description": "LeakyReLu 带泄露的修正线性单元激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5890,7 +5890,7 @@
   },
   {
     "name": "pyvqnet.nn.Gelu",
-    "description": "",
+    "description": "应用高斯误差线性单元函数:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5910,7 +5910,7 @@
   },
   {
     "name": "pyvqnet.nn.ELU",
-    "description": "",
+    "description": "ELU 指数线性单位激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5930,7 +5930,7 @@
   },
   {
     "name": "pyvqnet.nn.Tanh",
-    "description": "",
+    "description": "Tanh双曲正切激活函数.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5945,7 +5945,7 @@
   },
   {
     "name": "pyvqnet.optim.adadelta.Adadelta",
-    "description": "",
+    "description": "ADADELTA: An Adaptive Learning Rate Method。 参考:https://arxiv.org/abs/1212.5701。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5976,7 +5976,7 @@
   },
   {
     "name": "pyvqnet.optim.adagrad.Adagrad",
-    "description": "",
+    "description": "Adagrad自适应梯度优化器。 参考:https://databricks.com/glossary/adagrad。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6002,7 +6002,7 @@
   },
   {
     "name": "pyvqnet.optim.adam.Adam",
-    "description": "",
+    "description": "Adam优化器,它可以使用一阶矩估计动态调整每个参数的学习率和梯度的二阶矩估计。 参考:https://arxiv.org/abs/1412.6980。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6048,7 +6048,7 @@
   },
   {
     "name": "pyvqnet.optim.adam.AdamW",
-    "description": "",
+    "description": "实现 AdamW 算法.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6094,7 +6094,7 @@
   },
   {
     "name": "pyvqnet.optim.adamax.Adamax",
-    "description": "",
+    "description": "实现 Adamax 优化器(基于无穷范数的 Adam 变体)。 参考:https://arxiv.org/abs/1412.6980。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6130,7 +6130,7 @@
   },
   {
     "name": "pyvqnet.optim.rmsprop.RMSProp",
-    "description": "",
+    "description": "RMSprop 均方根传播算法优化器。 参考:https://arxiv.org/pdf/1308.0850v5.pdf。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6161,7 +6161,7 @@
   },
   {
     "name": "pyvqnet.optim.sgd.SGD",
-    "description": "",
+    "description": "随机梯度下降优化器。 参考:https://en.wikipedia.org/wiki/Stochastic_gradient_descent。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6192,7 +6192,7 @@
   },
   {
     "name": "pyvqnet.optim.rotosolve.Rotosolve",
-    "description": "",
+    "description": "Rotosolve:可以使用 rotosolve 算法来最小化线性组合的量子测量期望值。 请参阅以下论文: https://arxiv.org/abs/1903.12166, Ken M. Nakanishi。 https://arxiv.org/abs/1905.09692, Mateusz Ostaszewski。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6207,7 +6207,7 @@
   },
   {
     "name": "pyvqnet.backends.set_backend",
-    "description": "",
+    "description": "该用于切换计算和数据存储后端，可选择使用 pyvqnet 原生计算、C++自动微分、或基于 PyTorch 的后端，从而在不同性能和兼容性需求间灵活切换。默认为 \"pyvqnet\",可设置为 \"torch\"。 使用 ``pyvqnet.backends.set_backend(\"pyvqnet\")`` 后,VQNet ``QTensor`` 的 ``data`` 成员变量均使用 ``pyvqnet._core.Tensor`` 储存数据,并使用pyvqnet c++库计算, 自动微分在python完成。 使用 ``pyvqnet.backends.set_backend(\"pyvqnet-ad\")`` 后,VQNet ``QTensor`` 的 ``data`` 成员变量均使用 ``pyvqnet._core.Tensor`` 储存数据,并使用pyvqnet c++库计算, 自动微分在C++完成。 使用 ``pyvqnet.backends.set_backend(\"torch\")`` 后,接口保持不变,VQNet的 ``QTensor`` 的 ``data`` 成员变量均使用 ``torch.Tensor`` 储存数据。 :ref:`qtensor_api`， :ref:`vqc_api` 以及 `pyvqnet.nn.torch` 下的接口输入接受 ``QTensor`` 类型，输出为 ``QTensor`` 类型。 使用 ``pyvqnet.backends.set_backend(\"torch-native\")`` 后,接口保持不变, :ref:`qtensor_api`， :ref:`vqc_api` 以及 `pyvqnet.nn.torch` 下的接口 输入可直接接受 ``torch.Tensor`` 类型或 ``QTensor`` 类型，输出为 ``torch.Tensor`` ，不再转换为 ``QTensor`` ，减少了数据转换。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6223,7 +6223,7 @@
   },
   {
     "name": "pyvqnet.backends.get_backend",
-    "description": "",
+    "description": "如果 t 为 None,则获取当前计算后端。 如果 t 是 QTensor,则根据其 ``data`` 属性返回创建 QTensor 时使用的计算后端。 如果 \"torch\" 是使用的后端,则返回 pyvqnet torch api 后端。 如果 \"pyvqnet\" 是使用的后端, 则简单地返回“pyvqnet”。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6238,7 +6238,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.TorchModule",
-    "description": "",
+    "description": "当用户使用 `torch` 后端时候,定义模型 `Module` 应该继承的基类。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6259,7 +6259,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.Linear",
-    "description": "",
+    "description": "线性模块(全连接层)。 :math:`y = x@A.T + b`",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6305,7 +6305,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.Conv2D",
-    "description": "",
+    "description": "在输入上进行二维卷积运算。 Conv2D模块的输入具有形状(batch_size, input_channels, height, width)。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6376,7 +6376,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.AvgPool2D",
-    "description": "",
+    "description": "对二维输入进行平均池化。输入具有形状(batch_size, input_channels, height, width)。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6407,7 +6407,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.MaxPool2D",
-    "description": "",
+    "description": "对二维输入进行最大池化。输入具有形状(batch_size, input_channels, height, width)。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6438,7 +6438,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.Embedding",
-    "description": "",
+    "description": "该模块通常用于存储词嵌入并使用索引检索它们。模块的输入是索引列表,输出是对应的词嵌入。 该层的输入应该是kint64。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6474,7 +6474,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.BatchNorm2d",
-    "description": "",
+    "description": "在 4D 输入(B、C、H、W)上应用批归一化。参照论文 `Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift <https://arxiv.org/abs/1502.03167>`__ 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6525,7 +6525,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.BatchNorm1d",
-    "description": "",
+    "description": "在 2D 输入 (B,C) 上进行批归一化操作。 参照论文 `Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift <https://arxiv.org/abs/1502.03167>`__ 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6576,7 +6576,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.LayerNormNd",
-    "description": "",
+    "description": "在任意输入的后D个维度上进行层归一化。具体方式如论文所述: `Layer Normalization <https://arxiv.org/abs/1607.06450>`__。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6612,7 +6612,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.LayerNorm2d",
-    "description": "",
+    "description": "在 4D 输入上进行层归一化。具体方式如论文所述: `Layer Normalization <https://arxiv.org/abs/1607.06450>`__。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6648,7 +6648,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.LayerNorm1d",
-    "description": "",
+    "description": "在 2D 输入上进行层归一化。具体方式如论文所述: `Layer Normalization <https://arxiv.org/abs/1607.06450>`__。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6684,7 +6684,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.GroupNorm",
-    "description": "",
+    "description": "对小批量输入应用组归一化。输入: :math:`(N, C, *)` 其中 :math:`C=\\text{num_channels}` , 输出: :math:`(N, C, *)` 。 此层实现论文 `组归一化 <https://arxiv.org/abs/1803.08494>`__ 中描述的操作。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6725,7 +6725,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.Dropout",
-    "description": "",
+    "description": "Dropout 模块。dropout 模块将一些单元的输出随机设置为零,同时根据给定的 dropout_rate 概率升级其他单元。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6740,7 +6740,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.DropPath",
-    "description": "",
+    "description": "DropPath 模块将逐样本丢弃路径(随机深度)。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6760,7 +6760,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.GRU",
-    "description": "",
+    "description": "门控循环单元 (GRU) 模块。支持多层堆叠,双向配置。单层单向GRU的计算公式如下:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6816,7 +6816,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.RNN",
-    "description": "",
+    "description": "循环神经网络(RNN)模块,使用 :math:`\\tanh` 或 :math:`\\text{ReLU}` 作为激活函数。支持双向,多层配置。 单层单向RNN计算公式如下:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6872,7 +6872,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.LSTM",
-    "description": "",
+    "description": "长短期记忆(LSTM)模块。支持双向LSTM, 堆叠多层LSTM等配置。单层单向LSTM计算公式如下:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6923,7 +6923,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.Interpolate",
-    "description": "",
+    "description": "向下/向上对输入进行采样。 目前只支持四维输入数据。 输入尺寸的解释形式为 `B x C x H x W`。 可用于选择的 `mode` 有 ``nearest`` 、``bilinear`` 、``bicubic``.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6963,7 +6963,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.MeanSquaredError",
-    "description": "",
+    "description": "计算输入 :math:`x` 和目标值 :math:`y` 之间的均方根误差。 若平方根误差可由如下函数描述:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6978,7 +6978,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.SoftmaxCrossEntropy",
-    "description": "",
+    "description": "该损失函数将 LogSoftmax 和 NLLLoss 同时计算的平均分类交叉熵,并具有更高的数值稳定性。 损失函数计算方式如下,其中 class 为目标值的对应分类标签:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6993,7 +6993,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.NLL_Loss",
-    "description": "",
+    "description": "平均负对数似然损失。 对C个类别的分类问题很有用。 `x` 是模型给出的概率形式的似然量。其尺寸可以是 :math:`(N, C)` or :math:`(N, C, d_1, d_2, ..., d_K)` 。 `y` 是损失函数期望的真值,包含 :math:`[0, C-1]` 的类别索引。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7008,7 +7008,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.CrossEntropyLoss",
-    "description": "",
+    "description": "该函数计算LogSoftmax以及NLL_Loss在一起的损失。 `x` 是包含未做归一化的输出.它的尺寸可以为 :math:`(C)` , :math:`(N, C)` 二维或 :math:`(N, C, d_1, d_2, ..., d_K)` 多维。 损失函数的公式如下,其中 class 为目标值的对应分类标签:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7023,7 +7023,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.Sigmoid",
-    "description": "",
+    "description": "Sigmoid激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7038,7 +7038,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.Softplus",
-    "description": "",
+    "description": "Softplus激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7053,7 +7053,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.Softsign",
-    "description": "",
+    "description": "Softsign 激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7068,7 +7068,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.Softmax",
-    "description": "",
+    "description": "Softmax 激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7088,7 +7088,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.HardSigmoid",
-    "description": "",
+    "description": "HardSigmoid 激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7103,7 +7103,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.ReLu",
-    "description": "",
+    "description": "ReLu 整流线性单元激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7118,7 +7118,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.LeakyReLu",
-    "description": "",
+    "description": "LeakyReLu 带泄露的修正线性单元激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7138,7 +7138,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.Gelu",
-    "description": "",
+    "description": "应用高斯误差线性单元函数:",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7158,7 +7158,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.ELU",
-    "description": "",
+    "description": "ELU 指数线性单位激活函数层。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7178,7 +7178,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.Tanh",
-    "description": "",
+    "description": "Tanh双曲正切激活函数.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7193,7 +7193,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.QMachine",
-    "description": "",
+    "description": "变分量子计算的模拟器类,包含states属性为量子线路的statevectors。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7224,7 +7224,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.QMachine.reset_states",
-    "description": "",
+    "description": "将模拟器里面初态重新初始化,并且广播为 (batchsize,*) 维度从而适应批量数据训练。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7240,7 +7240,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.I",
-    "description": "",
+    "description": "定义一个I逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7280,7 +7280,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.Hadamard",
-    "description": "",
+    "description": "定义一个Hadamard逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7320,7 +7320,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.T",
-    "description": "",
+    "description": "定义一个T逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7360,7 +7360,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.S",
-    "description": "",
+    "description": "定义一个S逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7400,7 +7400,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.PauliX",
-    "description": "",
+    "description": "定义一个PauliX逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7440,7 +7440,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.PauliY",
-    "description": "",
+    "description": "定义一个PauliY逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7480,7 +7480,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.PauliZ",
-    "description": "",
+    "description": "定义一个PauliZ逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7520,7 +7520,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.X1",
-    "description": "",
+    "description": "定义一个X1逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7560,7 +7560,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.RX",
-    "description": "",
+    "description": "定义一个RX逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7600,7 +7600,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.RY",
-    "description": "",
+    "description": "定义一个RY逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7640,7 +7640,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.RZ",
-    "description": "",
+    "description": "定义一个RZ逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7680,7 +7680,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.CRX",
-    "description": "",
+    "description": "定义一个CRX逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7720,7 +7720,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.CRY",
-    "description": "",
+    "description": "定义一个CRY逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7760,7 +7760,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.CRZ",
-    "description": "",
+    "description": "定义一个CRZ逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7800,7 +7800,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.Probability",
-    "description": "",
+    "description": "计算量子线路在特定比特上概率测量结果。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7820,7 +7820,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.MeasureAll",
-    "description": "",
+    "description": "计算量子线路的测量结果,支持输入观测量 ``obs``。其格式可以为字典格式，用于表示一个由多个Pauli算符组合而成的可观测量；列表形式,表示多个期望值的可观测量列表。 例如: {\\'X0\\': 0.23} 表示在量子比特0上作用PauliX,系数为0.23 {\\'X1 Z2\\':2.4,\\'Y2\\':-0.5} 对应于观测量 2.4 * X1 @ Z2 - 0.5 * Y2 [{\\'X1 Z2\\':4,\\'Z1 Z0\\':3},{\\'X1 Y2 Z0\\':3.5}] 对应于两个观测量 4 * X1 @ Z2 + 3 * Z1 @ Z0 以及 3.5 * X1 @ Y2 @ Z0 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7840,7 +7840,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.Samples",
-    "description": "",
+    "description": "获取特定线路上的带有 shot 的样本结果",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7870,7 +7870,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.HermitianExpval",
-    "description": "",
+    "description": "计算量子线路某个厄密特量的期望。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7890,7 +7890,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.VQC_HardwareEfficientAnsatz",
-    "description": "",
+    "description": "论文介绍的Hardware Efficient Ansatz的实现: `Hardware-efficient Variational Quantum Eigensolver for Small Molecules <https://arxiv.org/pdf/1704.05018.pdf>`__ 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7936,7 +7936,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.vqc_basis_embedding",
-    "description": "",
+    "description": "将n个二进制特征编码到 ``q_machine`` 的n个量子比特的基态。该函数别名 `VQC_BasisEmbedding` 。 例如, 对于 ``basis_state=([0, 1, 1])``, 在量子系统下其基态为 :math:`|011 \\rangle`。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7957,7 +7957,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.vqc_angle_embedding",
-    "description": "",
+    "description": "将 :math:`N` 特征编码到 :math:`n` 量子比特的旋转角度中, 其中 :math:`N \\leq n`。 该函数别名 `VQC_AngleEmbedding` 。 旋转可以选择为 : 'X' , 'Y' , 'Z', 如 ``rotation`` 的参数定义为: * ``rotation='X'`` 将特征用作RX旋转的角度。 * ``rotation='Y'`` 将特征用作RY旋转的角度。 * ``rotation='Z'`` 将特征用作RZ旋转的角度。 ``wires`` 代表旋转门在量子比特上的idx。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -7988,7 +7988,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.vqc_controlled_hadamard",
-    "description": "",
+    "description": "受控Hadamard逻辑门量子线路。该函数别名:  ``VQC_Controlled_Hadamard`` 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8009,7 +8009,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.torch.QuantumLayerAdjoint",
-    "description": "",
+    "description": "使用伴随矩阵方式进行梯度计算的可自动微分的变分量子线路层,参考  `Efficient calculation of gradients in classical simulations of variational quantum algorithms <https://arxiv.org/abs/2009.02823>`_ 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8035,7 +8035,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.I",
-    "description": "",
+    "description": "定义一个I逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8075,7 +8075,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.Hadamard",
-    "description": "",
+    "description": "定义一个Hadamard逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8115,7 +8115,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.T",
-    "description": "",
+    "description": "定义一个T逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8155,7 +8155,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.S",
-    "description": "",
+    "description": "定义一个S逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8195,7 +8195,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.PauliX",
-    "description": "",
+    "description": "定义一个PauliX逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8235,7 +8235,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.PauliY",
-    "description": "",
+    "description": "定义一个PauliY逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8275,7 +8275,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.PauliZ",
-    "description": "",
+    "description": "定义一个PauliZ逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8315,7 +8315,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.X1",
-    "description": "",
+    "description": "定义一个X1逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8355,7 +8355,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.RX",
-    "description": "",
+    "description": "定义一个RX逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8395,7 +8395,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.RY",
-    "description": "",
+    "description": "定义一个RY逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8435,7 +8435,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.RZ",
-    "description": "",
+    "description": "定义一个RZ逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8475,7 +8475,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.CRX",
-    "description": "",
+    "description": "定义一个CRX逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8515,7 +8515,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.CRY",
-    "description": "",
+    "description": "定义一个CRY逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8555,7 +8555,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.CRZ",
-    "description": "",
+    "description": "定义一个CRZ逻辑门类 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8595,7 +8595,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.VQC_VarMeasure",
-    "description": "",
+    "description": "提供的可观察量 ``obs`` 的方差。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8616,7 +8616,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.Probability",
-    "description": "",
+    "description": "计算量子线路在特定比特上概率测量结果。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8636,7 +8636,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.MeasureAll",
-    "description": "",
+    "description": "计算量子线路的测量结果,支持输入obs为多个或单个泡利算子或哈密顿量。 例如: {\\'wires\\': [0,  1], \\'observables\\': [\\'x\\', \\'i\\'],\\'coefficient\\':[0.23,-3.5]} 或: {\\'X0\\': 0.23} 或: [{\\'wires\\': [0, 2, 3],\\'observables\\': [\\'X\\', \\'Y\\', \\'Z\\'],\\'coefficient\\': [1, 0.5, 0.4]}, {\\'wires\\': [0, 1, 2],\\'observables\\': [\\'X\\', \\'Y\\', \\'Z\\'],\\'coefficient\\': [1, 0.5, 0.4]}]",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8656,7 +8656,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.Samples",
-    "description": "",
+    "description": "获取特定线路上的带有 shot 的样本结果",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8686,7 +8686,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.HermitianExpval",
-    "description": "",
+    "description": "计算量子线路某个厄密特量的期望。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8706,7 +8706,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.VQC_HardwareEfficientAnsatz",
-    "description": "",
+    "description": "论文介绍的Hardware Efficient Ansatz的实现: `Hardware-efficient Variational Quantum Eigensolver for Small Molecules <https://arxiv.org/pdf/1704.05018.pdf>`__ 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8752,7 +8752,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.vqc_basis_embedding",
-    "description": "",
+    "description": "将n个二进制特征编码到 ``q_machine`` 的n个量子比特的基态。该函数别名 `VQC_BasisEmbedding` 。 例如, 对于 ``basis_state=([0, 1, 1])``, 在量子系统下其基态为 :math:`|011 \\rangle`。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8773,7 +8773,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.vqc_angle_embedding",
-    "description": "",
+    "description": "将 :math:`N` 特征编码到 :math:`n` 量子比特的旋转角度中, 其中 :math:`N \\leq n`。 该函数别名 `VQC_AngleEmbedding` 。 旋转可以选择为 : 'X' , 'Y' , 'Z', 如 ``rotation`` 的参数定义为: * ``rotation='X'`` 将特征用作RX旋转的角度。 * ``rotation='Y'`` 将特征用作RY旋转的角度。 * ``rotation='Z'`` 将特征用作RZ旋转的角度。 ``wires`` 代表旋转门在量子比特上的idx。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8804,7 +8804,7 @@
   },
   {
     "name": "pyvqnet.qnn.vqc.tn.vqc_controlled_hadamard",
-    "description": "",
+    "description": "受控Hadamard逻辑门量子线路。该函数别名:  ``VQC_Controlled_Hadamard`` 。",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -8825,7 +8825,7 @@
   },
   {
     "name": "pyvqnet.distributed.ControlComm.CommController.broadcast",
-    "description": "",
+    "description": ":no-index: 将指定进程root上的数据广播到所有进程上。",
     "inputSchema": {
       "type": "object",
       "properties": {

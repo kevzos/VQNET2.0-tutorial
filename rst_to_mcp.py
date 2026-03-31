@@ -111,7 +111,8 @@ class RSTParser:
         param_docs = {}
         return_doc = ""
 
-        # 首先收集描述（在 :param: 之前的所有非空行）
+        # 首先收集描述（在 :param: 之前的所有缩进行）
+        # RST文档中，class/function定义后的描述是缩进的
         while self.current_line < len(self.lines):
             line = self.lines[self.current_line].rstrip()
 
@@ -119,6 +120,8 @@ class RSTParser:
             if (':param ' in line or ':type ' in line or ':return:' in line or
                 ':raises ' in line or line.strip().startswith('.. note::') or
                 line.strip().startswith('.. warning::') or
+                line.strip().startswith('.. code-block::') or
+                line.strip().startswith('Example::') or
                 line.strip().startswith('.. ')):
                 break
 
@@ -131,9 +134,13 @@ class RSTParser:
                     next_line = self.lines[self.current_line + 1].rstrip()
                     if re.match(r'^[=*-]{3,}$', next_line):
                         break
+                # 非缩进的非空行，可能是新的定义开始
+                if line.strip():
+                    break
 
-            if line.strip() and not line.startswith('    ') and not line.startswith('\t'):
-                # 描述文本
+            # 收集缩进的描述文本（去除缩进后添加）
+            if line.strip() and (line.startswith('    ') or line.startswith('\t')):
+                # 描述文本 - 去除前导缩进
                 description_lines.append(line.strip())
 
             self.current_line += 1

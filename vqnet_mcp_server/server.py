@@ -7577,18 +7577,113 @@ class SimpleMCPServer:
 
         print("服务器关闭", file=sys.stderr)
 
-def main():
-    """主函数"""
-    # 从命令行获取工具文件路径（可选）
-    tools_file = "vqnet_all_tools.json"
-    if len(sys.argv) > 1:
-        tools_file = sys.argv[1]
-        if not os.path.exists(tools_file):
-            print(f"错误: 工具文件 {tools_file} 不存在", file=sys.stderr)
-            sys.exit(1)
+def setup_global_mcp():
+    """Add vqnet-mcp to Claude Code global settings"""
+    import platform
+    from pathlib import Path
 
-    # 创建并运行服务器
-    server = SimpleMCPServer(tools_file)
+    # Determine the global settings path
+    if platform.system() == "Windows":
+        settings_path = Path.home() / ".claude" / "settings.json"
+    else:
+        settings_path = Path.home() / ".claude" / "settings.json"
+
+    # Create .claude directory if not exists
+    settings_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Read existing settings or create new
+    settings = {}
+    if settings_path.exists():
+        try:
+            with open(settings_path, 'r', encoding='utf-8') as f:
+                settings = json.load(f)
+        except (json.JSONDecodeError, Exception) as e:
+            print(f"Warning: Could not read existing settings: {e}", file=sys.stderr)
+
+    # Add mcpServers section
+    if "mcpServers" not in settings:
+        settings["mcpServers"] = {}
+
+    # Add vqnet-mcp server
+    settings["mcpServers"]["vqnet-mcp"] = {
+        "command": "python",
+        "args": ["-m", "vqnet_mcp_server.server"]
+    }
+
+    # Write back
+    with open(settings_path, 'w', encoding='utf-8') as f:
+        json.dump(settings, f, indent=2, ensure_ascii=False)
+
+    print(f"✓ vqnet-mcp added to global settings: {settings_path}", file=sys.stderr)
+    print(f"✓ You can now use vqnet-mcp tools in any directory with Claude Code", file=sys.stderr)
+
+def remove_global_mcp():
+    """Remove vqnet-mcp from Claude Code global settings"""
+    import platform
+    from pathlib import Path
+
+    if platform.system() == "Windows":
+        settings_path = Path.home() / ".claude" / "settings.json"
+    else:
+        settings_path = Path.home() / ".claude" / "settings.json"
+
+    if not settings_path.exists():
+        print("Global settings file not found", file=sys.stderr)
+        return
+
+    try:
+        with open(settings_path, 'r', encoding='utf-8') as f:
+            settings = json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"Error reading settings: {e}", file=sys.stderr)
+        return
+
+    if "mcpServers" in settings and "vqnet-mcp" in settings["mcpServers"]:
+        del settings["mcpServers"]["vqnet-mcp"]
+        if not settings["mcpServers"]:
+            del settings["mcpServers"]
+
+        with open(settings_path, 'w', encoding='utf-8') as f:
+            json.dump(settings, f, indent=2, ensure_ascii=False)
+
+        print(f"✓ vqnet-mcp removed from global settings: {settings_path}", file=sys.stderr)
+    else:
+        print("vqnet-mcp not found in global settings", file=sys.stderr)
+
+def main():
+    """主函数 - 支持多种命令"""
+    # 检查命令参数
+    if len(sys.argv) > 1:
+        cmd = sys.argv[1]
+
+        if cmd == "setup":
+            setup_global_mcp()
+            return
+        elif cmd == "remove":
+            remove_global_mcp()
+            return
+        elif cmd == "--help" or cmd == "-h":
+            print("vqnet-mcp - VQNET Quantum ML MCP Server", file=sys.stderr)
+            print("", file=sys.stderr)
+            print("Usage:", file=sys.stderr)
+            print("  vqnet-mcp setup   - Add MCP to Claude Code global settings", file=sys.stderr)
+            print("  vqnet-mcp remove  - Remove MCP from global settings", file=sys.stderr)
+            print("  vqnet-mcp         - Run MCP server (default)", file=sys.stderr)
+            print("", file=sys.stderr)
+            print("After running 'vqnet-mcp setup', you can use VQNET tools in any directory.", file=sys.stderr)
+            return
+        else:
+            # 旧版兼容：作为工具文件路径
+            tools_file = cmd
+            if not os.path.exists(tools_file):
+                print(f"错误: 工具文件 {tools_file} 不存在", file=sys.stderr)
+                sys.exit(1)
+            server = SimpleMCPServer(tools_file)
+            server.run()
+            return
+
+    # 默认：运行MCP服务器
+    server = SimpleMCPServer()
     server.run()
 
 if __name__ == "__main__":
