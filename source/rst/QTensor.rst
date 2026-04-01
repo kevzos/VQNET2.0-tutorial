@@ -10,7 +10,7 @@ VQNet量子机器学习所使用的数据结构QTensor的python接口介绍。QT
 QTensor's 函数与属性
 ******************************************
 
-.. py:class:: pyvqnet.tensor.tensor.QTensor(data, requires_grad=False, nodes=None, device=0, dtype=None, name="")
+.. py:class:: pyvqnet.tensor.tensor.QTensor(data, requires_grad=False, nodes=None, device=pyvqnet.DEV_CPU, dtype=None, name="")
 
     具有动态计算图构造和自动微分的张量。
 
@@ -51,7 +51,7 @@ QTensor's 函数与属性
 
             from pyvqnet.tensor import QTensor
 
-            a = QTensor([2, 3, 4, 5], requires_grad=True)
+            a = QTensor([2.0, 3.0, 4.0, 5.0], requires_grad=True)
             print(a.ndim)
 
             # 1
@@ -68,7 +68,7 @@ QTensor's 函数与属性
 
             from pyvqnet.tensor import QTensor
 
-            a = QTensor([2, 3, 4, 5], requires_grad=True)
+            a = QTensor([2.0, 3.0, 4.0, 5.0], requires_grad=True)
             print(a.shape)
 
             # [4]
@@ -85,7 +85,7 @@ QTensor's 函数与属性
 
             from pyvqnet.tensor import QTensor
 
-            a = QTensor([2, 3, 4, 5], requires_grad=True)
+            a = QTensor([2.0, 3.0, 4.0, 5.0], requires_grad=True)
             print(a.size)
 
             # 4
@@ -101,7 +101,7 @@ QTensor's 函数与属性
 
             from pyvqnet.tensor import QTensor
 
-            a = QTensor([2, 3, 4, 5], requires_grad=True)
+            a = QTensor([2.0, 3.0, 4.0, 5.0], requires_grad=True)
             print(a.numel())
 
             # 4
@@ -141,23 +141,6 @@ QTensor's 函数与属性
             print(a.dtype)
             # 4
 
- 
-    .. py:attribute:: is_dense
-
-        是否是稠密张量。
-
-        :return: 当该数据是稠密的时候, 返回1；否则返回 0。
-
-        Example::
-
-            from pyvqnet.tensor import QTensor
-
-            a = QTensor([2, 3, 4, 5])
-            print(a.is_dense)
-            #1
-
-
- 
 
     .. py:attribute:: is_contiguous
 
@@ -188,7 +171,7 @@ QTensor's 函数与属性
         Example::
 
             from pyvqnet.tensor import QTensor
-            t3 = QTensor([2, 3, 4, 5], requires_grad=True)
+            t3 = QTensor([2.0, 3.0, 4.0, 5.0], requires_grad=True)
             t3.zero_grad()
             print(t3.grad)
             # [0., 0., 0., 0.]
@@ -226,7 +209,7 @@ QTensor's 函数与属性
 
             from pyvqnet.tensor import tensor
             from pyvqnet.tensor import QTensor
-            t3 = QTensor([2, 3, 4, 5], requires_grad=True)
+            t3 = QTensor([2.0, 3.0, 4.0, 5.0], requires_grad=True)
             t4 = t3.to_numpy()
             print(t4)
 
@@ -3231,7 +3214,7 @@ select
         from pyvqnet.tensor import tensor
         from pyvqnet.tensor import QTensor
         import numpy as np
-        t = QTensor(np.arange(1,25).reshape(2,3,4))
+        t = QTensor(np.arange(1,25.0).reshape(2,3,4))
               
         indx = [":", "0", ":"]        
         t.requires_grad = True
@@ -3259,7 +3242,7 @@ concatenate
 
         from pyvqnet.tensor import tensor
         from pyvqnet.tensor import QTensor
-        x = QTensor([[1, 2, 3],[4,5,6]], requires_grad=True)
+        x = QTensor([[1.0, 2, 3],[4,5,6]], requires_grad=True)
         y = 1-x
         x = tensor.concatenate([x,y],1)
         print(x)
@@ -4076,4 +4059,6 @@ no_grad
             x = tensor.QTensor([1.0, 2.0, 3.0],requires_grad=True)
             y = tensor.tan(x)
             y.backward()
-        #RuntimeError: output requires_grad is False.
+        """
+        RuntimeError: The output tensor does not require gradients (output.requires_grad == False). This may occur if you used a non-autograd function in the forward pass. To enable gradient computation, ensure that all operations are performed on tensors with requires_grad=True, or use autograd-compatible functions.
+        """
