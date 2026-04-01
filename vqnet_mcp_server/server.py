@@ -95,6 +95,28 @@ class SimpleMCPServer:
 
     def handle_initialize(self, request: Dict[str, Any], request_id: Any) -> Dict[str, Any]:
         """处理初始化请求"""
+        # 关键修复：添加 instructions 让 Claude 知道有 VQNET 工具可用
+        # 这会被添加到系统提示的 "MCP Server Instructions" 部分
+        instructions = """VQNET 2.0 Quantum Machine Learning Framework - 318+ API Tools Available
+
+IMPORTANT: When users ask about quantum computing, quantum neural networks, VQNET, pyvqnet, or any related topics, USE THESE MCP TOOLS instead of Web Search.
+
+Available tool categories:
+- pyvqnet.tensor: Tensor operations (QTensor, ones, zeros, arange, randn, add, mul, matmul, etc.)
+- pyvqnet.qnn: Quantum Neural Network modules (QuantumLayer, QMachine, VQC, etc.)
+- pyvqnet.qnn.pq3: pyQPanda3 quantum layers (QpandaQProgVQCLayer, etc.)
+- pyvqnet.qnn.vqc: Variational Quantum Circuits (Hadamard, RX, RY, RZ, CNOT, etc.)
+- pyvqnet.nn: Neural network layers (Linear, Conv2D, BatchNorm, Dropout, etc.)
+- pyvqnet.optim: Optimizers (SGD, Adam, etc.)
+- pyvqnet.utils: Utility functions
+
+How to use:
+1. Search for tools using keywords: "quantum", "tensor", "circuit", "Hadamard", "layer"
+2. Call tools directly by name: pyvqnet.tensor.ones, pyvqnet.qnn.vqc.Hadamard
+3. Each tool returns official example code from VQNET documentation
+
+Search hints: Use ToolSearchTool with keywords like "vqnet", "quantum", "tensor", "circuit", "neural network" to discover relevant tools."""
+
         return {
             "jsonrpc": "2.0",
             "id": request_id,
@@ -106,7 +128,8 @@ class SimpleMCPServer:
                 "serverInfo": {
                     "name": "VQNET Quantum ML Server",
                     "version": "1.0.0"
-                }
+                },
+                "instructions": instructions
             }
         }
 
@@ -120,6 +143,45 @@ class SimpleMCPServer:
                 "description": tool.get("description", ""),
                 "inputSchema": tool.get("inputSchema", {})
             }
+
+            # 关键修复：为核心工具添加 _meta 让它们不被 deferred
+            # 这样 Claude 在初始状态下就能看到这些工具的完整描述
+            tool_name = tool["name"]
+
+            # 核心量子计算工具 - 设置 alwaysLoad 避免被 deferred
+            always_load_tools = [
+                "pyvqnet.tensor.tensor.QTensor",
+                "pyvqnet.tensor.ones",
+                "pyvqnet.tensor.zeros",
+                "pyvqnet.qnn.pq3.quantumlayer.QpandaQProgVQCLayer",
+                "pyvqnet.qnn.vvc.QMachine",
+                "pyvqnet.qnn.vqc.Hadamard",
+                "pyvqnet.qnn.vqc.RX",
+                "pyvqnet.qnn.vqc.RY",
+                "pyvqnet.qnn.vqc.RZ",
+                "pyvqnet.qnn.vqc.CNOT",
+            ]
+
+            if tool_name in always_load_tools:
+                mcp_tool["_meta"] = {
+                    "anthropic/alwaysLoad": True,
+                    "anthropic/searchHint": f"Core VQNET tool for {tool_name.split('.')[-1]} operations"
+                }
+
+            # 为量子相关工具添加 searchHint
+            elif "qnn" in tool_name or "quantum" in tool_name.lower() or "vqc" in tool_name:
+                mcp_tool["_meta"] = {
+                    "anthropic/searchHint": f"VQNET quantum neural network tool: {tool_name}"
+                }
+            elif "tensor" in tool_name:
+                mcp_tool["_meta"] = {
+                    "anthropic/searchHint": f"VQNET tensor operation: {tool_name}"
+                }
+            elif "nn" in tool_name and "qnn" not in tool_name:
+                mcp_tool["_meta"] = {
+                    "anthropic/searchHint": f"VQNET neural network layer: {tool_name}"
+                }
+
             mcp_tools.append(mcp_tool)
 
         return {

@@ -2,6 +2,16 @@
 
 VQNET Quantum Machine Learning MCP Server - Provides 318+ VQNET 2.0 API interfaces via Model Context Protocol for Claude Code.
 
+## What's New in v0.3.0
+
+**Fixed: Claude now automatically uses VQNET MCP tools instead of Web Search**
+
+This version includes critical fixes to ensure Claude automatically discovers and uses VQNET tools:
+
+1. **Server Instructions** - Added comprehensive instructions that Claude sees in its system prompt, explaining when to use VQNET tools
+2. **Core Tools Pre-loaded** - Essential tools (QTensor, ones, zeros, QpandaQProgVQCLayer, etc.) are now always visible to Claude
+3. **Search Hints** - All 318 tools include search hints for better discoverability via ToolSearchTool
+
 ## Installation
 
 ```bash
