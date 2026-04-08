@@ -7662,18 +7662,12 @@ Search hints: Use ToolSearchTool with keywords like "vqnet", "quantum", "tensor"
         print("服务器关闭", file=sys.stderr)
 
 def setup_global_mcp():
-    """Add vqnet-mcp to Claude Code global settings"""
+    """Add vqnet-mcp to Claude Code user-level settings (~/.claude.json)"""
     import platform
     from pathlib import Path
 
-    # Determine the global settings path
-    if platform.system() == "Windows":
-        settings_path = Path.home() / ".claude" / "settings.json"
-    else:
-        settings_path = Path.home() / ".claude" / "settings.json"
-
-    # Create .claude directory if not exists
-    settings_path.parent.mkdir(parents=True, exist_ok=True)
+    # User-level settings path is ~/.claude.json
+    settings_path = Path.home() / ".claude.json"
 
     # Read existing settings or create new
     settings = {}
@@ -7698,21 +7692,19 @@ def setup_global_mcp():
     with open(settings_path, 'w', encoding='utf-8') as f:
         json.dump(settings, f, indent=2, ensure_ascii=False)
 
-    print(f"✓ vqnet-mcp added to global settings: {settings_path}", file=sys.stderr)
+    print(f"✓ vqnet-mcp added to user settings: {settings_path}", file=sys.stderr)
     print(f"✓ You can now use vqnet-mcp tools in any directory with Claude Code", file=sys.stderr)
 
 def remove_global_mcp():
-    """Remove vqnet-mcp from Claude Code global settings"""
+    """Remove vqnet-mcp from Claude Code user-level settings (~/.claude.json)"""
     import platform
     from pathlib import Path
 
-    if platform.system() == "Windows":
-        settings_path = Path.home() / ".claude" / "settings.json"
-    else:
-        settings_path = Path.home() / ".claude" / "settings.json"
+    # User-level settings path is ~/.claude.json
+    settings_path = Path.home() / ".claude.json"
 
     if not settings_path.exists():
-        print("Global settings file not found", file=sys.stderr)
+        print("User settings file not found", file=sys.stderr)
         return
 
     try:
@@ -7730,9 +7722,9 @@ def remove_global_mcp():
         with open(settings_path, 'w', encoding='utf-8') as f:
             json.dump(settings, f, indent=2, ensure_ascii=False)
 
-        print(f"✓ vqnet-mcp removed from global settings: {settings_path}", file=sys.stderr)
+        print(f"✓ vqnet-mcp removed from user settings: {settings_path}", file=sys.stderr)
     else:
-        print("vqnet-mcp not found in global settings", file=sys.stderr)
+        print("vqnet-mcp not found in user settings", file=sys.stderr)
 
 def main():
     """主函数 - 支持多种命令"""
@@ -7750,8 +7742,8 @@ def main():
             print("vqnet-mcp - VQNET Quantum ML MCP Server", file=sys.stderr)
             print("", file=sys.stderr)
             print("Usage:", file=sys.stderr)
-            print("  vqnet-mcp setup   - Add MCP to Claude Code global settings", file=sys.stderr)
-            print("  vqnet-mcp remove  - Remove MCP from global settings", file=sys.stderr)
+            print("  vqnet-mcp setup   - Add MCP to Claude Code user settings (~/.claude.json)", file=sys.stderr)
+            print("  vqnet-mcp remove  - Remove MCP from user settings", file=sys.stderr)
             print("  vqnet-mcp         - Run MCP server (default)", file=sys.stderr)
             print("", file=sys.stderr)
             print("After running 'vqnet-mcp setup', you can use VQNET tools in any directory.", file=sys.stderr)

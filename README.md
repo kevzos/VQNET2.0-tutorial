@@ -12,41 +12,44 @@ This version includes critical fixes to ensure Claude automatically discovers an
 2. **Core Tools Pre-loaded** - Essential tools (QTensor, ones, zeros, QpandaQProgVQCLayer, etc.) are now always visible to Claude
 3. **Search Hints** - All 318 tools include search hints for better discoverability via ToolSearchTool
 
-## Installation
+## Installation & Setup
 
+### Step 1: Install the package
+```bash
+pip install vqnet_mcp_server-xxx.whl
+```
+
+Or from PyPI:
 ```bash
 pip install vqnet-mcp-server
 ```
 
-## Setup for Claude Code
-
-After installation, run the setup command to add the MCP to Claude Code global settings:
-
+### Step 2: Configure Claude Code
 ```bash
 vqnet-mcp setup
 ```
 
-This will add `vqnet-mcp` to your `~/.claude/settings.json`, making the VQNET tools available in any directory when using Claude Code.
+This adds `vqnet-mcp` to your `~/.claude.json` (user-level settings), making VQNET tools available in any directory.
 
-## Remove from Global Settings
+### Step 3: Restart Claude Code
+Restart Claude Code to load the new MCP server.
 
-```bash
-vqnet-mcp remove
-```
+## Commands
 
-## Usage in Claude Code
+| Command | Description |
+|---------|-------------|
+| `vqnet-mcp setup` | Add MCP to Claude Code user settings |
+| `vqnet-mcp remove` | Remove MCP from user settings |
+| `vqnet-mcp --help` | Show help information |
+| `vqnet-mcp` | Run MCP server (usually auto-started by Claude Code) |
 
-After running `vqnet-mcp setup`, you can use VQNET tools in any conversation with Claude Code:
+## Verify Installation
 
-- Ask Claude to use VQNET quantum computing APIs
-- Generate code for quantum neural networks
-- Use VQNET tensor operations
-- Create quantum circuits and layers
+After setup, restart Claude Code and ask about VQNET:
+- "What quantum gates are available in vqnet-mcp?"
+- "Show me how to create a QTensor"
 
-Example prompts:
-- "Use vqnet-mcp to create a QTensor"
-- "Generate code for a quantum layer with pyvqnet"
-- "Show me how to use QMachine for variational quantum computing"
+Claude will automatically use VQNET MCP tools when you ask about quantum computing topics.
 
 ## Available APIs (318 tools)
 
