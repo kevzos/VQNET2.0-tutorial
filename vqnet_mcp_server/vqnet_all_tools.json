@@ -22,7 +22,7 @@
         "device": {
           "type": "string",
           "description": "储存在哪个设备上,默认: pyvqnet.DEV_CPU,在CPU上。",
-          "default": "0"
+          "default": "pyvqnet.DEV_CPU"
         },
         "dtype": {
           "type": "string",
@@ -31,7 +31,7 @@
         },
         "name": {
           "type": "string",
-          "description": "QTensor的名字,default:\"\"。 Example:: from pyvqnet.tensor import QTensor from pyvqnet.dtype import * import numpy as np t1 = QTensor(np.ones([2,3])) t2 =  QTensor([2,3,4j,5]) t3 =  QTensor([[[2,3,4,5],[2,3,4,5]]],dtype=kbool) print(t1) print(t2) print(t3) # [[1. 1. 1.] #  [1. 1. 1.]] # [2.+0.j 3.+0.j 0.+4.j 5.+0.j] # [[[ True  True  True  True] #   [ True  True  True  True]]] .. py:attribute:: ndim 返回张量的维度的个数。 Example:: from pyvqnet.tensor import QTensor a = QTensor([2, 3, 4, 5], requires_grad=True) print(a.ndim) # 1 .. py:attribute:: shape 返回张量的维度 Example:: from pyvqnet.tensor import QTensor a = QTensor([2, 3, 4, 5], requires_grad=True) print(a.shape) # [4] .. py:attribute:: size 返回张量的元素个数。 Example:: from pyvqnet.tensor import QTensor a = QTensor([2, 3, 4, 5], requires_grad=True) print(a.size) # 4",
+          "description": "QTensor的名字,default:\"\"。 Example:: from pyvqnet.tensor import QTensor from pyvqnet.dtype import * import numpy as np t1 = QTensor(np.ones([2,3])) t2 =  QTensor([2,3,4j,5]) t3 =  QTensor([[[2,3,4,5],[2,3,4,5]]],dtype=kbool) print(t1) print(t2) print(t3) # [[1. 1. 1.] #  [1. 1. 1.]] # [2.+0.j 3.+0.j 0.+4.j 5.+0.j] # [[[ True  True  True  True] #   [ True  True  True  True]]] .. py:attribute:: ndim 返回张量的维度的个数。 Example:: from pyvqnet.tensor import QTensor a = QTensor([2.0, 3.0, 4.0, 5.0], requires_grad=True) print(a.ndim) # 1 .. py:attribute:: shape 返回张量的维度 Example:: from pyvqnet.tensor import QTensor a = QTensor([2.0, 3.0, 4.0, 5.0], requires_grad=True) print(a.shape) # [4] .. py:attribute:: size 返回张量的元素个数。 Example:: from pyvqnet.tensor import QTensor a = QTensor([2.0, 3.0, 4.0, 5.0], requires_grad=True) print(a.size) # 4",
           "default": ""
         }
       },
@@ -49,7 +49,7 @@
       "properties": {},
       "required": null
     },
-    "example_code": "from pyvqnet.tensor import QTensor\n    t3 = QTensor([2, 3, 4, 5], requires_grad=True)\n    t3.zero_grad()\n    print(t3.grad)\n    # [0., 0., 0., 0.]"
+    "example_code": "from pyvqnet.tensor import QTensor\n    t3 = QTensor([2.0, 3.0, 4.0, 5.0], requires_grad=True)\n    t3.zero_grad()\n    print(t3.grad)\n    # [0., 0., 0., 0.]"
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.backward",
@@ -75,7 +75,7 @@
       "properties": {},
       "required": null
     },
-    "example_code": "from pyvqnet.tensor import tensor\n    from pyvqnet.tensor import QTensor\n    t3 = QTensor([2, 3, 4, 5], requires_grad=True)\n    t4 = t3.to_numpy()\n    print(t4)\n\n    # [2. 3. 4. 5.]"
+    "example_code": "from pyvqnet.tensor import tensor\n    from pyvqnet.tensor import QTensor\n    t3 = QTensor([2.0, 3.0, 4.0, 5.0], requires_grad=True)\n    t4 = t3.to_numpy()\n    print(t4)\n\n    # [2. 3. 4. 5.]"
   },
   {
     "name": "pyvqnet.tensor.tensor.QTensor.item",
@@ -2107,7 +2107,7 @@
         },
         "index": {
           "type": "integer",
-          "description": "一个字符串包含切片的索引。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor import numpy as np t = QTensor(np.arange(1,25).reshape(2,3,4)) indx = [\":\", \"0\", \":\"] t.requires_grad = True t.zero_grad() ts = tensor.select(t,indx) print(ts) # [ # [[1., 2., 3., 4.]], # [[13., 14., 15., 16.]] # ]"
+          "description": "一个字符串包含切片的索引。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor import numpy as np t = QTensor(np.arange(1,25.0).reshape(2,3,4)) indx = [\":\", \"0\", \":\"] t.requires_grad = True t.zero_grad() ts = tensor.select(t,indx) print(ts) # [ # [[1., 2., 3., 4.]], # [[13., 14., 15., 16.]] # ]"
         }
       },
       "required": [
@@ -2115,7 +2115,7 @@
         "index"
       ]
     },
-    "example_code": "from pyvqnet.tensor import tensor\nfrom pyvqnet.tensor import QTensor\nimport numpy as np\nt = QTensor(np.arange(1,25).reshape(2,3,4))\n\nindx = [\":\", \"0\", \":\"]\nt.requires_grad = True\nt.zero_grad()\nts = tensor.select(t,indx)\n\nprint(ts)\n# [\n# [[1., 2., 3., 4.]],\n# [[13., 14., 15., 16.]]\n# ]"
+    "example_code": "from pyvqnet.tensor import tensor\nfrom pyvqnet.tensor import QTensor\nimport numpy as np\nt = QTensor(np.arange(1,25.0).reshape(2,3,4))\n\nindx = [\":\", \"0\", \":\"]\nt.requires_grad = True\nt.zero_grad()\nts = tensor.select(t,indx)\n\nprint(ts)\n# [\n# [[1., 2., 3., 4.]],\n# [[13., 14., 15., 16.]]\n# ]"
   },
   {
     "name": "pyvqnet.tensor.concatenate",
@@ -2129,7 +2129,7 @@
         },
         "axis": {
           "type": "integer",
-          "description": "要连接的维度。 必须介于 0 和输入张量的最大维数之间。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor x = QTensor([[1, 2, 3],[4,5,6]], requires_grad=True) y = 1-x x = tensor.concatenate([x,y],1) print(x) # [ # [1., 2., 3., 0., -1., -2.], # [4., 5., 6., -3., -4., -5.] # ]",
+          "description": "要连接的维度。 必须介于 0 和输入张量的最大维数之间。 Example:: from pyvqnet.tensor import tensor from pyvqnet.tensor import QTensor x = QTensor([[1.0, 2, 3],[4,5,6]], requires_grad=True) y = 1-x x = tensor.concatenate([x,y],1) print(x) # [ # [1., 2., 3., 0., -1., -2.], # [4., 5., 6., -3., -4., -5.] # ]",
           "default": 1
         }
       },
@@ -2137,7 +2137,7 @@
         "args"
       ]
     },
-    "example_code": "from pyvqnet.tensor import tensor\nfrom pyvqnet.tensor import QTensor\nx = QTensor([[1, 2, 3],[4,5,6]], requires_grad=True)\ny = 1-x\nx = tensor.concatenate([x,y],1)\nprint(x)\n\n# [\n# [1., 2., 3., 0., -1., -2.],\n# [4., 5., 6., -3., -4., -5.]\n# ]"
+    "example_code": "from pyvqnet.tensor import tensor\nfrom pyvqnet.tensor import QTensor\nx = QTensor([[1.0, 2, 3],[4,5,6]], requires_grad=True)\ny = 1-x\nx = tensor.concatenate([x,y],1)\nprint(x)\n\n# [\n# [1., 2., 3., 0., -1., -2.],\n# [4., 5., 6., -3., -4., -5.]\n# ]"
   },
   {
     "name": "pyvqnet.tensor.stack",
@@ -2524,7 +2524,7 @@
         "qtensor_list"
       ]
     },
-    "example_code": "import pyvqnet.tensor as tensor\nfrom pyvqnet import no_grad\n\nwith no_grad():\n    x = tensor.QTensor([1.0, 2.0, 3.0],requires_grad=True)\n    y = tensor.tan(x)\n    y.backward()\n#RuntimeError: output requires_grad is False."
+    "example_code": "import pyvqnet.tensor as tensor\nfrom pyvqnet import no_grad\n\nwith no_grad():\n    x = tensor.QTensor([1.0, 2.0, 3.0],requires_grad=True)\n    y = tensor.tan(x)\n    y.backward()\n\"\"\"\nRuntimeError: The output tensor does not require gradients (output.requires_grad == False). This may occur if you used a non-autograd function in the forward pass. To enable gradient computation, ensure that all operations are performed on tensors with requires_grad=True, or use autograd-compatible functions.\n\"\"\""
   },
   {
     "name": "pyvqnet.tensor.pad_packed_sequence",
@@ -2556,7 +2556,7 @@
         "sequence"
       ]
     },
-    "example_code": "import pyvqnet.tensor as tensor\nfrom pyvqnet import no_grad\n\nwith no_grad():\n    x = tensor.QTensor([1.0, 2.0, 3.0],requires_grad=True)\n    y = tensor.tan(x)\n    y.backward()\n#RuntimeError: output requires_grad is False."
+    "example_code": "import pyvqnet.tensor as tensor\nfrom pyvqnet import no_grad\n\nwith no_grad():\n    x = tensor.QTensor([1.0, 2.0, 3.0],requires_grad=True)\n    y = tensor.tan(x)\n    y.backward()\n\"\"\"\nRuntimeError: The output tensor does not require gradients (output.requires_grad == False). This may occur if you used a non-autograd function in the forward pass. To enable gradient computation, ensure that all operations are performed on tensors with requires_grad=True, or use autograd-compatible functions.\n\"\"\""
   },
   {
     "name": "pyvqnet.tensor.pack_pad_sequence",
@@ -2588,7 +2588,7 @@
         "lengths"
       ]
     },
-    "example_code": "import pyvqnet.tensor as tensor\nfrom pyvqnet import no_grad\n\nwith no_grad():\n    x = tensor.QTensor([1.0, 2.0, 3.0],requires_grad=True)\n    y = tensor.tan(x)\n    y.backward()\n#RuntimeError: output requires_grad is False."
+    "example_code": "import pyvqnet.tensor as tensor\nfrom pyvqnet import no_grad\n\nwith no_grad():\n    x = tensor.QTensor([1.0, 2.0, 3.0],requires_grad=True)\n    y = tensor.tan(x)\n    y.backward()\n\"\"\"\nRuntimeError: The output tensor does not require gradients (output.requires_grad == False). This may occur if you used a non-autograd function in the forward pass. To enable gradient computation, ensure that all operations are performed on tensors with requires_grad=True, or use autograd-compatible functions.\n\"\"\""
   },
   {
     "name": "pyvqnet.qnn.pq3.quantumlayer.QuantumLayer",
@@ -2598,7 +2598,7 @@
       "properties": {
         "qprog_with_measure": {
           "type": "string",
-          "description": "用pyQPand构建的量子线路运行和测量函数。"
+          "description": "用pyQPanda构建的量子线路运行和测量函数。"
         },
         "para_num": {
           "type": "integer",
@@ -2621,7 +2621,7 @@
         },
         "name": {
           "type": "string",
-          "description": "这个模块的名字, 默认为\"\"。 qprog_with_measure是pyQPanda中定义的量子线路函数 :https://qcloud.originqc.com.cn/document/qpanda-3/dc/d12/tutorial_quantum_program.html。 此函数必须包含输入和参数两个参数作为函数入参(即使某个参数未实际使用),输出为线路的测量结果或者期望值（需要为np.ndarray或包含数值的列表）,否则无法在QpandaQCircuitVQCLayerLite中正常运行。 量子线路函数 qprog_with_measure (input,param)的使用可参考下面的例子。 `input`: 输入一维经典数据。如果没有,输入 None。 `param`: 输入一维的变分量子线路的待训练参数。 该类具有别名 `QuantumLayerV2`, `QpandaQCircuitVQCLayerLite`。 该类计算梯度需要额外使用pyqpanda3进行线路计算个数与参数个数、数据个数、数据维度的乘积线性相关。 Example:: from pyvqnet.qnn.pq3.measure import ProbsMeasure from pyvqnet.qnn.pq3.quantumlayer import QuantumLayer from pyvqnet.tensor import QTensor,ones import pyqpanda3.core as pq def pqctest (input,param): num_of_qubits = 4 m_machine = pq.CPUQVM() qubits = range(num_of_qubits) circuit = pq.QCircuit() circuit<<pq.H(qubits[0]) circuit<<pq.H(qubits[1]) circuit<<pq.H(qubits[2]) circuit<<pq.H(qubits[3]) circuit<<pq.RZ(qubits[0],input[0]) circuit<<pq.RZ(qubits[1],input[1]) circuit<<pq.RZ(qubits[2],input[2]) circuit<<pq.RZ(qubits[3],input[3]) circuit<<pq.CNOT(qubits[0],qubits[1]) circuit<<pq.RZ(qubits[1],param[0]) circuit<<pq.CNOT(qubits[0],qubits[1]) circuit<<pq.CNOT(qubits[1],qubits[2]) circuit<<pq.RZ(qubits[2],param[1]) circuit<<pq.CNOT(qubits[1],qubits[2]) circuit<<pq.CNOT(qubits[2],qubits[3]) circuit<<pq.RZ(qubits[3],param[2]) circuit<<pq.CNOT(qubits[2],qubits[3]) prog = pq.QProg() prog<<circuit rlt_prob = ProbsMeasure(m_machine,prog,[0,2]) return rlt_prob pqc = QuantumLayer(pqctest,3) #classic data as input input = QTensor([[1,2,3,4],[4,2,2,3],[3.0,3,2,2]] ) #forward circuits rlt = pqc(input) print(rlt) grad = ones(rlt.data.shape)*1000 #backward circuits rlt.backward(grad) print(pqc.m_para.grad)",
+          "description": "这个模块的名字, 默认为\"\"。 qprog_with_measure是pyQPanda中定义的量子线路函数 :https://qcloud.originqc.com.cn/document/qpanda-3/dc/d12/tutorial_quantum_program.html。 此函数必须包含输入和参数两个参数作为函数入参(即使某个参数未实际使用),输出为线路的测量结果或者期望值（需要为np.ndarray或包含数值的列表）,否则无法在QpandaQCircuitVQCLayerLite中正常运行。 量子线路函数 qprog_with_measure的使用可参考下面的例子。 qprog_with_measure(input,param) `input`: 输入一维经典数据。如果没有,输入 None。 `param`: 输入一维的变分量子线路的待训练参数。 该类具有别名 `QuantumLayerV2`, `QpandaQCircuitVQCLayerLite`。 该类在计算梯度时，需要额外使用 pyqpanda3，其计算量与线路计算个数、参数个数、数据个数以及数据维度的乘积呈线性相关。 Example:: from pyvqnet.qnn.pq3.measure import ProbsMeasure from pyvqnet.qnn.pq3.quantumlayer import QuantumLayer from pyvqnet.tensor import QTensor,ones import pyqpanda3.core as pq def pqctest (input,param): num_of_qubits = 4 m_machine = pq.CPUQVM() qubits = range(num_of_qubits) circuit = pq.QCircuit() circuit<<pq.H(qubits[0]) circuit<<pq.H(qubits[1]) circuit<<pq.H(qubits[2]) circuit<<pq.H(qubits[3]) circuit<<pq.RZ(qubits[0],input[0]) circuit<<pq.RZ(qubits[1],input[1]) circuit<<pq.RZ(qubits[2],input[2]) circuit<<pq.RZ(qubits[3],input[3]) circuit<<pq.CNOT(qubits[0],qubits[1]) circuit<<pq.RZ(qubits[1],param[0]) circuit<<pq.CNOT(qubits[0],qubits[1]) circuit<<pq.CNOT(qubits[1],qubits[2]) circuit<<pq.RZ(qubits[2],param[1]) circuit<<pq.CNOT(qubits[1],qubits[2]) circuit<<pq.CNOT(qubits[2],qubits[3]) circuit<<pq.RZ(qubits[3],param[2]) circuit<<pq.CNOT(qubits[2],qubits[3]) prog = pq.QProg() prog<<circuit rlt_prob = ProbsMeasure(m_machine,prog,[0,2]) return rlt_prob pqc = QuantumLayer(pqctest,3) #classic data as input input = QTensor([[1,2,3,4],[4,2,2,3],[3.0,3,2,2]] ) #forward circuits rlt = pqc(input) print(rlt) grad = ones(rlt.data.shape)*1000 #backward circuits rlt.backward(grad) print(pqc.m_para.grad)",
           "default": ""
         }
       },
@@ -2686,7 +2686,7 @@
         "para_num"
       ]
     },
-    "example_code": "import pyqpanda3.core as pq\nimport pyvqnet\nfrom pyvqnet.qnn.pq3.quantumlayer import  QpandaQProgVQCLayer\n\n\ndef qfun(input, param):\n    m_qlist = range(3)\n    cubits = range(3)\n    measure_qubits = [0,1, 2]\n    m_prog = pq.QProg()\n    cir = pq.QCircuit(3)\n\n    cir<<pq.RZ(m_qlist[0], input[0])\n    cir<<pq.RX(m_qlist[2], input[2])\n\n    qcir = pq.RX(m_qlist[1], param[1]).control(m_qlist[0])\n\n    cir<<qcir\n\n    qcir = pq.RY(m_qlist[0], param[2]).control(m_qlist[1])\n\n    cir<<qcir\n\n    cir<<pq.RY(m_qlist[0], input[1])\n\n    qcir = pq.RZ(m_qlist[0], param[3]).control(m_qlist[1])\n\n    cir<<qcir\n    m_prog<<cir\n\n    for idx, ele in enumerate(measure_qubits):\n        m_prog << pq.measure(m_qlist[ele], cubits[idx])  # pylint: disable=expression-not-assigned\n    return m_prog\n\nfrom pyvqnet.utils.initializer import ones\nl = QpandaQProgVQCLayer(qfun,\n                4,\n                \"cpu\",\n                pauli_str_dict=None,\n                shots=1000,\n                initializer=ones,\n                name=\"\")\nx = pyvqnet.tensor.QTensor(\n    [[2.56, 1.2,-3]],\n    requires_grad=True)\ny = l(x)\n\ny.backward()\nprint(l.m_para.grad.to_numpy())\nprint(x.grad.to_numpy())"
+    "example_code": "import pyqpanda3.core as pq\nimport pyvqnet\nfrom pyvqnet.qnn.pq3.quantumlayer import  QpandaQProgVQCLayer\n\n\ndef qfun(input, param):\n    m_qlist = range(3)\n    cubits = range(3)\n    measure_qubits = [0,1, 2]\n    m_prog = pq.QProg()\n    cir = pq.QCircuit(3)\n\n    cir<<pq.RZ(m_qlist[0], input[0])\n    cir<<pq.RX(m_qlist[2], input[2])\n    qcir = pq.RX(m_qlist[1], param[1]).control(m_qlist[0])\n    cir<<qcir\n    qcir = pq.RY(m_qlist[0], param[2]).control(m_qlist[1])\n    cir<<qcir\n    cir<<pq.RY(m_qlist[0], input[1])\n    qcir = pq.RZ(m_qlist[0], param[3]).control(m_qlist[1])\n    cir<<qcir\n    m_prog<<cir\n\n    for idx, ele in enumerate(measure_qubits):\n        m_prog << pq.measure(m_qlist[ele], cubits[idx])  # pylint: disable=expression-not-assigned\n    return m_prog\n\nfrom pyvqnet.utils.initializer import ones\nl = QpandaQProgVQCLayer(qfun,\n                4,\n                \"cpu\",\n                pauli_str_dict=None,\n                shots=1000,\n                initializer=ones,\n                name=\"\")\nx = pyvqnet.tensor.QTensor(\n    [[2.56, 1.2,-3]],\n    requires_grad=True)\ny = l(x)\n\ny.backward()\nprint(l.m_para.grad.to_numpy())\nprint(x.grad.to_numpy())"
   },
   {
     "name": "pyvqnet.qnn.pq3.quantumlayer.QuantumLayerAdjoint",
@@ -2709,7 +2709,12 @@
         "dtype": {
           "type": "string",
           "description": "参数类型，kfloat32 或 kfloat64，默认值：None，使用 kfloat32。",
-          "default": "None，name="
+          "default": null
+        },
+        "name": {
+          "type": "string",
+          "description": "此接口的名称。 Example:: from pyvqnet.qnn.pq3 import QuantumLayerAdjoint from pyvqnet import tensor from pyqpanda3.vqcircuit import VQCircuit import pyqpanda3 as pq3 l = 3 n = 7 def pqctest(x,param): vqc = VQCircuit() vqc.set_Param([len(param) +len(x)]) w_offset = len(x) for j in range(len(x)): vqc << pq3.core.RX(j, vqc.Param([j  ])) for j in range(l): for i in range(n - 1): vqc << pq3.core.CNOT(i, i + 1) for i in range(n): vqc << pq3.core.RX(i, vqc.Param([w_offset + 3 * n * j + i])) vqc << pq3.core.RZ(i, vqc.Param([w_offset + 3 * n * j + i + n])) vqc << pq3.core.RY(i, vqc.Param([w_offset + 3 * n * j + i + 2 * n])) return vqc Xn_string = ' '.join([f'X{i}' for i in range(n)]) pauli_dict  = {Xn_string:1.} layer = QuantumLayerAdjoint(pqctest,3*l*n,pauli_dict) x = tensor.randn([2,5]) x.requires_grad = True y = layer(x) y.backward() print(layer.m_para.grad) print(x.grad) Xn_string = ' '.join([f'X{i}' for i in range(n)]) Zn_string = ' '.join([f'Z{i}' for i in range(n)]) pauli_dict  = {Xn_string:1.,Zn_string:0.5} layer = QuantumLayerAdjoint(pqctest,3*l*n,pauli_dict) x = tensor.randn([2,5]) x.requires_grad = True y = layer(x) y.backward() print(layer.m_para.grad) print(x.grad) Xn_string = ' '.join([f'X{i}' for i in range(n)]) Zn_string = ' '.join([f'Z{i}' for i in range(n)]) pauli_dict  = {Xn_string:1.,Zn_string:0.5} layer = QuantumLayerAdjoint(pqctest,3*l*n,pauli_dict) x = tensor.randn([1,5]) x.requires_grad = True y = layer(x) y.backward() print(layer.m_para.grad) print(x.grad) Xn_string = ' '.join([f'X{i}' for i in range(n)]) Zn_string = ' '.join([f'Z{i}' for i in range(n)]) pauli_dict  = [{Xn_string:1.,Zn_string:0.5},{Xn_string:1.,Zn_string:0.5}] layer = QuantumLayerAdjoint(pqctest,3*l*n,pauli_dict) x = tensor.randn([1,5]) x.requires_grad = True y = layer(x) y.backward() print(layer.m_para.grad) print(x.grad) Xn_string = ' '.join([f'X{i}' for i in range(n)]) Zn_string = ' '.join([f'Z{i}' for i in range(n)]) pauli_dict  = [{Xn_string:1.,Zn_string:0.5},{Xn_string:1.,Zn_string:0.5}] layer = QuantumLayerAdjoint(pqctest,3*l*n,pauli_dict) x = tensor.randn([2,5]) x.requires_grad = True y = layer(x) y.backward() print(layer.m_para.grad) print(x.grad) \"\"\" [-0.1086438, 0.1805159, 0.2619071,..., 0.1508062, 0.0329617,-0.0043367] <QTensor [63] DEV_CPU kfloat32> [[-0.0425088, 0.0187212,-0.0326243, 0.1314874,-0.0729216], [-0.0972663,-0.0371378,-0.0455299,-0.0170686,-0.0328533]] <QTensor [2, 5] DEV_CPU kfloat32> [ 0.0706403,-0.1070583, 0.0547093,...,-0.0183769,-0.0742296, 0.0026942] <QTensor [63] DEV_CPU kfloat32> [[-0.07577  ,-0.1364278, 0.0220043, 0.0690343, 0.0281384], [ 0.0075356,-0.1627405,-0.0381604, 0.1185545, 0.1409108]] <QTensor [2, 5] DEV_CPU kfloat32> [-0.0634308,-0.0128268, 0.0396237,...,-0.0350691,-0.116307 , 0.0164972] <QTensor [63] DEV_CPU kfloat32> [[-0.0823639,-0.0418629, 0.0105356, 0.0699336, 0.041226 ]] <QTensor [1, 5] DEV_CPU kfloat32> [-0.1281752, 0.0852512, 0.0678721,...,-0.080481 , 0.0202518,-0.0348869] <QTensor [63] DEV_CPU kfloat32> [[-0.0339751,-0.0330053,-0.0651799, 0.2171837,-0.1267595]] <QTensor [1, 5] DEV_CPU kfloat32> [ 0.305574 , 0.2730191, 0.0605986,...,-0.2138517,-0.2475468, 0.174026 ] <QTensor [63] DEV_CPU kfloat32> [[ 0.1867954,-0.0704528,-0.0603823,-0.0123921,-0.0938597], [-0.041001 ,-0.2520995, 0.0683114,-0.0986969, 0.1000023]] <QTensor [2, 5] DEV_CPU kfloat32> \"\"\"",
+          "default": ""
         }
       },
       "required": [
@@ -3206,7 +3211,7 @@
         },
         "prog": {
           "type": "string",
-          "description": "pyQPanda创建的量子工程。"
+          "description": "pyQPanda创建的量子程序。"
         },
         "pauli_str_dict": {
           "type": "object",
@@ -3233,7 +3238,7 @@
         },
         "prog": {
           "type": "string",
-          "description": "pyQPanda创建的量子工程。"
+          "description": "pyQPanda创建的量子程序。"
         },
         "measure_qubits": {
           "type": "array",
@@ -3270,7 +3275,7 @@
         },
         "prog": {
           "type": "string",
-          "description": "qpanda创建的量子工程。"
+          "description": "qpanda创建的量子程序。"
         },
         "measure_qubits": {
           "type": "array",
@@ -5595,7 +5600,7 @@
   },
   {
     "name": "pyvqnet.nn.group_norm.GroupNorm",
-    "description": "[GroupNorm] 对小批量输入应用组归一化。输入: :math:`(N, C, *)` 其中 :math:`C=\\text{num_channels}` , 输出: :math:`(N, C, *)` 。 此层实现论文 `组归一化 <https://arxiv.org/abs/1803.08494>`__ 中描述的操作。 | Call this tool to get example code and usage instructions.",
+    "description": "[GroupNorm] 对小批量输入应用组归一化。输入: :math:`(N, C, *)` 其中 :math:`C=\\mathrm{num\\_channels}` , 输出: :math:`(N, C, *)` 。 此层实现论文 `组归一化 <https://arxiv.org/abs/1803.08494>`__ 中描述的操作。 | Call this tool to get example code and usage instructions.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5696,7 +5701,7 @@
       },
       "required": null
     },
-    "example_code": "import numpy as np\nfrom pyvqnet.nn.dropout import Dropout\nfrom pyvqnet.tensor import QTensor\nb = 2\nic = 2\nx = QTensor(np.arange(-1 * ic * 2 * 2,\n                    (b - 1) * ic * 2 * 2).reshape([b, ic, 2, 2]),\n            requires_grad=True)\ndroplayer = Dropout(0.5)\ndroplayer.train()\ny = droplayer(x)\nprint(y)\n\n# [\n# [[[-16., -14.],\n#  [-0., -0.]],\n# [[-8., -6.],\n#  [-4., -2.]]],\n# [[[0., 2.],\n#  [4., 6.]],\n# [[8., 10.],\n#  [0., 14.]]]\n# ]"
+    "example_code": "import numpy as np\nfrom pyvqnet.nn.dropout import Dropout\nfrom pyvqnet.tensor import QTensor\nb = 2\nic = 2\nx = QTensor(np.arange(-1 * ic * 2 * 2,\n                    (b - 1) * ic * 2 * 2.0).reshape([b, ic, 2, 2]),\n            requires_grad=True)\ndroplayer = Dropout(0.5)\ndroplayer.train()\ny = droplayer(x)\nprint(y)\n\n# [\n# [[[-16., -14.],\n#  [-0., -0.]],\n# [[-8., -6.],\n#  [-4., -2.]]],\n# [[[0., 2.],\n#  [4., 6.]],\n# [[8., 10.],\n#  [0., 14.]]]\n# ]"
   },
   {
     "name": "pyvqnet.nn.dropout.DropPath",
@@ -6432,17 +6437,17 @@
       "properties": {
         "max_iter": {
           "type": "integer",
-          "description": "rotosolve 更新的最大迭代次数。 Example:: from pyvqnet.optim.rotosolve import Rotosolve import pyqpanda as pq from pyvqnet.tensor import QTensor from pyvqnet import kfloat64 from pyvqnet.qnn.measure import expval machine = pq.CPUQVM() machine.init_qvm() nqbits = machine.qAlloc_many(2) def gen(param, generators, qbits, circuit): if generators == \"X\": circuit.insert(pq.RX(qbits, param)) elif generators == \"Y\": circuit.insert(pq.RY(qbits, param)) else: circuit.insert(pq.RZ(qbits, param)) def circuits(params, generators, circuit): gen(params[0], generators[0], nqbits[0], circuit) gen(params[1], generators[1], nqbits[1], circuit) circuit.insert(pq.CNOT(nqbits[0], nqbits[1])) prog = pq.QProg() prog.insert(circuit) return prog def ansatz1(params: QTensor, generators): circuit = pq.QCircuit() params = params.getdata() prog = circuits(params, generators, circuit) return expval(machine, prog, {\"Z0\": 1}, nqbits), expval(machine, prog, {\"Y1\": 1}, nqbits) def ansatz2(params: QTensor, generators): circuit = pq.QCircuit() params = params.getdata() prog = circuits(params, generators, circuit) return expval(machine, prog, {\"X0\": 1}, nqbits) def loss(params): Z, Y = ansatz1(params, [\"X\", \"Y\"]) X = ansatz2(params, [\"X\", \"Y\"]) return 0.5 * Y + 0.8 * Z - 0.2 * X t = QTensor([0.3, 0.25],dtype=kfloat64) opt = Rotosolve(max_iter=5) costs_rotosolve = opt.minimize(t, loss) print(costs_rotosolve) #[0.7642691884821847, -0.799999999999997, -0.799999999999997, -0.799999999999997, -0.799999999999997] .. figure:: ./images/rotosolve.png",
+          "description": "rotosolve 更新的最大迭代次数。 Example:: from pyvqnet.optim.rotosolve import Rotosolve import pyqpanda as pq from pyvqnet.tensor import QTensor from pyvqnet import kfloat64 from pyvqnet.qnn.measure import expval machine = pq.CPUQVM() machine.init_qvm() nqbits = machine.qAlloc_many(2) def gen(param, generators, qbits, circuit): if generators == \"X\": circuit.insert(pq.RX(qbits, param)) elif generators == \"Y\": circuit.insert(pq.RY(qbits, param)) else: circuit.insert(pq.RZ(qbits, param)) def circuits(params, generators, circuit): gen(params[0], generators[0], nqbits[0], circuit) gen(params[1], generators[1], nqbits[1], circuit) circuit.insert(pq.CNOT(nqbits[0], nqbits[1])) prog = pq.QProg() prog.insert(circuit) return prog def ansatz1(params: QTensor, generators): circuit = pq.QCircuit() prog = circuits(params, generators, circuit) return expval(machine, prog, {\"Z0\": 1}, nqbits), expval(machine, prog, {\"Y1\": 1}, nqbits) def ansatz2(params: QTensor, generators): circuit = pq.QCircuit() prog = circuits(params, generators, circuit) return expval(machine, prog, {\"X0\": 1}, nqbits) def loss(params): Z, Y = ansatz1(params, [\"X\", \"Y\"]) X = ansatz2(params, [\"X\", \"Y\"]) return 0.5 * Y + 0.8 * Z - 0.2 * X t = QTensor([0.3, 0.25],dtype=kfloat64) opt = Rotosolve(max_iter=5) costs_rotosolve = opt.minimize(t, loss) print(costs_rotosolve) #[0.7642691884821847, -0.799999999999997, -0.799999999999997, -0.799999999999997, -0.799999999999997] .. figure:: ./images/rotosolve.png",
           "default": 50
         }
       },
       "required": null
     },
-    "example_code": "from pyvqnet.optim.rotosolve import Rotosolve\nimport pyqpanda as pq\nfrom pyvqnet.tensor import QTensor\nfrom pyvqnet import kfloat64\nfrom pyvqnet.qnn.measure import expval\nmachine = pq.CPUQVM()\nmachine.init_qvm()\nnqbits = machine.qAlloc_many(2)\n\n\ndef gen(param, generators, qbits, circuit):\n    if generators == \"X\":\n        circuit.insert(pq.RX(qbits, param))\n    elif generators == \"Y\":\n        circuit.insert(pq.RY(qbits, param))\n    else:\n        circuit.insert(pq.RZ(qbits, param))\n\n\ndef circuits(params, generators, circuit):\n    gen(params[0], generators[0], nqbits[0], circuit)\n    gen(params[1], generators[1], nqbits[1], circuit)\n    circuit.insert(pq.CNOT(nqbits[0], nqbits[1]))\n    prog = pq.QProg()\n    prog.insert(circuit)\n    return prog\n\n\ndef ansatz1(params: QTensor, generators):\n    circuit = pq.QCircuit()\n    params = params.getdata()\n    prog = circuits(params, generators, circuit)\n    return expval(machine, prog, {\"Z0\": 1},\n                nqbits), expval(machine, prog, {\"Y1\": 1}, nqbits)\n\n\ndef ansatz2(params: QTensor, generators):\n    circuit = pq.QCircuit()\n    params = params.getdata()\n    prog = circuits(params, generators, circuit)\n    return expval(machine, prog, {\"X0\": 1}, nqbits)\n\n\ndef loss(params):\n    Z, Y = ansatz1(params, [\"X\", \"Y\"])\n    X = ansatz2(params, [\"X\", \"Y\"])\n    return 0.5 * Y + 0.8 * Z - 0.2 * X\n\n\nt = QTensor([0.3, 0.25],dtype=kfloat64)\nopt = Rotosolve(max_iter=5)\n\ncosts_rotosolve = opt.minimize(t, loss)\nprint(costs_rotosolve)\n#[0.7642691884821847, -0.799999999999997, -0.799999999999997, -0.799999999999997, -0.799999999999997]"
+    "example_code": "from pyvqnet.optim.rotosolve import Rotosolve\nimport pyqpanda as pq\nfrom pyvqnet.tensor import QTensor\nfrom pyvqnet import kfloat64\nfrom pyvqnet.qnn.measure import expval\nmachine = pq.CPUQVM()\nmachine.init_qvm()\nnqbits = machine.qAlloc_many(2)\n\n\ndef gen(param, generators, qbits, circuit):\n    if generators == \"X\":\n        circuit.insert(pq.RX(qbits, param))\n    elif generators == \"Y\":\n        circuit.insert(pq.RY(qbits, param))\n    else:\n        circuit.insert(pq.RZ(qbits, param))\n\n\ndef circuits(params, generators, circuit):\n    gen(params[0], generators[0], nqbits[0], circuit)\n    gen(params[1], generators[1], nqbits[1], circuit)\n    circuit.insert(pq.CNOT(nqbits[0], nqbits[1]))\n    prog = pq.QProg()\n    prog.insert(circuit)\n    return prog\n\n\ndef ansatz1(params: QTensor, generators):\n    circuit = pq.QCircuit()\n\n    prog = circuits(params, generators, circuit)\n    return expval(machine, prog, {\"Z0\": 1},\n                nqbits), expval(machine, prog, {\"Y1\": 1}, nqbits)\n\n\ndef ansatz2(params: QTensor, generators):\n    circuit = pq.QCircuit()\n\n    prog = circuits(params, generators, circuit)\n    return expval(machine, prog, {\"X0\": 1}, nqbits)\n\n\ndef loss(params):\n    Z, Y = ansatz1(params, [\"X\", \"Y\"])\n    X = ansatz2(params, [\"X\", \"Y\"])\n    return 0.5 * Y + 0.8 * Z - 0.2 * X\n\n\nt = QTensor([0.3, 0.25],dtype=kfloat64)\nopt = Rotosolve(max_iter=5)\n\ncosts_rotosolve = opt.minimize(t, loss)\nprint(costs_rotosolve)\n#[0.7642691884821847, -0.799999999999997, -0.799999999999997, -0.799999999999997, -0.799999999999997]"
   },
   {
     "name": "pyvqnet.backends.set_backend",
-    "description": "[set_backend] 该用于切换计算和数据存储后端，可选择使用 pyvqnet 原生计算、C++自动微分、或基于 PyTorch 的后端，从而在不同性能和兼容性需求间灵活切换。默认为 \"pyvqnet\",可设置为 \"torch\"。 使用 ``pyvqnet.backends.set_backend(\"pyvqnet\")`` 后,VQNet ``QTensor`` 的 ``data`` 成员变量均使用 ``pyvqnet._core.Tensor`` 储存数据,并使用pyvqnet c++库计算, 自动微分在python完成。 使用 ``pyvqnet.backends.set_backend(\"pyvqnet-ad\")`` 后,VQNet ``QTensor`` 的 ``data`` 成员变量均使用 ``pyvqnet._core.Tensor`` 储存数据,并使用pyvqnet c++库计算, 自动微分在C++完成。 使用 ``pyvqnet.backends.set_backend(\"torch\")`` 后,接口保持不变,VQNet的 ``QTensor`` 的 ``data`` 成员变量均使用 ``torch.Tensor`` 储存数据。 :ref:`qtensor_api`， :ref:`vqc_api` 以及 `pyvqnet.nn.torch` 下的接口输入接受 ``QTensor`` 类型，输出为 ``QTensor`` 类型。 使用 ``pyvqnet.backends.set_backend(\"torch-native\")`` 后,接口保持不变, :ref:`qtensor_api`， :ref:`vqc_api` 以及 `pyvqnet.nn.torch` 下的接口 输入可直接接受 ``torch.Tensor`` 类型或 ``QTensor`` 类型，输出为 ``torch.Tensor`` ，不再转换为 ``QTensor`` ，减少了数据转换。 | Call this tool to get example code and usage instructions.",
+    "description": "[set_backend] 该用于切换计算和数据存储后端，可选择使用 pyvqnet 原生计算、C++自动微分、或基于 PyTorch 的后端，从而在不同性能和兼容性需求间灵活切换。默认为 \"pyvqnet-ad\",可设置为 \"torch\"。 使用 ``pyvqnet.backends.set_backend(\"pyvqnet\")`` 后,VQNet ``QTensor`` 的 ``data`` 成员变量均使用 ``pyvqnet._core.Tensor`` 储存数据,并使用pyvqnet c++库计算, 自动微分在python完成。 使用 ``pyvqnet.backends.set_backend(\"pyvqnet-ad\")`` 后,VQNet ``QTensor`` 的 ``data`` 成员变量均使用 ``pyvqnet._core.Tensor`` 储存数据,并使用pyvqnet c++库计算, 自动微分在C++完成。 使用 ``pyvqnet.backends.set_backend(\"torch\")`` 后,接口保持不变,VQNet的 ``QTensor`` 的 ``data`` 成员变量均使用 ``torch.Tensor`` 储存数据。 :ref:`qtensor_api`， :ref:`vqc_api` 以及 `pyvqnet.nn.torch` 下的接口输入接受 ``QTensor`` 类型，输出为 ``QTensor`` 类型。 使用 ``pyvqnet.backends.set_backend(\"torch-native\")`` 后,接口保持不变, :ref:`qtensor_api`， :ref:`vqc_api` 以及 `pyvqnet.nn.torch` 下的接口 输入可直接接受 ``torch.Tensor`` 类型或 ``QTensor`` 类型，输出为 ``torch.Tensor`` ，不再转换为 ``QTensor`` ，减少了数据转换。 | Call this tool to get example code and usage instructions.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -6932,7 +6937,7 @@
   },
   {
     "name": "pyvqnet.nn.torch.GroupNorm",
-    "description": "[GroupNorm] 对小批量输入应用组归一化。输入: :math:`(N, C, *)` 其中 :math:`C=\\text{num_channels}` , 输出: :math:`(N, C, *)` 。 此层实现论文 `组归一化 <https://arxiv.org/abs/1803.08494>`__ 中描述的操作。 | Call this tool to get example code and usage instructions.",
+    "description": "[GroupNorm] 对小批量输入应用组归一化。输入: :math:`(N, C, *)` 其中 :math:`C=\\mathrm{num\\_channels}` , 输出: :math:`(N, C, *)` 。 此层实现论文 `组归一化 <https://arxiv.org/abs/1803.08494>`__ 中描述的操作。 | Call this tool to get example code and usage instructions.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -9152,7 +9157,7 @@
         },
         "root": {
           "type": "integer",
-          "description": "指定的节点。 Examples:: from pyvqnet.distributed import get_local_rank,CommController,init_group import pyvqnet import numpy as np from pyvqnet.tensor import tensor pyvqnet.backends.set_backend(\"torch\") import os import multiprocessing as mp def init_process(rank, size): \"\"\" Initialize the distributed environment. \"\"\" os.environ['MASTER_ADDR'] = '127.0.0.1' os.environ['MASTER_PORT'] = '29500' os.environ['LOCAL_RANK'] = f\"{rank}\" Comm_OP = CommController(\"gloo\", rank=rank, world_size=size) num = tensor.to_tensor(np.random.rand(1, 5))+ rank print(f\"before rank {Comm_OP.getRank()}  {num}\") Comm_OP.broadcast(num, 1) print(f\"after rank {Comm_OP.getRank()}  {num}\") if __name__ == \"__main__\": world_size = 3 processes = [] mp.set_start_method(\"spawn\") for rank in range(world_size): p = mp.Process(target=init_process, args=(rank, world_size)) p.start() processes.append(p) for p in processes: p.join()",
+          "description": "指定的节点。 Examples:: from pyvqnet.distributed import get_local_rank,CommController import pyvqnet import numpy as np from pyvqnet.tensor import tensor pyvqnet.backends.set_backend(\"torch\") import os import multiprocessing as mp def init_process(rank, size): \"\"\" Initialize the distributed environment. \"\"\" os.environ['MASTER_ADDR'] = '127.0.0.1' os.environ['MASTER_PORT'] = '29500' os.environ['LOCAL_RANK'] = f\"{rank}\" Comm_OP = CommController(\"gloo\", rank=rank, world_size=size) num = tensor.to_tensor(np.random.rand(1, 5))+ rank print(f\"before rank {Comm_OP.getRank()}  {num}\") Comm_OP.broadcast(num, 1) print(f\"after rank {Comm_OP.getRank()}  {num}\") if __name__ == \"__main__\": world_size = 3 processes = [] mp.set_start_method(\"spawn\") for rank in range(world_size): p = mp.Process(target=init_process, args=(rank, world_size)) p.start() processes.append(p) for p in processes: p.join() #python test.py",
           "default": 0
         }
       },
@@ -9161,5 +9166,32 @@
       ]
     },
     "example_code": ""
+  },
+  {
+    "name": "pyvqnet.utils.set_random_seed",
+    "description": "[set_random_seed] 设定全局随机种子。 | Call this tool to get example code and usage instructions. | Keywords: pyvqnet.utils.set_random_seed, set global random seed, reproducibility, deterministic",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "seed": {
+          "type": "integer",
+          "description": "随机数种子。 当指定固定随机数种子时,随机分布将依据随机种子产生固定的伪随机分布。 影响包括: `tensor.randu` , `tensor.randn` ,含参经典神经网络以及量子计算层的参数初始化。 Example:: import pyvqnet.tensor as tensor from pyvqnet.utils import get_random_seed, set_random_seed set_random_seed(256) rn = tensor.randn([2, 3]) print(rn) rn = tensor.randn([2, 3]) print(rn) rn = tensor.randu([2, 3]) print(rn) rn = tensor.randu([2, 3]) print(rn) print(\"########################################################\") from pyvqnet.nn.parameter import Parameter from pyvqnet.utils.initializer import he_normal, he_uniform, xavier_normal, xavier_uniform, uniform, quantum_uniform, normal print(Parameter(shape=[2, 3], initializer=he_normal)) print(Parameter(shape=[2, 3], initializer=he_uniform)) print(Parameter(shape=[2, 3], initializer=xavier_normal)) print(Parameter(shape=[2, 3], initializer=xavier_uniform)) print(Parameter(shape=[2, 3], initializer=uniform)) print(Parameter(shape=[2, 3], initializer=quantum_uniform)) print(Parameter(shape=[2, 3], initializer=normal)) # [ # [-1.2093765, 1.1265280, 0.0796480], #  [0.2420146, 1.2623813, 0.2844022] # ] # [ # [-1.2093765, 1.1265280, 0.0796480], #  [0.2420146, 1.2623813, 0.2844022] # ] # [ # [0.3151870, 0.6721524, 0.0416874], #  [0.8232620, 0.6537889, 0.9672953] # ] # [ # [0.3151870, 0.6721524, 0.0416874], #  [0.8232620, 0.6537889, 0.9672953] # ] # ######################################################## # [ # [-0.9874518, 0.9198063, 0.0650323], #  [0.1976041, 1.0307300, 0.2322134] # ] # [ # [-0.2134037, 0.1987845, -0.5292138], #  [0.3732708, 0.1775801, 0.5395861] # ] # [ # [-0.7648768, 0.7124789, 0.0503738], #  [0.1530635, 0.7984000, 0.1798717] # ] # [ # [-0.4049051, 0.3771670, -1.0041126], #  [0.7082316, 0.3369346, 1.0237927] # ] # [ # [0.3151870, 0.6721524, 0.0416874], #  [0.8232620, 0.6537889, 0.9672953] # ] # [ # [1.9803783, 4.2232580, 0.2619299], #  [5.1727076, 4.1078768, 6.0776958] # ] # [ # [-1.2093765, 1.1265280, 0.0796480], #  [0.2420146, 1.2623813, 0.2844022] # ]"
+        }
+      },
+      "required": [
+        "seed"
+      ]
+    },
+    "example_code": "import pyvqnet.tensor as tensor\nfrom pyvqnet.utils import get_random_seed, set_random_seed\n\nset_random_seed(256)\n\n\nrn = tensor.randn([2, 3])\nprint(rn)\nrn = tensor.randn([2, 3])\nprint(rn)\nrn = tensor.randu([2, 3])\nprint(rn)\nrn = tensor.randu([2, 3])\nprint(rn)\n\nprint(\"########################################################\")\nfrom pyvqnet.nn.parameter import Parameter\nfrom pyvqnet.utils.initializer import he_normal, he_uniform, xavier_normal, xavier_uniform, uniform, quantum_uniform, normal\nprint(Parameter(shape=[2, 3], initializer=he_normal))\nprint(Parameter(shape=[2, 3], initializer=he_uniform))\nprint(Parameter(shape=[2, 3], initializer=xavier_normal))\nprint(Parameter(shape=[2, 3], initializer=xavier_uniform))\nprint(Parameter(shape=[2, 3], initializer=uniform))\nprint(Parameter(shape=[2, 3], initializer=quantum_uniform))\nprint(Parameter(shape=[2, 3], initializer=normal))\n# [\n# [-1.2093765, 1.1265280, 0.0796480],\n#  [0.2420146, 1.2623813, 0.2844022]\n# ]\n# [\n# [-1.2093765, 1.1265280, 0.0796480],\n#  [0.2420146, 1.2623813, 0.2844022]\n# ]\n# [\n# [0.3151870, 0.6721524, 0.0416874],\n#  [0.8232620, 0.6537889, 0.9672953]\n# ]\n# [\n# [0.3151870, 0.6721524, 0.0416874],\n#  [0.8232620, 0.6537889, 0.9672953]\n# ]\n# ########################################################\n# [\n# [-0.9874518, 0.9198063, 0.0650323],\n#  [0.1976041, 1.0307300, 0.2322134]\n# ]\n# [\n# [-0.2134037, 0.1987845, -0.5292138],\n#  [0.3732708, 0.1775801, 0.5395861]\n# ]\n# [\n# [-0.7648768, 0.7124789, 0.0503738],\n#  [0.1530635, 0.7984000, 0.1798717]\n# ]\n# [\n# [-0.4049051, 0.3771670, -1.0041126],\n#  [0.7082316, 0.3369346, 1.0237927]\n# ]\n# [\n# [0.3151870, 0.6721524, 0.0416874],\n#  [0.8232620, 0.6537889, 0.9672953]\n# ]\n# [\n# [1.9803783, 4.2232580, 0.2619299],\n#  [5.1727076, 4.1078768, 6.0776958]\n# ]\n# [\n# [-1.2093765, 1.1265280, 0.0796480],\n#  [0.2420146, 1.2623813, 0.2844022]\n# ]"
+  },
+  {
+    "name": "pyvqnet.utils.get_random_seed",
+    "description": "[get_random_seed] 获取当前随机数种子。 | Call this tool to get example code and usage instructions. | Keywords: pyvqnet.utils.get_random_seed, get current random seed, reproducibility",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": null
+    },
+    "example_code": "import pyvqnet.tensor as tensor\nfrom pyvqnet.utils import get_random_seed, set_random_seed\n\nset_random_seed(256)\nprint(get_random_seed())\n#256"
   }
 ]

@@ -86,6 +86,9 @@ class RSTParser:
         "AdamW": "optimizer, AdamW optimizer, weight decay, neural network training",
         "SGD": "optimizer, stochastic gradient descent, neural network training",
         "RMSProp": "optimizer, RMSprop optimizer, neural network training",
+        # 工具函数
+        "set_random_seed": "pyvqnet.utils.set_random_seed, set global random seed, reproducibility, deterministic",
+        "get_random_seed": "pyvqnet.utils.get_random_seed, get current random seed, reproducibility",
     }
 
     def __init__(self):
@@ -546,7 +549,8 @@ def main():
         "source/rst/qnn_pq3.rst",
         "source/rst/vqc.rst",
         "source/rst/nn.rst",
-        "source/rst/torch_api.rst"
+        "source/rst/torch_api.rst",
+        "source/rst/utils.rst"
     ]
 
     # 要提取的目标API列表
@@ -841,7 +845,10 @@ def main():
         "QMachine",
         "vqc_basis_embedding",
         "vqc_angle_embedding",
-        "vqc_controlled_hadamard"
+        "vqc_controlled_hadamard",
+        # utils.rst - 工具函数
+        "set_random_seed",
+        "get_random_seed"
     ]
 
     all_tools = []
