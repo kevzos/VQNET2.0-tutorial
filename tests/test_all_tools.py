@@ -6,7 +6,13 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from simple_mcp_server import SimpleMCPServer
+# Try to import from packaged version first, fallback to simple version
+try:
+    from vqnet_mcp_server.server import SimpleMCPServer
+    print("Using packaged MCP server")
+except ImportError:
+    from simple_mcp_server import SimpleMCPServer
+    print("Using simple MCP server (fallback)")
 
 def test_all_tools():
     """测试所有工具的代码生成"""
