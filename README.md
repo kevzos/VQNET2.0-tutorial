@@ -87,6 +87,27 @@ Claude will automatically use VQNET MCP tools when you ask about quantum computi
 - Python >= 3.8
 - pyVQNET (install separately: `pip install pyvqnet`)
 
+## Development & Building
+
+### Build wheel package
+```bash
+# 安装 build 工具
+pip install build
+
+# 打包 wheel
+python -m build
+
+# 或者只构建 wheel（不包含 sdist）
+python -m build --wheel
+```
+
+生成的 wheel 文件在 `dist/` 目录下。
+
+### Install from source (editable mode)
+```bash
+pip install -e .
+```
+
 ## License
 
 MIT License
