@@ -184,6 +184,32 @@ Search hints: Use ToolSearchTool with keywords like "vqnet", "quantum", "tensor"
 
             mcp_tools.append(mcp_tool)
 
+        # 添加智能搜索工具 ToolSearchTool
+        search_tool = {
+            "name": "ToolSearchTool",
+            "description": "搜索VQNET API工具。输入关键词或需求描述，返回最匹配的API工具及其示例代码。例如：输入'adam优化器'会找到pyvqnet.optim.adam.Adam工具。使用此工具可以快速找到您需要的VQNET接口示例。",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "搜索关键词或需求描述，如：adam、quantum circuit、tensor、Hadamard门、优化器"
+                    },
+                    "top_k": {
+                        "type": "integer",
+                        "description": "返回最匹配的前N个工具，默认3",
+                        "default": 3
+                    }
+                },
+                "required": ["query"]
+            },
+            "_meta": {
+                "anthropic/alwaysLoad": True,
+                "anthropic/searchHint": "Search VQNET API tools by keyword - use this to find the right tool for your needs"
+            }
+        }
+        mcp_tools.append(search_tool)
+
         return {
             "jsonrpc": "2.0",
             "id": request_id,
@@ -200,6 +226,24 @@ Search hints: Use ToolSearchTool with keywords like "vqnet", "quantum", "tensor"
 
         print(f"调用工具: {tool_name}", file=sys.stderr)
         print(f"参数: {json.dumps(arguments, indent=2, ensure_ascii=False)[:200]}...", file=sys.stderr)
+
+        # 处理 ToolSearchTool 搜索工具
+        if tool_name == "ToolSearchTool":
+            query = arguments.get("query", "")
+            top_k = arguments.get("top_k", 3)
+            search_result = self.search_tools(query, top_k)
+            return {
+                "jsonrpc": "2.0",
+                "id": request_id,
+                "result": {
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": json.dumps(search_result, indent=2, ensure_ascii=False)
+                        }
+                    ]
+                }
+            }
 
         # 查找工具
         tool_def = None
@@ -254,6 +298,107 @@ Search hints: Use ToolSearchTool with keywords like "vqnet", "quantum", "tensor"
                     }
                 ]
             }
+        }
+
+    def search_tools(self, query: str, top_k: int = 3) -> Dict[str, Any]:
+        """智能搜索工具 - 根据用户输入匹配最相关的API工具"""
+        query_lower = query.lower()
+        query_words = query_lower.split()
+
+        # 中文名称映射 - 用于中文关键词搜索
+        chinese_keywords = {
+            "优化器": ["Adam", "SGD", "RMSProp", "AdamW", "optimizer"],
+            "张量": ["QTensor", "tensor", "ones", "zeros", "arange", "randn"],
+            "量子": ["quantum", "qnn", "vqc", "Hadamard", "QMachine", "QuantumLayer"],
+            "门": ["gate", "Hadamard", "PauliX", "PauliY", "PauliZ", "RX", "RY", "RZ", "CNOT"],
+            "神经网络": ["neural", "Linear", "Conv2d", "BatchNorm", "Dropout", "ReLu", "Sigmoid"],
+            "损失": ["loss", "CrossEntropyLoss", "MSELoss", "BCELoss"],
+            "电路": ["circuit", "vqc", "ansatz", "embedding"],
+            "卷积": ["Conv", "convolution"],
+            "池化": ["Pool", "pooling", "AvgPool", "MaxPool"],
+            "测量": ["measure", "Measure", "Probability", "Samples"],
+            "梯度": ["grad", "gradient", "backward", "zero_grad"],
+            "矩阵": ["matmul", "matrix", "transpose"],
+            "激活": ["activation", "ReLu", "Sigmoid", "Tanh", "Gelu"],
+        }
+
+        # 扩展搜索词
+        extended_words = set(query_words)
+        for word in query_words:
+            if word in chinese_keywords:
+                extended_words.update(chinese_keywords[word])
+
+        scored_tools = []
+        for tool in self.tools:
+            tool_name = tool.get("name", "")
+            tool_desc = tool.get("description", "")
+            simple_name = tool_name.split(".")[-1]
+
+            score = 0
+
+            # 1. 简单名精确匹配（最高优先级）
+            if query_lower == simple_name.lower():
+                score += 20
+
+            # 2. 简单名包含查询词
+            if query_lower in simple_name.lower():
+                score += 15
+
+            # 3. Keywords 匹配（从 description 中提取 Keywords 部分）
+            if "Keywords:" in tool_desc:
+                keywords_part = tool_desc.split("Keywords:")[-1]
+                for word in extended_words:
+                    if word.lower() in keywords_part.lower():
+                        score += 8
+
+            # 4. Description 匹配
+            for word in extended_words:
+                if word.lower() in tool_desc.lower():
+                    score += 5
+
+            # 5. 工具名路径匹配
+            for word in query_words:
+                if word.lower() in tool_name.lower():
+                    score += 3
+
+            # 6. 中文名称关键词匹配（从description开头的[名称]部分）
+            if tool_desc.startswith("["):
+                end_bracket = tool_desc.find("]")
+                if end_bracket > 0:
+                    chinese_name = tool_desc[1:end_bracket]
+                    for word in query_words:
+                        if word in chinese_name or chinese_name in word:
+                            score += 4
+
+            if score > 0:
+                scored_tools.append({
+                    "tool": tool,
+                    "score": score
+                })
+
+        # 按分数排序
+        scored_tools.sort(key=lambda x: x["score"], reverse=True)
+
+        # 取前 top_k 个结果
+        matched_tools = []
+        for i, item in enumerate(scored_tools[:top_k]):
+            tool = item["tool"]
+            matched_tools.append({
+                "rank": i + 1,
+                "name": tool.get("name", ""),
+                "score": item["score"],
+                "description": tool.get("description", "").split("|")[0].strip(),  # 只取描述部分
+                "example_code": tool.get("example_code", ""),
+                "suggestion": "这是最匹配的工具" if i == 0 else f"排名第{i+1}的匹配工具"
+            })
+
+        return {
+            "status": "success",
+            "query": query,
+            "total_matches": len(scored_tools),
+            "returned_count": len(matched_tools),
+            "matched_tools": matched_tools,
+            "hint": "每个匹配结果都包含示例代码，可以直接使用。score越高表示匹配度越好。"
         }
 
     def simulate_tool_call(self, tool_name: str, arguments: Dict[str, Any], tool_def: Dict[str, Any] = None) -> Dict[str, Any]:
