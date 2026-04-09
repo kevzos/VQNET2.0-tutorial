@@ -1,14 +1,39 @@
-这个项目是根据source/rst中的api文档：rst文档中介绍的接口，生成mcp。
+# VQNET 2.0 MCP Server 项目
 
-实现方式 参考rst_to_mcp.py 以及test_simple_server.py实现，输出是一段该接口代码。
+## 项目目标
+从 `source/rst` 中的 API 文档生成 MCP 工具，让 Claude Code 能自动调用相关工具生成代码。
 
-测试环境在conda环境 mini311下。
+## 使用方式
+当用户输入 VQNET 相关需求时，Claude Code 会调用 MCP 工具：
 
-每进行10轮对话，总结当前情况到一个md中以时间：精确到秒的作为文件名。并删除中间temp文件.
+- **ToolSearchTool**: 输入关键词（如"adam优化器"、"Hadamard门"），返回最匹配的 API 工具及其示例代码
+- **直接调用工具**: 如 `pyvqnet.tensor.ones`、`pyvqnet.qnn.vqc.Hadamard` 等
 
-git commit 相关必要文件，不要提交markdown文件。msg以[feat] [ref] [fix]开始,使用英文描述提交内容。
+## 核心文件
+- `rst_to_mcp.py`: 从 RST 文档解析生成工具定义 JSON
+- `vqnet_mcp_server/server.py`: MCP 服务器实现
+- `vqnet_mcp_server/vqnet_all_tools.json`: 工具定义文件（320+ API）
 
-对rst中理解不清晰的接口，保存到TODO.md里面。
+## 开发规范
 
-测试代码单独新建一个tests目录下
+### 测试环境
+- Conda 环境: `mini311`
 
+### Git 提交规范
+- 提交信息格式: `[feat]` / `[ref]` / `[fix]` + 英文描述
+- 只提交必要代码文件，不提交 markdown 文件
+
+### 测试代码
+- 测试文件放在 `tests/` 目录
+
+### 文档维护
+- RST 中理解不清晰的接口记录到 `TODO.md`
+- 每 10 轮对话总结当前状态（时间戳命名）
+
+## MCP 工具分类
+- `pyvqnet.tensor`: 张量操作 (QTensor, ones, zeros, arange, randn 等)
+- `pyvqnet.qnn.pq3`: pyQPanda3 量子层 (QpandaQProgVQCLayer 等)
+- `pyvqnet.qnn.vqc`: 变分量子电路 (Hadamard, RX, RY, RZ, CNOT 等)
+- `pyvqnet.nn`: 神经网络层 (Linear, Conv2D, BatchNorm 等)
+- `pyvqnet.optim`: 优化器 (Adam, SGD, RMSProp 等)
+- `pyvqnet.utils`: 工具函数
