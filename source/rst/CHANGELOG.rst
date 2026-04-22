@@ -3,6 +3,30 @@ VQNet Changelog
 ######################
 
 
+[v2.18.0] - 2026-04-22
+***************************
+
+Added
+===================
+- ``vqnetrun`` 新增 ``--backend nccl`` 模式支持，可通过 ``--nproc_per_node``, ``--nnodes``, ``--node_rank``, ``--master_addr``, ``--master_port``, ``--nccl_socket_ifname`` 参数控制 NCCL 分布式启动。
+- 新增 ``VQCQCloudLayer`` 接口，用于将 VQC Module 提交到 QCloud 真实芯片或 pyqpanda3 本地模拟器执行，支持 parameter_shift 反向传播。
+- ``CommController`` 新增 ``destroy()`` 方法用于 NCCL 通信资源清理。
+
+Changed
+===================
+- 默认后端改为 ``pyvqnet-ad``。
+- 删除已废弃的 ``QuantumLayerMultiProcess``、``DataParallelHybirdVQCQpandaQVMLayer``、``HybirdVQCQpanda3QVMLayer`` 接口。
+- ``split_group`` 重命名为 ``split_groups``。
+- ``QuantumLayerV3`` / ``QuantumBatchAsyncQcloudLayer`` 在 x 或 w 不需要梯度时自动跳过不必要的 parameter_shift 线路计算，提升性能。
+
+Fixed
+===================
+- 修复 ``roll`` CUDA 内核的整数溢出问题。
+- 修复 ``cuda_masked_fill`` 对 complex64/complex128 类型的支持。
+- 修复 ``bfloat16`` 下 ``log_softmax`` 前向计算产生错误 +inf 值的问题。
+- 修复跨 GPU 内存访问时缺少 ``CUDAGuard`` 导致的设备错误。
+
+
 [v2.17.3] - 2026-03-30
 ***************************
 

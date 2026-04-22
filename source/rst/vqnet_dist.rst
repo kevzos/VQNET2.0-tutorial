@@ -173,6 +173,127 @@ n, np
         # vqnetrun -n 2 python test.py
         # vqnetrun -np 2 python test.py
 
+backend
+^^^^^^^^^^^^^^^^^^^^^^
+
+``vqnetrun`` 接口中可以通过 ``--backend`` 参数选择分布式后端,支持 ``mpi`` (默认) 和 ``nccl`` 两种模式。
+MPI 模式支持多节点跨主机执行, NCCL 模式用于单机多 GPU 场景,采用去中心化启动模型(每个节点独立运行 vqnetrun)。
+
+    Example::
+
+        from pyvqnet.distributed import CommController
+        Comm_OP = CommController("nccl")
+
+        rank = Comm_OP.getRank()
+        size = Comm_OP.getSize()
+        print(f"rank: {rank}, size {size}")
+
+        # 单机多GPU:
+        # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+
+        # 多节点情况下,每个节点独立执行:
+        # 节点0: vqnetrun --backend nccl --nproc_per_node 2 --nnodes 2 --node_rank 0 --master_addr 10.0.0.1 python test.py
+        # 节点1: vqnetrun --backend nccl --nproc_per_node 2 --nnodes 2 --node_rank 1 --master_addr 10.0.0.1 python test.py
+
+nproc_per_node
+^^^^^^^^^^^^^^^^^^^^^^
+
+``vqnetrun`` 接口中可以通过 ``--nproc_per_node`` 参数控制每个节点启动的进程数,仅在 NCCL 模式下使用。
+
+    Example::
+
+        from pyvqnet.distributed import CommController
+        Comm_OP = CommController("nccl")
+
+        rank = Comm_OP.getRank()
+        size = Comm_OP.getSize()
+        print(f"rank: {rank}, size {size}")
+
+        # vqnetrun --backend nccl --nproc_per_node 4 python test.py
+
+nnodes
+^^^^^^^^^^^^^^^^^^^^^^
+
+``vqnetrun`` 接口中可以通过 ``--nnodes`` 参数控制总节点数,仅在 NCCL 模式下使用,默认值为 1。
+
+    Example::
+
+        from pyvqnet.distributed import CommController
+        Comm_OP = CommController("nccl")
+
+        rank = Comm_OP.getRank()
+        size = Comm_OP.getSize()
+        print(f"rank: {rank}, size {size}")
+
+        # vqnetrun --backend nccl --nproc_per_node 2 --nnodes 2 --node_rank 0 --master_addr 10.0.0.1 python test.py
+
+node_rank
+^^^^^^^^^^^^^^^^^^^^^^
+
+``vqnetrun`` 接口中可以通过 ``--node_rank`` 参数控制当前节点的 rank,仅在 NCCL 模式下使用,默认值为 0。
+
+    Example::
+
+        from pyvqnet.distributed import CommController
+        Comm_OP = CommController("nccl")
+
+        rank = Comm_OP.getRank()
+        size = Comm_OP.getSize()
+        print(f"rank: {rank}, size {size}")
+
+        # 节点0: vqnetrun --backend nccl --nproc_per_node 2 --nnodes 3 --node_rank 0 --master_addr 10.0.0.1 python test.py
+        # 节点1: vqnetrun --backend nccl --nproc_per_node 2 --nnodes 3 --node_rank 1 --master_addr 10.0.0.1 python test.py
+        # 节点2: vqnetrun --backend nccl --nproc_per_node 2 --nnodes 3 --node_rank 2 --master_addr 10.0.0.1 python test.py
+
+master_addr
+^^^^^^^^^^^^^^^^^^^^^^
+
+``vqnetrun`` 接口中可以通过 ``--master_addr`` 参数指定主节点地址,仅在 NCCL 模式下使用,默认值为 ``127.0.0.1``。
+
+    Example::
+
+        from pyvqnet.distributed import CommController
+        Comm_OP = CommController("nccl")
+
+        rank = Comm_OP.getRank()
+        size = Comm_OP.getSize()
+        print(f"rank: {rank}, size {size}")
+
+        # vqnetrun --backend nccl --nproc_per_node 2 --nnodes 2 --node_rank 0 --master_addr 10.0.0.1 python test.py
+
+master_port
+^^^^^^^^^^^^^^^^^^^^^^
+
+``vqnetrun`` 接口中可以通过 ``--master_port`` 参数指定主节点端口,仅在 NCCL 模式下使用,默认值为 ``29500``。
+
+    Example::
+
+        from pyvqnet.distributed import CommController
+        Comm_OP = CommController("nccl")
+
+        rank = Comm_OP.getRank()
+        size = Comm_OP.getSize()
+        print(f"rank: {rank}, size {size}")
+
+        # vqnetrun --backend nccl --nproc_per_node 2 --master_port 29600 python test.py
+
+nccl_socket_ifname
+^^^^^^^^^^^^^^^^^^^^^^
+
+``vqnetrun`` 接口中可以通过 ``--nccl_socket_ifname`` 参数指定 NCCL 使用的网络接口名,仅在 NCCL 模式下使用。
+该参数对应环境变量 ``NCCL_SOCKET_IFNAME``,用于在多网卡环境下指定 NCCL 通信使用的网卡。
+
+    Example::
+
+        from pyvqnet.distributed import CommController
+        Comm_OP = CommController("nccl")
+
+        rank = Comm_OP.getRank()
+        size = Comm_OP.getSize()
+        print(f"rank: {rank}, size {size}")
+
+        # vqnetrun --backend nccl --nproc_per_node 2 --nccl_socket_ifname eth0 python test.py
+
 H, hosts
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -279,6 +400,37 @@ start-timeout
 
         # vqnetrun -np 4 --start-timeout 10 python test.py
 
+
+disable-cache
+^^^^^^^^^^^^^^^^^^^^^^
+``vqnetrun`` 接口中可以通过 ``--disable-cache`` 标志禁用初始化检查缓存。默认情况下, vqnetrun 会将初始化检查的结果缓存 60 分钟, 如果禁用了缓存, 则每次运行都会重新执行初始化检查。
+
+执行代码如下
+
+    Example::
+
+        from pyvqnet.distributed import CommController, get_host_name
+        Comm_OP = CommController("mpi") # init mpi controller
+
+        rank = Comm_OP.getRank()
+        size = Comm_OP.getSize()
+        print(f"rank: {rank}, size {size}")
+        print(f"LocalRank {Comm_OP.getLocalRank()} hosts name {get_host_name()}")
+
+        # vqnetrun -np 4 --disable-cache python test.py
+
+
+cb, check-build
+^^^^^^^^^^^^^^^^^^^^^^
+
+``vqnetrun`` 接口中可以通过 ``-cb``, ``--check-build`` 标志查看当前构建支持的分布式后端和通信库。
+
+执行代码如下
+
+    Example::
+
+        # vqnetrun -cb
+        # vqnetrun --check-build
 
 h
 ^^^^^^^^^^^^^^^^^^^^^^

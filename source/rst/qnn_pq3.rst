@@ -480,6 +480,73 @@ QuantumLayerAdjoint
         <QTensor [2, 5] DEV_CPU kfloat32>
         """
 
+VQCQCloudLayer
+============================
+
+.. py:class:: pyvqnet.qnn.pq3.vqc_qcloud_layer.VQCQCloudLayer(vqc_module, qcloud_token, pauli_str_dict=None, shots=1000, name="", submit_kwargs={}, query_kwargs={})
+
+    提交 VQC Module 到 QCloud 真实芯片或 pyqpanda3 本地模拟器上执行。
+
+    正向传播:不执行VQNet的量子变分线路计算,而是调用量子真实芯片或者qpanda本地模拟器计算。
+
+    反向传播:使用 parameter_shift 规则计算梯度。对每个输入维度和 VQC 中的每个可训练参数,
+    生成 +/- pi/2 偏移的线路并提交计算,获取结果后计算 jacobian。梯度会设置到输入张量和 VQC 的可训练 Parameters 上。
+
+    .. note::
+
+        单次线路提交至 QCloud 的默认总超时时间为 60 秒。如果因 QCloud 繁忙而导致超时,可以在 ``query_kwargs`` 中设置 ``total_timeout`` 键的值来指定等待秒数。
+
+    .. note::
+
+        在 ``vqc_module`` 中不能定义测量函数(如 ``MeasureAll``),测量应通过 ``pauli_str_dict`` 参数指定观测量来完成。
+        例如:``VQCQCloudLayer(vqc_module, token, pauli_str_dict={'Z0': 1, 'Z1': 1})``。
+
+    :param vqc_module: VQNet VQC Module,必须包含 save_ir=True 的 QMachine。
+    :param qcloud_token: QCloud API token。若使用本地模拟器可传入空字符串。
+    :param pauli_str_dict: 泡利算符字典,用于期望值计算。默认值为 None,则进行测量操作。
+    :param shots: 测量次数。默认值为 1000。
+    :param name: 模块名称。默认为空字符串。
+    :param submit_kwargs: 用于提交量子电路的附加关键字参数,默认:{"chip_id":"origin_wukong","is_amend":True,"is_mapping":True,"is_optimization":True,"compile_level":3,"default_task_group_size":200,"test_qcloud_fake":False},当设置test_qcloud_fake为True则本地CPUQVM模拟。
+    :param query_kwargs: 用于查询量子结果的附加关键字参数,默认:{"timeout":1,"total_timeout":60, "print_query_info":True,"sub_circuits_split_size":1}。
+
+    Example::
+
+        from pyvqnet.qnn.vqc import *
+        from pyvqnet.qnn.pq3 import VQCQCloudLayer
+        from pyvqnet.nn import Module
+        import pyvqnet
+
+        class QModel(Module):
+            def __init__(self, num_wires, dtype):
+                super(QModel, self).__init__()
+                self._num_wires = num_wires
+                self._dtype = dtype
+                self.qm = QMachine(num_wires, dtype=dtype, save_ir=True)
+                self.rx_layer = RX(has_params=True, trainable=False, wires=0)
+                self.u1 = U1(has_params=True, trainable=True, wires=[1])
+                self.cnot = CNOT(wires=[0, 1])
+
+            def forward(self, x, *args, **kwargs):
+                self.qm.reset_states(x.shape[0])
+                self.rx_layer(params=x[:, [0]], q_machine=self.qm)
+                self.cnot(q_machine=self.qm)
+                self.u1(q_machine=self.qm)
+                return x
+
+        qmodel = QModel(num_wires=2, dtype=pyvqnet.kcomplex64)
+        layer = VQCQCloudLayer(
+            qmodel,
+            "your_qcloud_token",
+            pauli_str_dict={'Z0': 1, 'Z1': 1},
+            shots=1000,
+            submit_kwargs={"test_qcloud_fake": True},
+        )
+        x = pyvqnet.tensor.QTensor([[0.5, 0.3], [0.5, 0.3]], requires_grad=True)
+        y = layer(x)
+        y.backward()
+        print(x.grad)
+        print(qmodel.u1.params.grad)
+
 grad
 ==============
 .. py:function:: pyvqnet.qnn.pq3.quantumlayer.grad(quantum_prog_func, input_params, *args)
