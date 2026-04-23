@@ -17,7 +17,7 @@ Changed
 - 默认后端改为 ``pyvqnet-ad``。
 - 删除已废弃的 ``QuantumLayerMultiProcess``、``DataParallelHybirdVQCQpandaQVMLayer``、``HybirdVQCQpanda3QVMLayer`` 接口。
 - ``split_group`` 重命名为 ``split_groups``。
-- ``QuantumLayerV3`` / ``QuantumBatchAsyncQcloudLayer`` 在 x 或 w 不需要梯度时自动跳过不必要的 parameter_shift 线路计算，提升性能。
+
 
 Fixed
 ===================
@@ -36,7 +36,7 @@ Added
 - 增加异步的NCCL通信接口： ``nccl_async_all_gather``, ``nccl_async_all_reduce``, ``nccl_async_reduce``, ``nccl_async_broadcast``, ``nccl_async_send``, ``nccl_async_recv`` 。
 - 增加对最新本源量子芯片的支持，芯片ID为 ``WK_C180``
 - 增加 ``data_ptr`` 等接口，实验性增加对 `triton <https://triton-lang.org/main/index.html>`_ 的支持。
-- 增加Lincese文件。
+- 
 
 Changed
 ===================
@@ -128,7 +128,7 @@ Changed
 - 使用openblas进行矩阵运算。
 - 使用sleef进行CPU SIMD运算。
 - 删除qnn.MeasurePauliSum。
-- 当torch低于2.4.0版本时候，使用torch后端计算抛出警告。
+- 当torch低于2.4.0版本，使用torch后端计算抛出警告。
 
 
 Fixed
@@ -155,7 +155,7 @@ Changed
 - 移除ONNX过时功能,移除集成pyqpanda的绝大部分接口,保留示例代码中使用的部分接口。
 - VQC_QuantumEmbedding接口修改
 - 安装本软件包时不再同时安装pyqpanda, 而是同时安装pyqpanda3.
-- VQC接口支持入参使用 `x[,:2]`,原先只支持 `x[:,[2]]` 形式。
+- VQC接口支持入参使用 `x[:,:2]`,原先只支持 `x[:,[2]]` 形式。
 - 本软件支持3.9,3.10,3.11版本python 不再支持python3.8
 
 Fixed
@@ -197,7 +197,7 @@ Added
 - 增加 `VQC_LCU`, `VQC_FABLE`, `VQC_QSVT` 的block-encoding算法, 以及qpanda算法实现 `QPANDA_QSVT`, `QPANDA_LCU`, `QPANDA_FABLE` 接口.
 - 增加整数加到量子比特上 `vqc_qft_add_to_register`, 两个量子比特上的数加法 `vqc_qft_add_two_register`,两个量子比特上的数乘法的 `vqc_qft_mul`.
 - 增加混合qpanda与vqc的训练模块 `HybirdVQCQpandaQVMLayer`.
-- 增加 `einsum`, `moveaxis`, `eigh`, `dignoal` 等接口实现.
+- 增加 `einsum`, `moveaxis`, `eigh`, `diagonal` 等接口实现.
 - 增加分布式计算中张量并行计算功能 `ColumnParallelLinear`, `RowParallelLinear`.
 - 增加分布式计算中Zero stage-1 功能 `ZeroModelInitial`.
 - `QuantumBatchAsyncQcloudLayer` 指定 diff_method == "random_coordinate_descent" 时候不会使用PSR而是随机对量子参数选择一个进行梯度计算.
@@ -239,7 +239,7 @@ Fixed
 - 修改 VQC 部分逻辑门分解函数的错误。
 - 修复部分函数的内存泄露问题。
 - 修复 `QuantumLayerMultiProcess` 不支持GPU输入的问题。
-- 修改 `Linear` 的默认参数初始化话方式
+- 修改 `Linear` 的默认参数初始化方式
 
 
 [v2.12.0] - 2024-05-01
@@ -261,7 +261,7 @@ Changed
 ===================
 
 - 安装包新加入依赖 "Pillow", "hjson", linux系统下安装包添加新依赖 "psutil"。 "cloudpickle"。
-- 优化softmax以及tranpose在GPU下运行速度。
+- 优化softmax以及transpose在GPU下运行速度。
 - 使用cuda11.8编译。
 - 整合了基于cpu、gpu下的分布式计算接口。
 
@@ -303,7 +303,7 @@ Fixed
 
 Added
 ===========
-- 增加了pyvqnet.qnn.vqc下的新接口:IsingXX、IsingXY、IsingYY、IsingZZ、SDG、TDG、PhaseShift、MutliRZ、MultiCnot、MultixCnot、ControlledPhaseShift、SingleExcitation、DoubleExcitation、VQC_AllSinglesDoubles,ExpressiveEntanglingAnsatz等;
+- 增加了pyvqnet.qnn.vqc下的新接口:IsingXX、IsingXY、IsingYY、IsingZZ、SDG、TDG、PhaseShift、MultiRZ、MultiCnot、MultixCnot、ControlledPhaseShift、SingleExcitation、DoubleExcitation、VQC_AllSinglesDoubles,ExpressiveEntanglingAnsatz等;
 - 支持adjoint梯度计算的pyvqnet.qnn.vqc.QuantumLayerAdjoint接口;
 - 支持originIR与VQC相互转换的功能;
 - 支持统计VQC模型中的经典和量子模块信息;
@@ -436,7 +436,7 @@ Added
 ===========
 
 - 增加支持stack,双向的循环神经网络接口: RNN, LSTM, GRU
-- 增加常用计算性能指标的接口: MSE,RMSE, MAE, R_Square, precision_recall_f1_2_score, precision_recall_f1_Multi_scoreprecision_recall_f1_N_score, auc_calculate
+- 增加常用计算性能指标的接口: MSE,RMSE, MAE, R_Square, precision_recall_f1_2_score, precision_recall_f1_Multi_score,precision_recall_f1_N_score, auc_calculate
 - 增加量子核SVM的算法示例
 
 Changed
@@ -490,7 +490,7 @@ Added
 ===========
 
 - 增加基本数据结构QTensor接口100余个,包括创建函数,逻辑函数,数学函数,矩阵操作。
-- 增加基本神经网络网络函数14个,包括卷积,反卷积,池化等。
+- 增加基本神经网络函数14个,包括卷积,反卷积,池化等。
 - 增加损失函数4个,包括MSE,BCE,CCE,SCE等。
 - 增加激活函数10个,包括ReLu,Sigmoid,ELU等。
 - 增加优化器6个,包括SGD,RMSPROP,ADAM等。

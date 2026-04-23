@@ -130,7 +130,7 @@ QMachine
         (batchsize,*) 维度从而适应批量数据训练。
 
     :param num_wires: 量子比特数。
-    :param dtype: 计算数据的数据类型。默认值是pyvqnet。kcomplex64,对应的参数精度为pyvqnet.kfloat32。
+    :param dtype: 计算数据的数据类型。默认值是pyvqnet.kcomplex64,对应的参数精度为pyvqnet.kfloat32。
     :param grad_mode: 梯度计算模式,可为 "adjoint",默认值:"",使用自动微分模拟。
     :param save_ir: 设置为True时,将操作保存到originIR,默认值:False。
 
@@ -4239,13 +4239,13 @@ VQC_QSVT
 Quanvolution
 ---------------------------------------------------------------
 
-.. py:class:: pyvqnet.qnn.qcnn.Quanvolution(params_shape, strides=(1, 1), kernel_initializer=quantum_uniform, machine_type_or_cloud_token: str = "cpu")
+.. py:class:: pyvqnet.qnn.qcnn.Quanvolution(params_shape, stride=(1, 1), kernel_initializer=quantum_uniform, machine_type_or_cloud_token: str = "cpu")
 
 
     基于《Quanvolutional Neural Networks: Powering Image Recognition with Quantum Circuits》（https://arxiv.org/abs/1904.04767）实现的量子卷积，用变分量子电路替换经典的卷积滤波器，从而得到具有量子卷积滤波器的量子卷积神经网络。
 
     :param params_shape: 参数的形状，应为二维。
-    :param strides: 切片窗口的步长，默认为 (1,1)。
+    :param stride: 切片窗口的步长，默认为 (1,1)。
     :param kernel_initializer: 参数的卷积核初始化器。
     :param machine_type_or_cloud_token: 机器类型字符串或 Qcloud 令牌，默认为“cpu”。
 

@@ -4,16 +4,16 @@ VQNet的分布式计算模块
 *********************************************************
 
 分布式计算​​是指通过多台设备（如GPU/CPU节点）协同完成神经网络的训练或推理任务，利用并行处理加速计算并扩展模型规模。
-其核心是通过​​分布式接口​​（如MPI、NCCL、gRP）协调设备间的通信与同步
+其核心是通过​​分布式接口​​（如MPI、NCCL）协调设备间的通信与同步
 
-VQNet的分布式计算模块模块使用mpi启动多进程并行计算, 使用nccl进行GPU之间通信。该功能仅在linux操作系统下能够使用。
+VQNet的分布式计算模块使用mpi启动多进程并行计算, 使用nccl进行GPU之间通信。该功能仅在linux操作系统下能够使用。
 
 
 
 环境部署
 =================================
 
-以下介绍VQNet分别基于CPU、GPU分布式计算所需的Linux系统下环境的部署.该部分必须MPI的支持, 以下介绍MPI的环境部署。
+以下介绍VQNet分别基于CPU、GPU分布式计算所需的Linux系统下环境的部署.该部分必须有MPI的支持, 以下介绍MPI的环境部署。
 
 MPI安装
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -114,20 +114,22 @@ NCCL为GPU间通信的常用库, **VQNet中GPU的分布式计算功能则基于N
 .. code-block::
 
     # 在每个节点上执行
-    ssh-keygen
-    
-    # 之后一直回车,在.ssh文件夹下生成一个公钥(id_rsa.pub)一个私钥(id_rsa)
-    # 将其另外两个节点的公钥都添加到第一个节点的authorized_keys文件中,
-    # 再将第一个节点authorized_keys文件传到另外两个节点便可以实现节点间的免密通信
+    ssh-keygen -t rsa
+
+    # 之后一直回车,在.ssh文件夹下生成一个公钥(id_rsa.pub)和一个私钥(id_rsa)
+    # 使用ssh-copy-id将各节点的公钥复制到主节点node0
     # 在子节点node1上执行
-    cat ~/.ssh/id_dsa.pub >> node0:~/.ssh/authorized_keys
+    ssh-copy-id node0
 
     # 在子节点node2上执行
-    cat ~/.ssh/id_dsa.pub >> node0:~/.ssh/authorized_keys
-    
-    # 先删除node1、node2中的authorized_keys文件后,在node0上将authorized_keys文件拷贝到另外两个节点上
-    scp ~/.ssh/authorized_keys  node1:~/.ssh/authorized_keys
-    scp ~/.ssh/authorized_keys  node2:~/.ssh/authorized_keys
+    ssh-copy-id node0
+
+    # 在主节点node0上,将node0自己的公钥也加入authorized_keys
+    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+    # 再将node0上的authorized_keys文件分发到各子节点
+    scp ~/.ssh/authorized_keys node1:~/.ssh/authorized_keys
+    scp ~/.ssh/authorized_keys node2:~/.ssh/authorized_keys
 
     # 保证三个不同节点生成的公钥都在authorized_keys文件中,即可实现节点间的免密通信
 
@@ -147,9 +149,8 @@ NCCL为GPU间通信的常用库, **VQNet中GPU的分布式计算功能则基于N
     systemctl start rpcbind
     systemctl start nfs
 
-    # 在所有子结点node1,node2上mount要共享的目录
-    mount node1:/data/mpi/ /data/mpi
-    mount node2:/data/mpi/ /data/mpi
+    # 在所有子节点node1,node2上mount主节点node0的共享目录
+    mount node0:/data/mpi /data/mpi
 
 分布式启动
 =================================
@@ -690,7 +691,7 @@ CommController
             
             # vqnetrun -n 2 python test.py
 
-    .. py:method:: split_group(rankL)
+    .. py:method:: split_groups(rankL)
         
         根据入参设置的进程号列表用于划分多个通信组。
 
@@ -705,7 +706,7 @@ CommController
             import numpy as np
             Comm_OP = CommController("mpi")
 
-            groups = Comm_OP.split_group([[0, 1],[2,3]])
+            groups = Comm_OP.split_groups([[0, 1],[2,3]])
             print(groups)
             #[[<mpi4py.MPI.Intracomm object at 0x7f53691f3230>, [0, 3]], [<mpi4py.MPI.Intracomm object at 0x7f53691f3010>, [2, 1]]]
 
@@ -717,7 +718,7 @@ CommController
 
         :param tensor: 输入数据.
         :param c_op: 计算方法.
-        :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_group` 生成的组对应通信组，当使用nccl后端时候输入`split_group` 生成的组序号。
+        :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
 
 
         Examples::
@@ -728,7 +729,7 @@ CommController
             from pyvqnet import kcomplex64
             Comm_OP = CommController("nccl")
 
-            groups = Comm_OP.split_group([[0, 1]])
+            groups = Comm_OP.split_groups([[0, 1]])
 
             complex_data = tensor.QTensor([3+1j, 2, 1 + get_rank()],dtype=kcomplex64).reshape((3,1)).toGPU(1000+ get_local_rank())
 
@@ -745,7 +746,7 @@ CommController
         :param tensor: 输入数据.
         :param root: 指定进程号.
         :param c_op: 计算方法.
-        :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_group` 生成的组对应通信组，当使用nccl后端时候输入`split_group` 生成的组序号。
+        :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
 
 
         Examples::
@@ -756,7 +757,7 @@ CommController
             from pyvqnet import kcomplex64
             Comm_OP = CommController("nccl")
 
-            groups = Comm_OP.split_group([[0, 1]])
+            groups = Comm_OP.split_groups([[0, 1]])
 
             complex_data = tensor.QTensor([3+1j, 2, 1 + get_rank()],dtype=kcomplex64).reshape((3,1)).toGPU(1000+ get_local_rank())
 
@@ -773,7 +774,7 @@ CommController
 
         :param tensor: 输入数据.
         :param root: 指定从哪个进程号广播， 默认为0.
-        :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_group` 生成的组对应通信组，当使用nccl后端时候输入`split_group` 生成的组序号。
+        :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
 
 
         Examples::
@@ -784,7 +785,7 @@ CommController
             from pyvqnet import kcomplex64
             Comm_OP = CommController("nccl")
 
-            groups = Comm_OP.split_group([[0, 1]])
+            groups = Comm_OP.split_groups([[0, 1]])
 
             complex_data = tensor.QTensor([3+1j, 2, 1 + get_rank()],dtype=kcomplex64).reshape((3,1)).toGPU(1000+ get_local_rank())
 
@@ -801,7 +802,7 @@ CommController
         组内allgather通信接口。
 
         :param tensor: 输入数据.
-        :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_group` 生成的组对应通信组，当使用nccl后端时候输入`split_group` 生成的组序号。
+        :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
 
 
         Examples::
@@ -817,17 +818,17 @@ CommController
             print(f" before rank {get_rank()}: {complex_data}")
             for comm_ in group:
                 if Comm_OP.getRank() in comm_[1]:
-                    complex_data = Comm_OP.all_gather_group(complex_data, comm_[0])
+                    complex_data = Comm_OP.allgather_group(complex_data, comm_[0])
                     print(f"after rank {get_rank()}: {complex_data}")
             # mpirun -n 2 python test.py
 
             from pyvqnet.distributed import CommController,get_rank,get_local_rank
             from pyvqnet.tensor import tensor
             Comm_OP = CommController("nccl")
-            groups = Comm_OP.split_group([[0, 1]])
+            groups = Comm_OP.split_groups([[0, 1]])
             complex_data = tensor.QTensor([3+1j, 2, 1 + get_rank()],dtype=kcomplex64).reshape((3,1)).toGPU(1000+ get_local_rank())
             print(f" before rank {get_rank()}: {complex_data}")
-            complex_data = Comm_OP.all_gather_group(complex_data, group = groups[0])
+            complex_data = Comm_OP.allgather_group(complex_data, group = groups[0])
             print(f"after rank {get_rank()}: {complex_data}")
             # mpirun -n 2 python test.py
 
@@ -861,7 +862,6 @@ CommController
         对GPU上数据使用NCCL进行异步或同步allreduce。
 
         :param tensor: 需要归约的 QTensor。
-        :param dest: 要归约的 QTensor 的目标排名。
         :param c_op: 计算方法，可以是 "sum" 或 "avg"，默认值为 "avg"。
         :param group: 通信进程组，group 是一个包含组索引的元组。默认值：None，不使用任何组。
         :param async_op: 此操作是否为异步操作，默认值：False。
@@ -883,7 +883,7 @@ CommController
         对GPU上数据使用NCCL进行异步或同步reduce。
 
         :param tensor_: 需要归约的 QTensor。
-        :param dest: 要归约的 QTensor 的目标排名。
+        :param dest: 要归约的 QTensor 的目标进程号/rank。
         :param c_op: 计算方法，可以是 "sum" 或 "avg"，默认值为 "avg"。
         :param group: 通信进程组，group 是一个包含组索引的元组。默认值：None，不使用任何组。
         :param async_op: 此操作是否为异步操作，默认值：False。
@@ -928,10 +928,10 @@ CommController
 
     .. py:method:: nccl_async_send( t, dest, async_op=False ):
 
-        对GPU上数据使用NCCL进行异步或同步P2Psend。
+        对GPU上数据使用NCCL进行异步或同步P2P send。
 
         :param t: 需要发送的 QTensor。
-        :param dest: 要发送 QTensor 的目标排名。
+        :param dest: 要发送 QTensor 的目标进程号/rank。
         :param async_op: 此操作是否为异步操作，默认值：False。
         :return: Work，一个异步通信句柄。使用 wait() 等待此操作完成。
 
@@ -955,10 +955,10 @@ CommController
 
     .. py:method:: nccl_async_recv( t, src, async_op=False ):
 
-        对GPU上数据使用NCCL进行异步或同步P2Precv。
+        对GPU上数据使用NCCL进行异步或同步P2P recv。
         
         :param t: 需要接受的 QTensor。
-        :param src: 要接受 QTensor 的目标排名。
+        :param src: 要接受 QTensor 的目标进程号/rank。
         :param async_op: 此操作是否为异步操作，默认值：False。
         :return: Work，一个异步通信句柄。使用 wait() 等待此操作完成。
 
@@ -1085,7 +1085,7 @@ PipelineParallelTrainingWrapper
     :return:
         PipelineParallelTrainingWrapper 实例。
 
-    以下使用 CIFAR10数据库 `CIFAR10_Dataset`,在2块GPU上训练AlexNet上的分类任务。
+    以下使用 CIFAR10数据集 `CIFAR10_Dataset`,在2块GPU上训练AlexNet上的分类任务。
     本例子中分成两个流水线并行进程 `pipeline_parallel_size` = 2。
     批处理大小为 `train_batch_size` = 64, 单GPU 上为 `train_micro_batch_size_per_gpu` = 32。
     其他配置参数可见 `args`。
@@ -1760,7 +1760,7 @@ DistributeQMachine
 
     .. note::
 
-        输入的比特数是整个量子线路所需要的比特数量，通过DistributeQMachine会根据全局比特数构建量子模拟器, 其比特数量为 ``nums_wires - global_qubit``，
+        输入的比特数是整个量子线路所需要的比特数量，通过DistributeQMachine会根据全局比特数构建量子模拟器, 其比特数量为 ``num_wires - global_qubit``，
         反传必须基于 ``DistQuantumLayerAdjoint``。
 
     .. warning::

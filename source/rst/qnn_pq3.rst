@@ -18,13 +18,13 @@ QuantumLayer
 
 .. py:class:: pyvqnet.qnn.pq3.quantumlayer.QuantumLayer(qprog_with_measure,para_num,diff_method:str = "parameter_shift",delta:float = 0.01,dtype=None,name="")
 
-	变分量子层的抽象计算模块。对一个参数化的量子线路使用pyqpanda3进行仿真,得到测量结果。该变分量子层继承了VQNet框架的梯度计算模块,可以使用参数漂移法等计算线路参数的梯度,训练变分量子线路模型或将变分量子线路嵌入混合量子和经典模型。
+	变分量子层的抽象计算模块。对一个参数化的量子线路使用pyqpanda3进行仿真,得到测量结果。该变分量子层继承了VQNet框架的梯度计算模块,可以使用参数移位法等计算线路参数的梯度,训练变分量子线路模型或将变分量子线路嵌入混合量子和经典模型。
     
-    :param qprog_with_measure: 用pyQPanda构建的量子线路运行和测量函数。
+    :param qprog_with_measure: 用pyqpanda3构建的量子线路运行和测量函数。
     :param para_num: `int` - 参数个数。
-    :param diff_method: 求解量子线路参数梯度的方法,“参数位移”或“有限差分”,默认参数偏移。
+    :param diff_method: 求解量子线路参数梯度的方法,"parameter_shift"或"finite_diff"，默认为 "parameter_shift"。 。
     :param delta: 有限差分计算梯度时的 \delta。
-    :param dtype: 参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。
+    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
     :param name: 这个模块的名字, 默认为""。
 
     :return: 一个可以计算量子线路的模块。
@@ -32,7 +32,7 @@ QuantumLayer
     .. note::
         qprog_with_measure是pyQPanda中定义的量子线路函数 :https://qcloud.originqc.com.cn/document/qpanda-3/dc/d12/tutorial_quantum_program.html。
         
-        此函数必须包含输入和参数两个参数作为函数入参(即使某个参数未实际使用),输出为线路的测量结果或者期望值（需要为np.ndarray或包含数值的列表）,否则无法在QpandaQCircuitVQCLayerLite中正常运行。
+        此函数必须包含输入和参数两个参数作为函数入参(即使某个参数未实际使用),输出为线路的测量结果或者期望值（需要为np.ndarray或包含数值的列表）,否则无法在QuantumLayer中正常运行。
 
         
         量子线路函数 qprog_with_measure的使用可参考下面的例子。
@@ -121,7 +121,7 @@ QpandaQProgVQCLayer
 
     它将参数化的量子电路提交给 本地QPanda3全振幅模拟器中计算,并训练线路中的参数。
     它支持批量数据并使用参数移位规则来估计参数的梯度。
-    对于 CRX、CRY、CRZ,此层使用 https://iopscience.iop.org/article/10.1088/1367-2630/ac2cb3 中的公式,其余逻辑门采用默认的参数漂移法计算梯度。
+    对于 CRX、CRY、CRZ,此层使用 https://iopscience.iop.org/article/10.1088/1367-2630/ac2cb3 中的公式,其余逻辑门采用默认的参数移位法计算梯度。
 
     :param origin_qprog_func: 由 QPanda 构建的可调用量子电路函数。
     :param para_num: `int` - 参数数量；参数是一维的。
@@ -137,7 +137,7 @@ QpandaQProgVQCLayer
     .. note::
 
         origin_qprog_func 是用户使用 pyqpanda3 定义的量子电路函数:
-        https://qcloud.originqc.com.cn/document/qpanda-3/dc/d12/tutorial_quantum_program.html。。
+        https://qcloud.originqc.com.cn/document/qpanda-3/dc/d12/tutorial_quantum_program.html 。
 
         此函数必须包含输入和参数两个参数作为函数入参(即使某个参数未实际使用),输出为pyqpanda3.core.QProg类型数据,否则无法在QuantumLayerV3中正常运行。
 
@@ -167,7 +167,7 @@ QpandaQProgVQCLayer
 
         def qfun(input, param ):
             m_qlist = range(3)
-            cubits = range(3)
+            cbits = range(3)
             measure_qubits = [0,1, 2]
             m_prog = pq.QProg()
             cir = pq.QCircuit(3)
@@ -184,7 +184,7 @@ QpandaQProgVQCLayer
             m_prog<<cir
 
             for idx, ele in enumerate(measure_qubits):
-                m_prog << pq.measure(m_qlist[ele], cubits[idx])  # pylint: disable=expression-not-assigned
+                m_prog << pq.measure(m_qlist[ele], cbits[idx])  # pylint: disable=expression-not-assigned
             return m_prog
 
         from pyvqnet.utils.initializer import ones
@@ -551,7 +551,7 @@ grad
 ==============
 .. py:function:: pyvqnet.qnn.pq3.quantumlayer.grad(quantum_prog_func, input_params, *args)
 
-    grad 函数提供了一种对用户设计的含参量子线路参数的梯度使用参数漂移法计算的接口。
+    grad 函数提供了一种对用户设计的含参量子线路参数的梯度使用参数移位法计算的接口。
     用户可按照如下例子,使用pyqpanda设计线路运行函数 ``quantum_prog_func`` ,并作为参数送入grad函数。
     grad函数的第二个参数则是想要计算量子逻辑门参数梯度的坐标。
     返回值的形状为  [num of parameters,num of output]。
@@ -601,7 +601,7 @@ QLinear 实现了一种量子全连接算法。首先将数据编码到量子态
 
 .. image:: ./images/qlinear_cir.png
 
-.. py:class:: pyvqnet.qnn.qlinear.QLinear(input_channels,output_channels,machine: str = "CPU"))
+.. py:class:: pyvqnet.qnn.qlinear.QLinear(input_channels,output_channels,machine: str = "CPU")
 
     量子全连接模块。全连接模块的输入为形状（输入通道、输出通道）。
     
@@ -614,7 +614,7 @@ QLinear 实现了一种量子全连接算法。首先将数据编码到量子态
     :param machine: `str` - 使用的虚拟机,默认使用CPU模拟。
     :return: 量子全连接层。
 
-    Exmaple::
+    Example::
 
         from pyvqnet.tensor import QTensor
         from pyvqnet.qnn.qlinear import QLinear
@@ -661,7 +661,7 @@ Qconv是一种量子卷积算法接口。
     :param padding: `tuple` - 填充,默认为（0,0）。
     :param kernel_initializer: `callable` - 默认为正态分布。
     :param machine: `str` - 使用的虚拟机,默认使用CPU模拟。
-    :param dtype: 参数的数据类型,defaults:None,使用默认数据类型:kfloat32,代表32位浮点数。
+    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
     :param name: 这个模块的名字, 默认为""。
 
 
@@ -1253,10 +1253,10 @@ StronglyEntanglingTemplate
         circuit.print_circuit(qubits)
 
 
-ComplexEntangelingTemplate
+ComplexEntanglingTemplate
 ============================
 
-.. py:class:: pyvqnet.qnn.pq3.ComplexEntangelingTemplate(weights,num_qubits,depth)
+.. py:class:: pyvqnet.qnn.pq3.ComplexEntanglingTemplate(weights,num_qubits,depth)
 
 
     由 U3 门和 CNOT 门组成的强纠缠层。
@@ -1270,7 +1270,7 @@ ComplexEntangelingTemplate
 
     Example::
 
-        from pyvqnet.qnn.pq3 import ComplexEntangelingTemplate
+        from pyvqnet.qnn.pq3 import ComplexEntanglingTemplate
         import pyqpanda3.core as pq
         from pyvqnet.tensor import *
         depth =3
@@ -1282,7 +1282,7 @@ ComplexEntangelingTemplate
 
         qubits = range(num_qubits)
 
-        circuit = ComplexEntangelingTemplate(weights, num_qubits=num_qubits,depth=depth)
+        circuit = ComplexEntanglingTemplate(weights, num_qubits=num_qubits,depth=depth)
         result = circuit.create_circuit(qubits)
         circuit.print_circuit(qubits)
 
@@ -1316,7 +1316,7 @@ Quantum_Embedding
         
         nq = depth_input * num_repetitions_input
         qubits = range(nq)
-        cubits = range(nq)
+        cbits = range(nq)
 
         data_in = tensor.ones([12, depth_input])
         data_in.requires_grad = True
