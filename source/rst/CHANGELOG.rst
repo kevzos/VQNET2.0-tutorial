@@ -17,7 +17,7 @@ Changed
 - 默认后端改为 ``pyvqnet-ad``。
 - 删除已废弃的 ``QuantumLayerMultiProcess``、``DataParallelHybirdVQCQpandaQVMLayer``、``HybirdVQCQpanda3QVMLayer`` 接口。
 - ``split_group`` 重命名为 ``split_groups``。
-
+- 依赖于cuda12.6的nvidia runtime 。
 
 Fixed
 ===================
