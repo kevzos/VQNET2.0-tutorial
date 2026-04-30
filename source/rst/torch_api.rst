@@ -1643,7 +1643,7 @@ SDPA
 
 .. py:class:: pyvqnet.nn.torch.SDPA(attn_mask=None,dropout_p=0.,scale=None,is_causal=False)
 
-    构造计算查询、键和值张量的缩放点积注意力的类。如果输入为cpu下的QTensor,则使用数学公式计算, 如果输入在gpu下QTensor,则使用flash-attention方法计算。
+    构造计算查询、键和值张量的缩放点积注意力的类。
     
     .. warning::
 
@@ -1652,7 +1652,7 @@ SDPA
     :param attn_mask: 注意掩码；默认值: 无。shape 必须可广播到注意权重的形状。
     :param dropout_p: Dropout 概率；默认值: 0,如果大于 0.0,则应用 dropout。
     :param scale: 在 softmax 之前应用的缩放因子,默认值: 无。
-    :param is_causal: 默认值: False,如果设置为 true,则当掩码为方阵时,注意掩码为下三角矩阵。如果同时设置了 attn_mask 和 is_causal,则会引发错误。
+    :param is_causal: 默认值: False,如果设置为 true,则当掩码为方阵时,注意力掩码为下三角矩阵。如果同时设置了 attn_mask 和 is_causal,则会引发错误。
     :return: 一个SDPA类
 
     Examples::
@@ -1665,7 +1665,7 @@ SDPA
 
     .. py:method:: forward(query,key,value)
 
-        进行前向计算,如果输入为cpu下的QTensor,则使用数学公式计算, 如果输入在gpu下QTensor,则使用flash-attention方法计算。
+        进行前向计算
 
         :param query: query输入QTensor。
         :param key: key输入QTensor。
