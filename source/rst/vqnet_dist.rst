@@ -1699,9 +1699,9 @@ RowParallelLinear
 量子比特重排序技术是比特并行中的技术，其核心是通过改变比特并行过程中量子逻辑门的排列顺序，减少比特并行中需要执行比特变换的次数，以下是基于比特并行构建大比特量子线路时需要的模块。参照论文 `Lazy Qubit Reordering for Accelerating Parallel State-Vector-based Quantum Circuit Simulation <https://export.arxiv.org/abs/2410.04252>`__ 。
 以下接口需要通过 `mpi` 启动多个进程进行计算。
 
-DistributeQMachine
+DistributedQMachine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. py:class:: pyvqnet.distributed.qubits_reorder.DistributeQMachine(num_wires,dtype,grad_mode)
+.. py:class:: pyvqnet.distributed.qubits_reorder.DistributedQMachine(num_wires, dtype=kcomplex64, grad_mode="")
 
     用于比特并行中的变分量子计算的模拟类，包含每个节点包含的部分比特上的量子态。通过MPI,每个节点都申请一个该类，进行分布式的量子变分线路模拟，N的值必须等于2的分布式并行的比特个数 `global_qubit` 的幂次方，可通过 `set_qr_config` 进行配置。
 
@@ -1711,14 +1711,14 @@ DistributeQMachine
 
     .. note::
 
-        输入的比特数是整个量子线路所需要的比特数量，通过DistributeQMachine会根据全局比特数构建量子模拟器, 其比特数量为 ``num_wires - global_qubit``，
+        输入的比特数是整个量子线路所需要的比特数量，        通过DistributedQMachine会根据全局比特数构建量子模拟器, 其比特数量为 ``num_wires - global_qubit``，
         反传必须基于 ``DistQuantumLayerAdjoint``。
 
     .. warning::
 
         该接口只支持在Linux下运行；
 
-        必须对 ``DistributeQMachine`` 中比特并行中参数进行配置， 如样例中所示，包括：
+        必须对 ``DistributedQMachine`` 中比特并行中参数进行配置， 如样例中所示，包括：
         
         .. code-block::
 
@@ -1732,7 +1732,7 @@ DistributeQMachine
         from pyvqnet import tensor
         from pyvqnet.qnn.vqc import rx, ry, cnot, MeasureAll,rz
         import pyvqnet
-        from pyvqnet.distributed.qubits_reorder import DistributeQMachine,DistQuantumLayerAdjoint
+        from pyvqnet.distributed.qubits_reorder import DistributedQMachine,DistQuantumLayerAdjoint
         pyvqnet.utils.set_random_seed(123)
 
 
@@ -1745,7 +1745,7 @@ DistributeQMachine
 
                 self._num_wires = num_wires
                 self._dtype = dtype
-                self.qm = DistributeQMachine(num_wires, dtype=dtype, grad_mode=grad_mode)
+                self.qm = DistributedQMachine(num_wires, dtype=dtype, grad_mode=grad_mode)
                 
                 self.qm.set_just_defined(True)
                 self.qm.set_save_op_history_flag(True) # open save op
@@ -1796,12 +1796,12 @@ DistQuantumLayerAdjoint
 
     使用伴随矩阵方式对比特并行计算中的参数进行梯度计算的DistQuantumLayer层
 
-    :param vqc_module: 输入的蕴含 ``DistributeQMachine`` 模块。
+    :param vqc_module: 输入的蕴含 ``DistributedQMachine`` 模块。
     :param name: 模块名称。
 
     .. note::
 
-        输入的vqc_module模块必须包含 ``DistributeQMachine``， 基于 ``DistributeQMachine`` 进行比特并行下的adjoint反传梯度计算。
+        输入的vqc_module模块必须包含 ``DistributedQMachine``， 基于 ``DistributedQMachine`` 进行比特并行下的adjoint反传梯度计算。
 
     .. warning::
 
@@ -1813,7 +1813,7 @@ DistQuantumLayerAdjoint
         from pyvqnet import tensor
         from pyvqnet.qnn.vqc import rx, ry, cnot, MeasureAll,rz
         import pyvqnet
-        from pyvqnet.distributed.qubits_reorder import DistributeQMachine,DistQuantumLayerAdjoint
+        from pyvqnet.distributed.qubits_reorder import DistributedQMachine,DistQuantumLayerAdjoint
         pyvqnet.utils.set_random_seed(123)
 
 
@@ -1826,7 +1826,7 @@ DistQuantumLayerAdjoint
 
                 self._num_wires = num_wires
                 self._dtype = dtype
-                self.qm = DistributeQMachine(num_wires, dtype=dtype, grad_mode=grad_mode)
+                self.qm = DistributedQMachine(num_wires, dtype=dtype, grad_mode=grad_mode)
                 
                 self.qm.set_just_defined(True)
                 self.qm.set_save_op_history_flag(True) # open save op
