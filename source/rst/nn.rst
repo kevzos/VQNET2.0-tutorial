@@ -2430,309 +2430,6 @@ CrossEntropyLoss
 
         #[1.1508200]
 
-
-激活函数
-*********************************************************
-
-Activation
-=================================
-.. py:class:: pyvqnet.nn.activation.Activation()
-
-    激活的基类。 特定的激活函数继承了这个类。
-
-Sigmoid
-=================================
-.. py:class:: pyvqnet.nn.Sigmoid(name:str="")
-
-    Sigmoid激活函数层。
-
-    .. math::
-        \text{Sigmoid}(x) = \frac{1}{1 + \exp(-x)}
-
-    :param name: 激活函数层的命名,默认为""。
-
-    :return: 一个Sigmoid激活函数层实例。
-
-    Examples::
-
-        from pyvqnet.nn import Sigmoid
-        from pyvqnet.tensor import QTensor
-        layer = Sigmoid()
-        y = layer(QTensor([1.0, 2.0, 3.0, 4.0]))
-        print(y)
-
-        # [0.7310586, 0.8807970, 0.9525741, 0.9820138]
-
-
-Softplus
-=================================
-.. py:class:: pyvqnet.nn.Softplus(name:str="")
-
-    Softplus激活函数层。
-
-    .. math::
-        \text{Softplus}(x) = \log(1 + \exp(x))
-
-    :param name: 激活函数层的命名,默认为""。
-
-    :return: 一个Softplus激活函数层实例。
-
-    Examples::
-
-        from pyvqnet.nn import Softplus
-        from pyvqnet.tensor import QTensor
-        layer = Softplus()
-        y = layer(QTensor([1.0, 2.0, 3.0, 4.0]))
-        print(y)
-
-        # [1.3132616, 2.1269281, 3.0485873, 4.0181499]
-        
-
-Softsign
-=================================
-.. py:class:: pyvqnet.nn.Softsign(name:str="")
-
-    Softsign 激活函数层。
-
-    .. math::
-        \text{SoftSign}(x) = \frac{x}{ 1 + |x|}
-
-    :param name: 激活函数层的命名,默认为""。
-
-    :return: 一个Softsign 激活函数层实例。
-
-    Examples::
-
-        from pyvqnet.nn import Softsign
-        from pyvqnet.tensor import QTensor
-        layer = Softsign()
-        y = layer(QTensor([1.0, 2.0, 3.0, 4.0]))
-        print(y)
-
-        # [0.5000000, 0.6666667, 0.7500000, 0.8000000]
-        
-
-
-Softmax
-=================================
-.. py:class:: pyvqnet.nn.Softmax(dim:int = -1,name:str="")
-
-    Softmax 激活函数层。
-
-    .. math::
-        \text{Softmax}(x_{i}) = \frac{\exp(x_i)}{\sum_j \exp(x_j)}
-
-
-    :param dim: 计算的维度(最后一个轴为-1),默认值 = -1。
-    :param name: 激活函数层的命名,默认为""。
-
-    :return: 一个Softmax 激活函数层实例。
-
-    Examples::
-
-        from pyvqnet.nn import Softmax
-        from pyvqnet.tensor import QTensor
-        layer = Softmax()
-        y = layer(QTensor([1.0, 2.0, 3.0, 4.0]))
-        print(y)
-
-        # [0.0320586, 0.0871443, 0.2368828, 0.6439142]
-        
-
-HardSigmoid
-=================================
-.. py:class:: pyvqnet.nn.HardSigmoid(name:str="")
-
-    HardSigmoid 激活函数层。
-
-    .. math::
-        \text{Hardsigmoid}(x) = \begin{cases}
-            0 & \text{ if } x \le -3, \\
-            1 & \text{ if } x \ge +3, \\
-            x / 6 + 1 / 2 & \text{otherwise}
-        \end{cases}
-
-    :param name: 激活函数层的命名,默认为""。
-
-    :return: 一个HardSigmoid 激活函数层实例。
-
-    Examples::
-
-        from pyvqnet.nn import HardSigmoid
-        from pyvqnet.tensor import QTensor
-        layer = HardSigmoid()
-        y = layer(QTensor([1.0, 2.0, 3.0, 4.0]))
-        print(y)
-
-        # [0.6666667, 0.8333334, 1., 1.]
-        
-
-SwiGLU
-=================================
-
-.. py:class:: pyvqnet.nn.SwiGLU(name:str="")
-
-    SwiGLU 激活函数层,是 SwiGLU 门控线性单元的变体: ``SiLU(gate) * up`` 。
-
-    :param name: 激活函数层的命名,默认为""。
-    :return: 一个 SwiGLU 激活函数层实例。
-
-    Example::
-
-        from pyvqnet.nn import SwiGLU
-        from pyvqnet.tensor import QTensor, kfloat32
-        layer = SwiGLU()
-        gate = QTensor([1.0, 2.0, 3.0, 4.0], dtype=kfloat32)
-        up = QTensor([0.5, 1.0, 1.5, 2.0], dtype=kfloat32)
-        y = layer(gate, up)
-        print(y)
-
-        # [0.3655293,1.761594 ,4.286584 ,7.85611  ]
-
-ReLu
-=================================
-.. py:class:: pyvqnet.nn.ReLu(name:str="")
-
-    ReLu 整流线性单元激活函数层。
-
-    .. math::
-        \text{ReLu}(x) = \begin{cases}
-        x, & \text{ if } x > 0\\
-        0, & \text{ if } x \leq 0
-        \end{cases}
-
-
-    :param name: 激活函数层的命名,默认为""。
-
-    :return: 一个ReLu 激活函数层实例。
-
-    Examples::
-
-        from pyvqnet.nn import ReLu
-        from pyvqnet.tensor import QTensor
-        layer = ReLu()
-        y = layer(QTensor([-1, 2.0, -3, 4.0]))
-        print(y)
-
-        # [0., 2., 0., 4.]
-        
-
-
-LeakyReLu
-=================================
-.. py:class:: pyvqnet.nn.LeakyReLu(alpha:float=0.01,name:str="")
-
-    LeakyReLu 带泄露的修正线性单元激活函数层。
-
-    .. math::
-        \text{LeakyRelu}(x) =
-        \begin{cases}
-        x, & \text{ if } x \geq 0 \\
-        \alpha * x, & \text{ otherwise }
-        \end{cases}
-
-    :param alpha: LeakyRelu 系数,默认:0.01。
-    :param name: 激活函数层的命名,默认为""。
-
-    :return: 一个LeakyReLu 激活函数层实例。
-
-    Examples::
-
-        from pyvqnet.nn import LeakyReLu
-        from pyvqnet.tensor import QTensor
-        layer = LeakyReLu()
-        y = layer(QTensor([-1, 2.0, -3, 4.0]))
-        print(y)
-
-        # [-0.0100000, 2., -0.0300000, 4.]
-
-
-
-Gelu
-=================================
-.. py:class:: pyvqnet.nn.Gelu(approximate="tanh", name="")
-    
-    应用高斯误差线性单元函数:
-
-    .. math:: \text{GELU}(x) = x * \Phi(x)
-
-    当近似参数为 'tanh' 时, GELU 通过以下方式估计:
-
-    .. math:: \text{GELU}(x) = 0.5 * x * (1 + \text{Tanh}(\sqrt{2 / \pi} * (x + 0.044715 * x^3)))
-
-
-    :param approximate: 近似计算方式, 默认为"tanh"。
-    :param name: 激活函数层的命名,默认为""。
-
-    :return: Gelu 激活函数层实例。
-    
-    Examples::
-
-        from pyvqnet.tensor import randu, ones_like
-        from pyvqnet.nn import Gelu
-        qa = randu([5,4])
-        qb = Gelu()(qa)
-        print(qb)
-        # [[0.0292515,0.0668998,0.4036024,0.8369502],
-        #  [0.1929213,0.1981275,0.2358531,0.7790835],
-        #  [0.1754935,0.6204091,0.2354677,0.2409406],
-        #  [0.4238827,0.804715 ,0.1633414,0.2853   ],
-        #  [0.1959854,0.590143 ,0.553995 ,0.0008423]]
-
-
-ELU
-=================================
-.. py:class:: pyvqnet.nn.ELU(alpha:float=1,name:str="")
-
-    ELU 指数线性单位激活函数层。
-
-    .. math::
-        \text{ELU}(x) = \begin{cases}
-        x, & \text{ if } x > 0\\
-        \alpha * (\exp(x) - 1), & \text{ if } x \leq 0
-        \end{cases}
-
-    :param alpha: ELU 系数,默认:1。
-    :param name: 激活函数层的命名,默认为""。
-
-    :return: ELU 激活函数层实例。
-
-    Examples::
-
-        from pyvqnet.nn import ELU
-        from pyvqnet.tensor import QTensor
-        layer = ELU()
-        y = layer(QTensor([-1, 2.0, -3, 4.0]))
-        print(y)
-
-        # [-0.6321205, 2., -0.9502130, 4.]
-        
-         
-Tanh
-=================================
-.. py:class:: pyvqnet.nn.Tanh(name:str="")
-
-    Tanh双曲正切激活函数.
-
-    .. math::
-        \text{Tanh}(x) = \frac{\exp(x) - \exp(-x)} {\exp(x) + \exp(-x)}
-
-    :param name: 激活函数层的命名,默认为""。
-
-    :return: Tanh 激活函数层实例。
-
-    Examples::
-
-        from pyvqnet.nn import Tanh
-        from pyvqnet.tensor import QTensor
-        layer = Tanh()
-        y = layer(QTensor([-1, 2.0, -3, 4.0]))
-        print(y)
-
-        # [-0.7615942, 0.9640276, -0.9950548, 0.9993293]
-        
-
-
 ``pyvqnet.nn.functional`` 与 ``pyvqnet.nn._sampling`` 模块提供了一系列底层函数式算子,可用于构建自定义层或实现采样逻辑。
 
 rope (旋转位置编码)
@@ -3078,6 +2775,311 @@ fused_moe (融合专家混合)
         # [3,0]
         print(valid)
         # [ True, True]
+
+
+
+
+激活函数
+*********************************************************
+
+Activation
+=================================
+.. py:class:: pyvqnet.nn.activation.Activation()
+
+    激活的基类。 特定的激活函数继承了这个类。
+
+Sigmoid
+=================================
+.. py:class:: pyvqnet.nn.Sigmoid(name:str="")
+
+    Sigmoid激活函数层。
+
+    .. math::
+        \text{Sigmoid}(x) = \frac{1}{1 + \exp(-x)}
+
+    :param name: 激活函数层的命名,默认为""。
+
+    :return: 一个Sigmoid激活函数层实例。
+
+    Examples::
+
+        from pyvqnet.nn import Sigmoid
+        from pyvqnet.tensor import QTensor
+        layer = Sigmoid()
+        y = layer(QTensor([1.0, 2.0, 3.0, 4.0]))
+        print(y)
+
+        # [0.7310586, 0.8807970, 0.9525741, 0.9820138]
+
+
+Softplus
+=================================
+.. py:class:: pyvqnet.nn.Softplus(name:str="")
+
+    Softplus激活函数层。
+
+    .. math::
+        \text{Softplus}(x) = \log(1 + \exp(x))
+
+    :param name: 激活函数层的命名,默认为""。
+
+    :return: 一个Softplus激活函数层实例。
+
+    Examples::
+
+        from pyvqnet.nn import Softplus
+        from pyvqnet.tensor import QTensor
+        layer = Softplus()
+        y = layer(QTensor([1.0, 2.0, 3.0, 4.0]))
+        print(y)
+
+        # [1.3132616, 2.1269281, 3.0485873, 4.0181499]
+        
+
+Softsign
+=================================
+.. py:class:: pyvqnet.nn.Softsign(name:str="")
+
+    Softsign 激活函数层。
+
+    .. math::
+        \text{SoftSign}(x) = \frac{x}{ 1 + |x|}
+
+    :param name: 激活函数层的命名,默认为""。
+
+    :return: 一个Softsign 激活函数层实例。
+
+    Examples::
+
+        from pyvqnet.nn import Softsign
+        from pyvqnet.tensor import QTensor
+        layer = Softsign()
+        y = layer(QTensor([1.0, 2.0, 3.0, 4.0]))
+        print(y)
+
+        # [0.5000000, 0.6666667, 0.7500000, 0.8000000]
+        
+
+
+Softmax
+=================================
+.. py:class:: pyvqnet.nn.Softmax(dim:int = -1,name:str="")
+
+    Softmax 激活函数层。
+
+    .. math::
+        \text{Softmax}(x_{i}) = \frac{\exp(x_i)}{\sum_j \exp(x_j)}
+
+
+    :param dim: 计算的维度(最后一个轴为-1),默认值 = -1。
+    :param name: 激活函数层的命名,默认为""。
+
+    :return: 一个Softmax 激活函数层实例。
+
+    Examples::
+
+        from pyvqnet.nn import Softmax
+        from pyvqnet.tensor import QTensor
+        layer = Softmax()
+        y = layer(QTensor([1.0, 2.0, 3.0, 4.0]))
+        print(y)
+
+        # [0.0320586, 0.0871443, 0.2368828, 0.6439142]
+        
+
+HardSigmoid
+=================================
+.. py:class:: pyvqnet.nn.HardSigmoid(name:str="")
+
+    HardSigmoid 激活函数层。
+
+    .. math::
+        \text{Hardsigmoid}(x) = \begin{cases}
+            0 & \text{ if } x \le -3, \\
+            1 & \text{ if } x \ge +3, \\
+            x / 6 + 1 / 2 & \text{otherwise}
+        \end{cases}
+
+    :param name: 激活函数层的命名,默认为""。
+
+    :return: 一个HardSigmoid 激活函数层实例。
+
+    Examples::
+
+        from pyvqnet.nn import HardSigmoid
+        from pyvqnet.tensor import QTensor
+        layer = HardSigmoid()
+        y = layer(QTensor([1.0, 2.0, 3.0, 4.0]))
+        print(y)
+
+        # [0.6666667, 0.8333334, 1., 1.]
+        
+
+SwiGLU
+=================================
+
+.. py:class:: pyvqnet.nn.SwiGLU(name:str="")
+
+    SwiGLU 激活函数层,是 SwiGLU 门控线性单元的变体: ``SiLU(gate) * up`` 。
+
+    :param name: 激活函数层的命名,默认为""。
+    :return: 一个 SwiGLU 激活函数层实例。
+
+    Example::
+
+        from pyvqnet.nn import SwiGLU
+        from pyvqnet.tensor import QTensor, kfloat32
+        layer = SwiGLU()
+        gate = QTensor([1.0, 2.0, 3.0, 4.0], dtype=kfloat32)
+        up = QTensor([0.5, 1.0, 1.5, 2.0], dtype=kfloat32)
+        y = layer(gate, up)
+        print(y)
+
+        # [0.3655293,1.761594 ,4.286584 ,7.85611  ]
+
+ReLu
+=================================
+.. py:class:: pyvqnet.nn.ReLu(name:str="")
+
+    ReLu 整流线性单元激活函数层。
+
+    .. math::
+        \text{ReLu}(x) = \begin{cases}
+        x, & \text{ if } x > 0\\
+        0, & \text{ if } x \leq 0
+        \end{cases}
+
+
+    :param name: 激活函数层的命名,默认为""。
+
+    :return: 一个ReLu 激活函数层实例。
+
+    Examples::
+
+        from pyvqnet.nn import ReLu
+        from pyvqnet.tensor import QTensor
+        layer = ReLu()
+        y = layer(QTensor([-1, 2.0, -3, 4.0]))
+        print(y)
+
+        # [0., 2., 0., 4.]
+        
+
+
+LeakyReLu
+=================================
+.. py:class:: pyvqnet.nn.LeakyReLu(alpha:float=0.01,name:str="")
+
+    LeakyReLu 带泄露的修正线性单元激活函数层。
+
+    .. math::
+        \text{LeakyRelu}(x) =
+        \begin{cases}
+        x, & \text{ if } x \geq 0 \\
+        \alpha * x, & \text{ otherwise }
+        \end{cases}
+
+    :param alpha: LeakyRelu 系数,默认:0.01。
+    :param name: 激活函数层的命名,默认为""。
+
+    :return: 一个LeakyReLu 激活函数层实例。
+
+    Examples::
+
+        from pyvqnet.nn import LeakyReLu
+        from pyvqnet.tensor import QTensor
+        layer = LeakyReLu()
+        y = layer(QTensor([-1, 2.0, -3, 4.0]))
+        print(y)
+
+        # [-0.0100000, 2., -0.0300000, 4.]
+
+
+
+Gelu
+=================================
+.. py:class:: pyvqnet.nn.Gelu(approximate="tanh", name="")
+    
+    应用高斯误差线性单元函数:
+
+    .. math:: \text{GELU}(x) = x * \Phi(x)
+
+    当近似参数为 'tanh' 时, GELU 通过以下方式估计:
+
+    .. math:: \text{GELU}(x) = 0.5 * x * (1 + \text{Tanh}(\sqrt{2 / \pi} * (x + 0.044715 * x^3)))
+
+
+    :param approximate: 近似计算方式, 默认为"tanh"。
+    :param name: 激活函数层的命名,默认为""。
+
+    :return: Gelu 激活函数层实例。
+    
+    Examples::
+
+        from pyvqnet.tensor import randu, ones_like
+        from pyvqnet.nn import Gelu
+        qa = randu([5,4])
+        qb = Gelu()(qa)
+        print(qb)
+        # [[0.0292515,0.0668998,0.4036024,0.8369502],
+        #  [0.1929213,0.1981275,0.2358531,0.7790835],
+        #  [0.1754935,0.6204091,0.2354677,0.2409406],
+        #  [0.4238827,0.804715 ,0.1633414,0.2853   ],
+        #  [0.1959854,0.590143 ,0.553995 ,0.0008423]]
+
+
+ELU
+=================================
+.. py:class:: pyvqnet.nn.ELU(alpha:float=1,name:str="")
+
+    ELU 指数线性单位激活函数层。
+
+    .. math::
+        \text{ELU}(x) = \begin{cases}
+        x, & \text{ if } x > 0\\
+        \alpha * (\exp(x) - 1), & \text{ if } x \leq 0
+        \end{cases}
+
+    :param alpha: ELU 系数,默认:1。
+    :param name: 激活函数层的命名,默认为""。
+
+    :return: ELU 激活函数层实例。
+
+    Examples::
+
+        from pyvqnet.nn import ELU
+        from pyvqnet.tensor import QTensor
+        layer = ELU()
+        y = layer(QTensor([-1, 2.0, -3, 4.0]))
+        print(y)
+
+        # [-0.6321205, 2., -0.9502130, 4.]
+        
+         
+Tanh
+=================================
+.. py:class:: pyvqnet.nn.Tanh(name:str="")
+
+    Tanh双曲正切激活函数.
+
+    .. math::
+        \text{Tanh}(x) = \frac{\exp(x) - \exp(-x)} {\exp(x) + \exp(-x)}
+
+    :param name: 激活函数层的命名,默认为""。
+
+    :return: Tanh 激活函数层实例。
+
+    Examples::
+
+        from pyvqnet.nn import Tanh
+        from pyvqnet.tensor import QTensor
+        layer = Tanh()
+        y = layer(QTensor([-1, 2.0, -3, 4.0]))
+        print(y)
+
+        # [-0.7615942, 0.9640276, -0.9950548, 0.9993293]
+        
+
 
 
 
