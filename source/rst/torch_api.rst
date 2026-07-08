@@ -4850,8 +4850,6 @@ vqc_amplitude_embedding
 
     将 :math:`2^n` 特征编码为 :math:`n` 量子比特的振幅向量。该函数别名 `VQC_AmplitudeEmbedding` 。
 
-.. py:function:: pyvqnet.qnn.vqc.sv.torch.VQC_AmplitudeEmbedding(input_feature, q_machine)
-
     ``VQC_AmplitudeEmbedding`` 是 ``vqc_amplitude_embedding`` 的别名,作用完全相同。
 
     :param input_feature: 表示参数的numpy数组。
