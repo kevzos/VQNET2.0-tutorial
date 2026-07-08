@@ -425,9 +425,9 @@ Circuit-centric quantum classifiers算法示例
     from pyvqnet.dtype import *
 
     from pyvqnet.tensor.tensor import QTensor
-    from pyvqnet.qnn.vqc.qcircuit import PauliZ, VQC_ZZFeatureMap,PauliX,PauliY,hadamard,crz,rz
+    from pyvqnet.qnn.vqc import PauliZ, VQC_ZZFeatureMap,PauliX,PauliY,hadamard,crz,rz
     from pyvqnet.qnn.vqc import QMachine
-    from pyvqnet.qnn.vqc.qmeasure import MeasureAll
+    from pyvqnet.qnn.vqc import MeasureAll
     from pyvqnet import tensor
     import functools as ft
 
@@ -657,9 +657,9 @@ Circuit-centric quantum classifiers算法示例
     import seaborn as sns
 
     from pyqpanda import *
-    from pyvqnet.qnn.vqc.qcircuit import isingxx,isingyy,isingzz,u3,cnot,VQC_AmplitudeEmbedding,rxx,ryy,rzz,rzx
-    from pyvqnet.qnn.vqc.qmachine import QMachine
-    from pyvqnet.qnn.vqc.utils import probs
+    from pyvqnet.qnn.vqc import isingxx,isingyy,isingzz,u3,cnot,VQC_AmplitudeEmbedding,rxx,ryy,rzz,rzx
+    from pyvqnet.qnn.vqc import QMachine
+    from pyvqnet.qnn.vqc.common import probs
     from pyvqnet.nn import Module, Parameter
     from pyvqnet.tensor import tensor
     from pyvqnet.tensor import QTensor

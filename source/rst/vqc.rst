@@ -19,7 +19,7 @@
 .. code-block::
 
     from pyvqnet.nn import Module,Linear,ModuleList
-    from pyvqnet.qnn.vqc.qcircuit import VQC_HardwareEfficientAnsatz,RZZ,RZ
+    from pyvqnet.qnn.vqc import VQC_HardwareEfficientAnsatz,RZZ,RZ
     from pyvqnet.qnn.vqc import Probability,QMachine
     from pyvqnet import tensor
 
@@ -66,7 +66,7 @@
 .. code-block::
 
     from pyvqnet.nn import Module,Linear,ModuleList
-    from pyvqnet.qnn.vqc.qcircuit import VQC_HardwareEfficientAnsatz,RZZ,RZ,rz,ry,cnot
+    from pyvqnet.qnn.vqc import VQC_HardwareEfficientAnsatz,RZZ,RZ,rz,ry,cnot
     from pyvqnet.qnn.vqc import Probability,QMachine
     from pyvqnet import tensor
 
@@ -118,7 +118,7 @@
 .. code-block::
 
     from pyvqnet.nn import Module,Linear,ModuleList
-    from pyvqnet.qnn.vqc.qcircuit import VQC_HardwareEfficientAnsatz,RZZ,RZ,rz,ry,cnot
+    from pyvqnet.qnn.vqc import VQC_HardwareEfficientAnsatz,RZZ,RZ,rz,ry,cnot
     from pyvqnet.qnn.vqc import Probability,QMachine
     from pyvqnet import tensor
     from pyvqnet import DEV_GPU
@@ -3144,7 +3144,7 @@ VQC_HardwareEfficientAnsatz
     Example::
 
         from pyvqnet.nn import Module,Linear,ModuleList
-        from pyvqnet.qnn.vqc.qcircuit import VQC_HardwareEfficientAnsatz,RZZ,RZ
+        from pyvqnet.qnn.vqc import VQC_HardwareEfficientAnsatz,RZZ,RZ
         from pyvqnet.qnn.vqc import Probability,QMachine
         from pyvqnet import tensor
 
@@ -3199,7 +3199,7 @@ VQC_BasicEntanglerTemplate
     Example::
 
         from pyvqnet.nn import Module, Linear, ModuleList
-        from pyvqnet.qnn.vqc.qcircuit import VQC_BasicEntanglerTemplate, RZZ, RZ
+        from pyvqnet.qnn.vqc import VQC_BasicEntanglerTemplate, RZZ, RZ
         from pyvqnet.qnn.vqc import Probability, QMachine
         from pyvqnet import tensor
 
@@ -3250,7 +3250,7 @@ VQC_StronglyEntanglingTemplate
     Example::
 
         from pyvqnet.nn import Module
-        from pyvqnet.qnn.vqc.qcircuit import VQC_StronglyEntanglingTemplate
+        from pyvqnet.qnn.vqc import VQC_StronglyEntanglingTemplate
         from pyvqnet.qnn.vqc import Probability, QMachine
         from pyvqnet import tensor
 
@@ -3303,7 +3303,7 @@ VQC_QuantumEmbedding
     Example::
 
         from pyvqnet.nn import Module
-        from pyvqnet.qnn.vqc.qcircuit import VQC_QuantumEmbedding
+        from pyvqnet.qnn.vqc import VQC_QuantumEmbedding
         from pyvqnet.qnn.vqc import  QMachine,MeasureAll
         from pyvqnet import tensor
         import pyvqnet
@@ -3597,7 +3597,7 @@ VQC_CRotCircuit
     Example::
 
         from pyvqnet.tensor import QTensor
-        from pyvqnet.qnn.vqc.qcircuit import VQC_CRotCircuit
+        from pyvqnet.qnn.vqc import VQC_CRotCircuit
         from pyvqnet.qnn.vqc import QMachine, MeasureAll
         p = QTensor([2, 3, 4.0])
         qm = QMachine(2)
@@ -3633,7 +3633,7 @@ VQC_Controlled_Hadamard
     Example::
 
         from pyvqnet.tensor import QTensor
-        from pyvqnet.qnn.vqc.qcircuit import VQC_Controlled_Hadamard
+        from pyvqnet.qnn.vqc import VQC_Controlled_Hadamard
         from pyvqnet.qnn.vqc import QMachine, MeasureAll
         p = QTensor([0.2, 3, 4.0])
 
@@ -3675,7 +3675,7 @@ VQC_CCZ
     Example::
 
         from pyvqnet.tensor import QTensor
-        from pyvqnet.qnn.vqc.qcircuit import VQC_CCZ
+        from pyvqnet.qnn.vqc import VQC_CCZ
         from pyvqnet.qnn.vqc import QMachine, MeasureAll
         p = QTensor([0.2, 3, 4.0])
 
@@ -3712,7 +3712,7 @@ VQC_FermionicSingleExcitation
     Example::
 
         from pyvqnet.tensor import QTensor
-        from pyvqnet.qnn.vqc.qcircuit import VQC_FermionicSingleExcitation
+        from pyvqnet.qnn.vqc import VQC_FermionicSingleExcitation
         from pyvqnet.qnn.vqc import QMachine, MeasureAll
         qm = QMachine(3)
         p0 = QTensor([0.5])
@@ -3763,7 +3763,7 @@ VQC_FermionicDoubleExcitation
     Example::
 
         from pyvqnet.tensor import QTensor
-        from pyvqnet.qnn.vqc.qcircuit import VQC_FermionicDoubleExcitation
+        from pyvqnet.qnn.vqc import VQC_FermionicDoubleExcitation
         from pyvqnet.qnn.vqc import QMachine, MeasureAll
         qm = QMachine(5)
         p0 = QTensor([0.5])
@@ -5842,7 +5842,7 @@ QNSPSAOptimizer
 
                 qmd = QModuleDemo()
 
-                from pyvqnet.qnn.vqc.qnspsa import QNSPSAOptimizer
+                from pyvqnet.qnn.vqc.sv.native.qnspsa import QNSPSAOptimizer
                 params = QTensor([0.37454012, 0.95071431])
 
                 params.requires_grad = True
