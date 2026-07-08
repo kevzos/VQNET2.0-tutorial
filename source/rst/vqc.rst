@@ -3630,7 +3630,7 @@ VQC_Controlled_Hadamard
     :param q_machine: 量子虚拟机设备。
     
 
-    Examples::
+    Example::
 
         from pyvqnet.tensor import QTensor
         from pyvqnet.qnn.vqc.qcircuit import VQC_Controlled_Hadamard
@@ -3709,7 +3709,7 @@ VQC_FermionicSingleExcitation
 
     
 
-    Examples::
+    Example::
 
         from pyvqnet.tensor import QTensor
         from pyvqnet.qnn.vqc.qcircuit import VQC_FermionicSingleExcitation
@@ -3760,7 +3760,7 @@ VQC_FermionicDoubleExcitation
 
     
 
-    Examples::
+    Example::
 
         from pyvqnet.tensor import QTensor
         from pyvqnet.qnn.vqc.qcircuit import VQC_FermionicDoubleExcitation
@@ -3815,7 +3815,7 @@ VQC_UCCSD
     :param q_machine: 量子虚拟机设备。
     
     
-    Examples::
+    Example::
 
         from pyvqnet.qnn.vqc import VQC_UCCSD, QMachine, MeasureAll
         from pyvqnet.tensor import QTensor
@@ -4028,7 +4028,7 @@ VQC_QuantumPoolingCircuit
     :param q_machine: 量子虚拟机设备。
 
 
-    Examples:: 
+    Example:: 
 
         from pyvqnet.qnn.vqc import VQC_QuantumPoolingCircuit, QMachine, MeasureAll
         from pyvqnet import tensor
@@ -4176,7 +4176,7 @@ VQC_FABLE
 
     :return: 返回一个基于VQC的FABLE类实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.qnn.vqc import VQC_FABLE
         from pyvqnet.qnn.vqc import QMachine
@@ -4211,7 +4211,7 @@ VQC_LCU
     :param wires: 运算符作用的 qlist 索引,可能需要辅助量子位。
     :param check_hermitian: 检查输入是否为 Hermitian,默认值:True。
 
-    Examples::
+    Example::
 
         from pyvqnet.qnn.vqc import VQC_LCU
         from pyvqnet.qnn.vqc import QMachine
@@ -4302,7 +4302,7 @@ Quanvolution
     :param kernel_initializer: 参数的卷积核初始化器。
     :param machine_type_or_cloud_token: 机器类型字符串或 Qcloud 令牌，默认为“cpu”。
 
-    Examples::
+    Example::
 
         from pyvqnet.qnn.qcnn import Quanvolution
         import pyvqnet.tensor as tensor
@@ -5822,7 +5822,7 @@ QNSPSAOptimizer
         :return: 更新后的参数。
 
 
-        Examples::
+        Example::
 
                 from pyvqnet.tensor import QTensor,ones,randu
                 from pyvqnet.qnn.vqc import rx,cry,QMachine,MeasureAll,QModule

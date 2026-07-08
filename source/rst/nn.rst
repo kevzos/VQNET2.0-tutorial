@@ -195,7 +195,7 @@ toGPU
     :param device: 当前保存QTensor的设备,默认:DEV_GPU_0。device= pyvqnet.DEV_GPU_0,存储在第一个 GPU 中,device = DEV_GPU_1,存储在第二个 GPU 中,依此类推
     :return: Module 移动到 GPU 设备。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn.conv import ConvT2D 
         test_conv = ConvT2D(3, 2, [4,4], [2, 2], "same")
@@ -213,7 +213,7 @@ toCPU
 
     :return: Module 移动到 CPU 设备。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn.conv import ConvT2D 
         test_conv = ConvT2D(3, 2, [4,4], [2, 2], "same")
@@ -1982,7 +1982,7 @@ fuse_module
 
     :return: 模块融合后的模型。
 
-    Examples::
+    Example::
     
         from pyvqnet import tensor,kfloat32
         from pyvqnet.nn import Linear
@@ -2098,7 +2098,7 @@ SDPA
     :param is_causal: 如果为 "true",则假定存在左上因果注意力屏蔽,如果同时设置了 attn_mask 和 is_causal, 则会出现错误。
     :return: 一个SDPA类
 
-    Examples::
+    Example::
     
         from pyvqnet.transformer import SDPA
         from pyvqnet import tensor
@@ -2113,7 +2113,7 @@ SDPA
         :param value: key输入QTensor。
         :return: SDPA计算返回的QTensor。
 
-        Examples::
+        Example::
         
             from pyvqnet.transformer import SDPA
             from pyvqnet import tensor
@@ -2801,7 +2801,7 @@ Sigmoid
 
     :return: 一个Sigmoid激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn import Sigmoid
         from pyvqnet.tensor import QTensor
@@ -2825,7 +2825,7 @@ Softplus
 
     :return: 一个Softplus激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn import Softplus
         from pyvqnet.tensor import QTensor
@@ -2849,7 +2849,7 @@ Softsign
 
     :return: 一个Softsign 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn import Softsign
         from pyvqnet.tensor import QTensor
@@ -2876,7 +2876,7 @@ Softmax
 
     :return: 一个Softmax 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn import Softmax
         from pyvqnet.tensor import QTensor
@@ -2904,7 +2904,7 @@ HardSigmoid
 
     :return: 一个HardSigmoid 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn import HardSigmoid
         from pyvqnet.tensor import QTensor
@@ -2954,7 +2954,7 @@ ReLu
 
     :return: 一个ReLu 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn import ReLu
         from pyvqnet.tensor import QTensor
@@ -2984,7 +2984,7 @@ LeakyReLu
 
     :return: 一个LeakyReLu 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn import LeakyReLu
         from pyvqnet.tensor import QTensor
@@ -3014,7 +3014,7 @@ Gelu
 
     :return: Gelu 激活函数层实例。
     
-    Examples::
+    Example::
 
         from pyvqnet.tensor import randu, ones_like
         from pyvqnet.nn import Gelu
@@ -3045,7 +3045,7 @@ ELU
 
     :return: ELU 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn import ELU
         from pyvqnet.tensor import QTensor
@@ -3069,7 +3069,7 @@ Tanh
 
     :return: Tanh 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn import Tanh
         from pyvqnet.tensor import QTensor

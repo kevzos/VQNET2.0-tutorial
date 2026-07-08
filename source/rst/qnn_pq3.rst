@@ -563,7 +563,7 @@ grad
     :return:
             参数的梯度
 
-    Examples::
+    Example::
 
         from pyvqnet.qnn.pq3 import grad, ProbsMeasure
         import pyqpanda3.core as pq
@@ -927,7 +927,7 @@ Controlled_Hadamard
 
     :param qubits: 量子比特索引。
 
-    Examples::
+    Example::
 
         import pyqpanda3.core as pq
 
@@ -997,7 +997,7 @@ FermionicSingleExcitation
     :return:
             pyqpanda QCircuit
 
-    Examples::
+    Example::
 
         from pyvqnet.qnn.pq3 import FermionicSingleExcitation, expval
 
@@ -1046,7 +1046,7 @@ FermionicDoubleExcitation
     :return:
         pyqpanda QCircuit
 
-    Examples::
+    Example::
 
         import pyqpanda3.core as pq
         from pyvqnet.qnn.pq3 import FermionicDoubleExcitation, expval
@@ -1097,7 +1097,7 @@ UCCSD
         高频状态。 ``init_state`` 在量子比特初始化状态。
     :param qubits: 量子比特索引。
 
-    Examples::
+    Example::
 
         import pyqpanda3.core as pq
         from pyvqnet.tensor import tensor
@@ -1131,7 +1131,7 @@ QuantumPoolingCircuit
     :return:
         pyqpanda QCircuit
 
-    Examples:: 
+    Example:: 
 
         from pyvqnet.qnn.pq3.template import QuantumPoolingCircuit
         import pyqpanda3.core as pq
@@ -1571,7 +1571,7 @@ Purity
     :return:
             纯度
 
-    Examples::
+    Example::
 
         from pyvqnet.qnn.pq3.measure import Purity
         qstate = [(0.9306699299765968 + 0j), (0.18865613455240968 + 0j),

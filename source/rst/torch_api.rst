@@ -191,7 +191,7 @@ TorchModule
 
         :return: 如果发生错误,则返回错误消息。
  
-        Examples::
+        Example::
  
             from pyvqnet.nn.torch import TorchModule,Conv2D
             import pyvqnet
@@ -227,7 +227,7 @@ TorchModule
         :param device: 当前保存QTensor的设备,默认:DEV_GPU_0。device= pyvqnet.DEV_GPU_0,存储在第一个 GPU 中,device = DEV_GPU_1,存储在第二个 GPU 中,依此类推
         :return: Module 移动到 GPU 设备。
 
-        Examples::
+        Example::
 
             from pyvqnet.nn.torch import ConvT2D
             import pyvqnet
@@ -243,7 +243,7 @@ TorchModule
 
         :return: Module 移动到 CPU 设备。
 
-        Examples::
+        Example::
 
             from pyvqnet.nn.torch import ConvT2D
             import pyvqnet
@@ -1655,7 +1655,7 @@ SDPA
     :param is_causal: 默认值: False,如果设置为 true,则当掩码为方阵时,注意力掩码为下三角矩阵。如果同时设置了 attn_mask 和 is_causal,则会引发错误。
     :return: 一个SDPA类
 
-    Examples::
+    Example::
     
         from pyvqnet.nn.torch import SDPA
         from pyvqnet import tensor
@@ -1672,7 +1672,7 @@ SDPA
         :param value: key输入QTensor。
         :return: SDPA计算返回的QTensor。
 
-        Examples::
+        Example::
         
             from pyvqnet.nn.torch import SDPA
             from pyvqnet import tensor
@@ -2040,7 +2040,7 @@ Sigmoid
 
     :return: 一个Sigmoid激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn.torch import Sigmoid
         from pyvqnet.tensor import QTensor
@@ -2069,7 +2069,7 @@ Softplus
 
     :return: 一个Softplus激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn.torch import Softplus
         from pyvqnet.tensor import QTensor
@@ -2097,7 +2097,7 @@ Softsign
 
     :return: 一个Softsign 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn.torch import Softsign
         from pyvqnet.tensor import QTensor
@@ -2128,7 +2128,7 @@ Softmax
 
     :return: 一个Softmax 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn.torch import Softmax
         from pyvqnet.tensor import QTensor
@@ -2161,7 +2161,7 @@ HardSigmoid
 
     :return: 一个HardSigmoid 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn.torch import HardSigmoid
         from pyvqnet.tensor import QTensor
@@ -2193,7 +2193,7 @@ ReLu
 
     :return: 一个ReLu 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn.torch import ReLu
         from pyvqnet.tensor import QTensor
@@ -2229,7 +2229,7 @@ LeakyReLu
 
     :return: 一个LeakyReLu 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn.torch import LeakyReLu
         from pyvqnet.tensor import QTensor
@@ -2263,7 +2263,7 @@ Gelu
 
     :return: Gelu 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.tensor import randu, ones_like
         from pyvqnet.nn.torch import Gelu
@@ -2298,7 +2298,7 @@ ELU
 
     :return: ELU 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn.torch import ELU
         from pyvqnet.tensor import QTensor
@@ -2328,7 +2328,7 @@ Tanh
 
     :return: Tanh 激活函数层实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.nn.torch import Tanh
         from pyvqnet.tensor import QTensor
@@ -4984,7 +4984,7 @@ vqc_controlled_hadamard
     :param q_machine: 量子虚拟机设备。
     
 
-    Examples::
+    Example::
 
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
@@ -5064,7 +5064,7 @@ vqc_fermionic_single_excitation
 
     
 
-    Examples::
+    Example::
 
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
@@ -5119,7 +5119,7 @@ vqc_fermionic_double_excitation
 
     
 
-    Examples::
+    Example::
 
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
@@ -5176,7 +5176,7 @@ vqc_uccsd
     :param q_machine: 量子虚拟机设备。
     
     
-    Examples::
+    Example::
 
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
@@ -5380,7 +5380,7 @@ vqc_quantumpooling_circuit
 
     
 
-    Examples:: 
+    Example:: 
 
         import pyvqnet
 
@@ -8334,7 +8334,7 @@ vqc_controlled_hadamard
     :param q_machine: 量子虚拟机设备。
     
 
-    Examples::
+    Example::
 
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
@@ -8414,7 +8414,7 @@ vqc_fermionic_single_excitation
 
     
 
-    Examples::
+    Example::
 
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
@@ -8469,7 +8469,7 @@ vqc_fermionic_double_excitation
 
     
 
-    Examples::
+    Example::
 
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
@@ -8526,7 +8526,7 @@ vqc_uccsd
     :param q_machine: 量子虚拟机设备。
     
     
-    Examples::
+    Example::
 
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
@@ -8950,7 +8950,7 @@ reward_loss
     :return:
         CommController 实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.distributed import CommController
         import pyvqnet
@@ -8990,7 +8990,7 @@ reward_loss
 
         :return: 返回当前进程的进程号。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController
             import pyvqnet
@@ -9032,7 +9032,7 @@ reward_loss
 
         :return: 返回总共进程的数量。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController
             import pyvqnet
@@ -9074,7 +9074,7 @@ reward_loss
 
         :return: 当前机器上的当前进程号。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController
             import pyvqnet
@@ -9115,7 +9115,7 @@ reward_loss
         :param rankL: 进程组列表。
         :return: 包含 ``torch.distributed.ProcessGroup`` 的列表
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import get_local_rank,CommController
             import pyvqnet
@@ -9161,7 +9161,7 @@ reward_loss
 
         :return: 同步操作。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController
             import pyvqnet
@@ -9201,7 +9201,7 @@ reward_loss
         :param tensor: 输入数据.
         :param c_op: 计算方式.
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import get_local_rank,CommController
             import pyvqnet
@@ -9249,7 +9249,7 @@ reward_loss
         :param root: 指定数据返回的节点。
         :param c_op: 计算方式。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import get_local_rank,CommController
             import pyvqnet
@@ -9295,7 +9295,7 @@ reward_loss
         :param tensor: 输入数据。
         :param root: 指定的节点。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import get_local_rank,CommController
             import pyvqnet
@@ -9341,7 +9341,7 @@ reward_loss
 
         :param tensor: 输入数据。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import get_local_rank,CommController,get_world_size
             import pyvqnet
@@ -9386,7 +9386,7 @@ reward_loss
         :param tensor: 输入数据.
         :param dest: 目的进程.
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import get_rank,CommController,get_world_size
             import pyvqnet
@@ -9434,7 +9434,7 @@ reward_loss
         :param tensor: 输入数据.
         :param source: 接受进程.
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import get_rank,CommController,get_world_size
             import pyvqnet
@@ -9483,7 +9483,7 @@ reward_loss
         :param c_op: 计算方法.
         :param group: 通信组.
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import get_local_rank,CommController
             import pyvqnet
@@ -9539,7 +9539,7 @@ reward_loss
         :param c_op: 计算方法.
         :param group: 通信组.
 
-        Examples::
+        Example::
             
             from pyvqnet.distributed import get_local_rank,CommController
             import pyvqnet
@@ -9591,7 +9591,7 @@ reward_loss
         :param root: 指定全局进程号.
         :param group: 通信组.
 
-        Examples::
+        Example::
             
             from pyvqnet.distributed import get_local_rank,CommController
             import pyvqnet
@@ -9644,7 +9644,7 @@ reward_loss
         :param tensor: 输入数据.
         :param group: 通信组.
 
-        Examples::
+        Example::
             
             from pyvqnet.distributed import get_local_rank,CommController,get_world_size
             import pyvqnet

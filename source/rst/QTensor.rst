@@ -807,7 +807,7 @@ QTensor's 函数与属性
 
         :return: QTensor 克隆到 GPU 设备。
 
-        Examples::
+        Example::
 
             from pyvqnet.tensor import QTensor
             a = QTensor([2])
@@ -822,7 +822,7 @@ QTensor's 函数与属性
 
         :return: QTensor 克隆到 CPU 设备。
 
-        Examples::
+        Example::
 
             from pyvqnet.tensor import QTensor
             a = QTensor([2])
@@ -847,7 +847,7 @@ QTensor's 函数与属性
         :param device: 当前保存QTensor的设备, 默认:DEV_GPU_0。device = pyvqnet.DEV_GPU_0, 存储在第一个 GPU 中, device = DEV_GPU_1, 存储在第二个 GPU 中, 依此类推。
         :return: QTensor 移动到 GPU 设备。
 
-        Examples::
+        Example::
 
             from pyvqnet.tensor import QTensor
             a = QTensor([2])
@@ -863,7 +863,7 @@ QTensor's 函数与属性
 
         :return: QTensor 移动到 CPU 设备。
 
-        Examples::
+        Example::
 
             from pyvqnet.tensor import QTensor
             a = QTensor([2])
@@ -879,7 +879,7 @@ QTensor's 函数与属性
 
         :return: 该 QTensor 的数据是否存储在 GPU 主机内存上。
 
-        Examples::
+        Example::
         
             from pyvqnet.tensor import QTensor
             a = QTensor([2])
@@ -894,7 +894,7 @@ QTensor's 函数与属性
 
         :return: 该 QTensor 的数据是否存储在 CPU 主机内存上。
 
-        Examples::
+        Example::
         
             from pyvqnet.tensor import QTensor
             a = QTensor([2])
@@ -910,7 +910,7 @@ QTensor's 函数与属性
 
         :return:  QTensor。
 
-        Examples::
+        Example::
         
             from pyvqnet.tensor import QTensor
             from pyvqnet import kcomplex128
@@ -1365,7 +1365,7 @@ multinomial
     :return:
          输出采样索引
 
-    Examples::
+    Example::
 
         from pyvqnet import tensor
         weights = tensor.QTensor([0.1,10, 3, 1]) 
@@ -1392,7 +1392,7 @@ triu
 
     :return: 输出 QTensor。
 
-    Examples::
+    Example::
 
         from pyvqnet.tensor import tensor
         a = tensor.arange(1.0, 2 * 6 * 5 + 1.0).reshape([2, 6, 5])
@@ -1425,7 +1425,7 @@ tril
 
     :return: 输出 QTensor。
 
-    Examples::
+    Example::
 
         from pyvqnet.tensor import tensor
         a = tensor.arange(1.0, 2 * 6 * 5 + 1.0).reshape([12, 5])
@@ -1585,7 +1585,7 @@ topK
 
     :return: 新的 QTensor 。
 
-    Examples::
+    Example::
 
         from pyvqnet.tensor import tensor, QTensor
         x = QTensor([
@@ -1621,7 +1621,7 @@ argtopK
 
     :return: 新的 QTensor 。
 
-    Examples::
+    Example::
 
         from pyvqnet.tensor import tensor, QTensor
         x = QTensor([
@@ -2537,7 +2537,7 @@ eigh
 
         返回特征值以及特征向量
 
-    Examples::
+    Example::
 
         import numpy as np
         import pyvqnet
@@ -3535,7 +3535,7 @@ masked_fill
     :param value: 填充值。
     :return: 一个 QTensor。
 
-    Examples::
+    Example::
 
         from pyvqnet.tensor import tensor
         import numpy as np
@@ -3821,7 +3821,7 @@ pad_sequence
         如果 batch_first 为 ``False``,则张量大小为 ``批大小 x 最长序列长度 x *``。
         否则张量的大小为 ``最长序列长度 x 批大小 x *`` 。
 
-    Examples::
+    Example::
 
         from pyvqnet.tensor import tensor
         a = tensor.ones([4, 2,3])
@@ -3879,7 +3879,7 @@ pad_packed_sequence
     :return:
         包含填充序列的张量元组,以及批次中每个序列的长度列表。批次元素将按照最初的顺序重新排序。
 
-    Examples::
+    Example::
 
         from pyvqnet.tensor import tensor
         a = tensor.ones([4, 2,3])
@@ -3957,7 +3957,7 @@ pack_pad_sequence
 
     :return: 一个 :class:`PackedSequence` 对象。
 
-    Examples::
+    Example::
 
         from pyvqnet.tensor import tensor
         a = tensor.ones([4, 2,3])
@@ -4016,7 +4016,7 @@ functional_conv2d
     :return: qtensor
 
 
-    Examples::
+    Example::
 
         from pyvqnet.nn.functional import functional_conv2d
         from pyvqnet.tensor import arange,ones

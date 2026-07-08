@@ -410,7 +410,7 @@ CommController
     :return:
         CommController 实例。
 
-    Examples::
+    Example::
 
         from pyvqnet.distributed import CommController
         Comm_OP = CommController("nccl") # init nccl controller
@@ -425,7 +425,7 @@ CommController
 
         :return: 返回当前进程的进程号。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController
             Comm_OP = CommController("nccl") # init nccl controller
@@ -440,7 +440,7 @@ CommController
 
         :return: 返回总共进程的数量。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController
             Comm_OP = CommController("nccl") # init nccl controller
@@ -457,7 +457,7 @@ CommController
 
         :return: 当前机器上的当前进程号。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController
             Comm_OP = CommController("nccl") # init nccl controller
@@ -475,7 +475,7 @@ CommController
 
         :return: 同步操作。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController
             Comm_OP = CommController("nccl")
@@ -489,7 +489,7 @@ CommController
 
         :return: 返回当前节点上显卡数量。
         
-        Examples::
+        Example::
 
 
             from pyvqnet.distributed import CommController
@@ -506,7 +506,7 @@ CommController
         :param tensor: 输入数据.
         :param c_op: 计算方式.
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController
             from pyvqnet.tensor import tensor
@@ -529,7 +529,7 @@ CommController
         :param root: 指定数据返回的节点。
         :param c_op: 计算方式。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController
             from pyvqnet.tensor import tensor
@@ -553,7 +553,7 @@ CommController
         :param tensor: 输入数据。
         :param root: 指定的节点。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController
             from pyvqnet.tensor import tensor
@@ -574,7 +574,7 @@ CommController
 
         :param tensor: 输入数据。
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController
             from pyvqnet.tensor import tensor
@@ -596,7 +596,7 @@ CommController
         :param tensor: 输入数据.
         :param dest: 目的进程.
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController,get_rank
             from pyvqnet.tensor import tensor
@@ -623,7 +623,7 @@ CommController
         :param tensor: 输入数据.
         :param source: 接受进程.
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController,get_rank
             from pyvqnet.tensor import tensor
@@ -650,7 +650,7 @@ CommController
 
         :return: 当后端为 `nccl` 返回的是进程组序号元组，当后端为 `mpi` 返回一个列表，其长度等于分组个数；每个元素是二元组 (comm, rank)，其中 comm 为该分组的 MPI 通信器，rank 为组内序号。
 
-        Examples::
+        Example::
             
             from pyvqnet.distributed import CommController,get_rank,get_local_rank
             from pyvqnet.tensor import tensor
@@ -672,7 +672,7 @@ CommController
         :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
 
 
-        Examples::
+        Example::
 
             from pyvqnet.distributed import CommController,get_rank,get_local_rank
             from pyvqnet.tensor import tensor
@@ -700,7 +700,7 @@ CommController
         :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
 
 
-        Examples::
+        Example::
             
             from pyvqnet.distributed import CommController,get_rank,get_local_rank
             from pyvqnet.tensor import tensor
@@ -728,7 +728,7 @@ CommController
         :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
 
 
-        Examples::
+        Example::
             
             from pyvqnet.distributed import CommController,get_rank,get_local_rank
             from pyvqnet.tensor import tensor
@@ -756,7 +756,7 @@ CommController
         :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
 
 
-        Examples::
+        Example::
             
             from pyvqnet.distributed import CommController,get_rank,init_group
             from pyvqnet.tensor import tensor
@@ -794,7 +794,7 @@ CommController
         :param async_op: 此操作是否为异步操作，默认值：False。
         :return: Work，一个异步通信句柄。使用 wait() 等待此操作完成。
         
-        Examples::
+        Example::
 
             from pyvqnet import tensor
             import pyvqnet
@@ -818,7 +818,7 @@ CommController
         :param async_op: 此操作是否为异步操作，默认值：False。
         :return: Work，一个异步通信句柄。使用 wait() 等待此操作完成。
 
-        Examples::
+        Example::
             
             import pyvqnet
             from pyvqnet.tensor import tensor
@@ -840,7 +840,7 @@ CommController
         :param async_op: 此操作是否为异步操作，默认值：False。
         :return: Work，一个异步通信句柄。使用 wait() 等待此操作完成。
         
-        Examples::
+        Example::
 
             from pyvqnet import tensor
             import pyvqnet
@@ -861,7 +861,7 @@ CommController
         :param async_op: 此操作是否为异步操作，默认值：False。
         :return: Work，一个异步通信句柄。使用 wait() 等待此操作完成。
 
-        Examples::
+        Example::
 
             import pyvqnet
             from pyvqnet.tensor import tensor
@@ -886,7 +886,7 @@ CommController
         :param async_op: 此操作是否为异步操作，默认值：False。
         :return: Work，一个异步通信句柄。使用 wait() 等待此操作完成。
 
-        Examples::
+        Example::
 
             import pyvqnet
             from pyvqnet.tensor import tensor
@@ -913,7 +913,7 @@ CommController
         :param async_op: 此操作是否为异步操作，默认值：False。
         :return: Work，一个异步通信句柄。使用 wait() 等待此操作完成。
 
-        Examples::
+        Example::
 
             import pyvqnet
             from pyvqnet.tensor import tensor
@@ -1048,7 +1048,7 @@ PipelineParallelTrainingWrapper
 
     调用 `train_batch` 进行训练。
 
-    Examples::
+    Example::
 
         import os
         import pyvqnet
@@ -1183,7 +1183,7 @@ ZeroModelInitial
 
         os.environ["LOCAL_RANK"] = str(dist.get_local_rank())
 
-    Examples::
+    Example::
 
         from pyvqnet.distributed import *
         from pyvqnet import *
@@ -1370,7 +1370,7 @@ ColumnParallelLinear
 
     多进程使用时基于 `vqnetrun -n 2 python test.py` 的方式进行
 
-    Examples::
+    Example::
 
         import pyvqnet.distributed
         import pyvqnet.optim as optim
@@ -1544,7 +1544,7 @@ RowParallelLinear
 
     多进程使用时基于 `vqnetrun -n 2 python test.py` 的方式进行
 
-    Examples::
+    Example::
 
         import pyvqnet.distributed
         import pyvqnet.optim as optim
@@ -1726,7 +1726,7 @@ DistributedQMachine
             qm.set_save_op_history_flag(True) # open save op
             qm.set_qr_config({'qubit': 总比特个数, 'global_qubit': 分布式比特个数})
 
-    Examples::
+    Example::
 
         from pyvqnet.distributed import get_rank
         from pyvqnet import tensor
@@ -1807,7 +1807,7 @@ DistQuantumLayerAdjoint
 
         该接口只支持在Linux下运行；
         
-    Examples::
+    Example::
 
         from pyvqnet.distributed import get_rank
         from pyvqnet import tensor
