@@ -8738,6 +8738,7 @@ sft_loss
 -----------------------------
 
 .. py:function:: pyvqnet.torch.trl.sft_loss(model, input_ids, labels, ignore_index=-100)
+   :no-index:
 
     监督式微调(SFT)交叉熵损失。
 
@@ -8770,6 +8771,7 @@ dpo_loss
 -----------------------------
 
 .. py:function:: pyvqnet.torch.trl.dpo_loss(policy_model, ref_model, chosen_ids, rejected_ids, chosen_mask, rejected_mask, beta=0.1)
+   :no-index:
 
     DPO (Direct Preference Optimization) 标准 sigmoid 偏好损失。通过最大化偏好与非偏好序列之间的隐式奖励差异进行优化。
 
@@ -8809,6 +8811,7 @@ ppo_loss
 -----------------------------
 
 .. py:function:: pyvqnet.torch.trl.ppo_loss(policy_model, value_model, ref_model, query_responses, context_length, response_mask, old_logprobs, old_values, advantages, returns, cliprange=0.2, cliprange_value=0.2, vf_coef=1.0, temperature=1.0)
+   :no-index:
 
     PPO (Proximal Policy Optimization) 策略与价值函数联合损失。包含裁剪的替代策略损失和价值函数损失。
 
@@ -8862,6 +8865,7 @@ grpo_loss
 -----------------------------
 
 .. py:function:: pyvqnet.torch.trl.grpo_loss(policy_model, ref_model, input_ids, completion_mask, old_per_token_logps, advantages, beta=0.0, epsilon=0.2, epsilon_low=None, epsilon_high=None)
+   :no-index:
 
     GRPO (Group Relative Policy Optimization) 裁剪替代损失。将多个补全结果分组计算优势。
 
@@ -8904,6 +8908,7 @@ reward_loss
 -----------------------------
 
 .. py:function:: pyvqnet.torch.trl.reward_loss(model, chosen_ids, rejected_ids, margin=None, center_coef=None)
+   :no-index:
 
     奖励模型对比损失。通过最大化偏好与非偏好序列之间的奖励差异训练奖励模型。
 

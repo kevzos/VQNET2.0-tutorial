@@ -2528,7 +2528,7 @@ scaled_softmax (缩放 Softmax)
         #  [0.1863237,0.3071959,0.5064804]]
 
 scaled_masked_softmax (掩码缩放 Softmax)
-=================================
+==========================================
 
 .. py:function:: pyvqnet.nn.functional.scaled_masked_softmax(input, mask, scale: float)
 
@@ -2553,7 +2553,7 @@ scaled_masked_softmax (掩码缩放 Softmax)
         #  [0.       ,0.2689414,0.7310586]]
 
 scaled_upper_triang_masked_softmax (上三角掩码缩放 Softmax)
-=====================================
+=============================================================
 
 .. py:function:: pyvqnet.nn.functional.scaled_upper_triang_masked_softmax(input, scale: float)
 
@@ -3512,7 +3512,7 @@ SGD
 
 
 Rotosolve
-^^^^^^^^^^^^^^
+=================================
 Rotosolve算法它允许相对于其他参数的固定值直接跳转到单个参数的最佳值,直接找到量子线路最佳参数的优化算法。
 
 .. py:class:: pyvqnet.optim.rotosolve.Rotosolve(max_iter =50)
