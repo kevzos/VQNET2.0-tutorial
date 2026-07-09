@@ -8814,7 +8814,7 @@ VQC_Purity
         from pyvqnet.tensor import QTensor
 
         x = QTensor([[0.7, 0.4], [1.7, 2.4]], requires_grad=True).toGPU()
-
+        x.requires_grad = True
         class QM(TNQModule):
             def __init__(self, name=""):
                 super().__init__(name)
@@ -8831,7 +8831,7 @@ VQC_Purity
 
         model = QM().toGPU()
         y_tn = model(x)
-        x.data.retain_grad()
+        
         y_tn.backward(pyvqnet.tensor.ones_like(y_tn))
         print(y_tn)
 
@@ -8860,7 +8860,7 @@ VQC_VarMeasure
         from pyvqnet import kfloat64
         pyvqnet.backends.set_backend("pyvqnet")
         x = QTensor([[0.7, 0.4], [0.6, 0.4]], requires_grad=True).toGPU()
-
+        x.requires_grad = True
         class QM(TNQModule):
             def __init__(self, name=""):
                 super().__init__(name)
@@ -8877,7 +8877,7 @@ VQC_VarMeasure
             
         model = QM().toGPU()
         y = model(x)
-        x.data.retain_grad()
+
         y.backward(pyvqnet.tensor.ones_like(y))
         print(y)
 
@@ -8904,6 +8904,7 @@ VQC_DensityMatrixFromQstate
         from pyvqnet.qnn.vqc.tn.native import TNQMachine, qcircuit, VQC_DensityMatrixFromQstate,TNQModule
         pyvqnet.backends.set_backend("pyvqnet")
         x = QTensor([[0.7,0.4],[1.7,2.4]], requires_grad=True).toGPU()
+        x.requires_grad = True
         class QM(TNQModule):
             def __init__(self, name=""):
                 super().__init__(name=name, use_jit=True)
@@ -8920,7 +8921,7 @@ VQC_DensityMatrixFromQstate
             
         model = QM().toGPU()
         y = model(x)
-        x.data.retain_grad()
+ 
         y.backward(pyvqnet.tensor.ones_like(y))
         print(y)
 
@@ -9417,7 +9418,7 @@ ExpressiveEntanglingAnsatz
 vqc_basis_embedding
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_basis_embedding(basis_state,q_machine)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_basis_embedding(basis_state,q_machine)
    :no-index:
 
     将n个二进制特征编码到 ``q_machine`` 的n个量子比特的基态。该函数别名 `VQC_BasisEmbedding` 。
@@ -9444,7 +9445,7 @@ vqc_angle_embedding
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_angle_embedding(input_feat, wires, q_machine: pyvqnet.qnn.vqc.tn.native.TNQMachine, rotation: str = "X")
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_angle_embedding(input_feat, wires, q_machine: pyvqnet.qnn.vqc.tn.native.TNQMachine, rotation: str = "X")
    :no-index:
 
     将 :math:`N` 特征编码到 :math:`n` 量子比特的旋转角度中, 其中 :math:`N \leq n`。
@@ -9481,12 +9482,32 @@ vqc_angle_embedding
         print(qm.get_states())
 
 
+vqc_amplitude_embedding
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_amplitude_embedding(input_feature, q_machine)
+
+    将 :math:`2^n` 特征编码为 :math:`n` 量子比特的振幅向量。该函数别名 `VQC_AmplitudeEmbedding` 。
+
+    :param input_feature: 表示参数的numpy数组。
+    :param q_machine: 量子虚拟机设备。
+    
+
+    Example::
+
+        import pyvqnet
+        pyvqnet.backends.set_backend("pyvqnet")
+        from pyvqnet.qnn.vqc.tn.native import vqc_amplitude_embedding, TNQMachine
+        from pyvqnet.tensor import QTensor
+        qm  = TNQMachine(3)
+        vqc_amplitude_embedding(QTensor([3.2,-2,-2,0.3,12,0.1,2,-1]), q_machine=qm)
+        print(qm.get_states())
 
 
 
 vqc_iqp_embedding
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_iqp_embedding(input_feat, q_machine: pyvqnet.qnn.vqc.tn.native.TNQMachine, rep: int = 1)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_iqp_embedding(input_feat, q_machine: pyvqnet.qnn.vqc.tn.native.TNQMachine, rep: int = 1)
    :no-index:
 
     使用IQP线路的对角门将 :math:`n` 特征编码为 :math:`n` 量子比特。该函数别名:  ``VQC_IQPEmbedding`` 。
@@ -9515,7 +9536,7 @@ vqc_iqp_embedding
 vqc_rotcircuit
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_rotcircuit(q_machine, wire, params)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_rotcircuit(q_machine, wire, params)
    :no-index:
 
     任意单量子比特旋转的量子逻辑门组合。该函数别名:  ``VQC_RotCircuit`` 。
@@ -9548,7 +9569,7 @@ vqc_crot_circuit
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_crot_circuit(para,control_qubits,rot_wire,q_machine)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_crot_circuit(para,control_qubits,rot_wire,q_machine)
    :no-index:
 
 	受控Rot单量子比特旋转的量子逻辑门组合。该函数别名:  ``VQC_CRotCircuit`` 。
@@ -9586,7 +9607,7 @@ vqc_controlled_hadamard
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_controlled_hadamard(wires, q_machine)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_controlled_hadamard(wires, q_machine)
    :no-index:
 
     受控Hadamard逻辑门量子线路。该函数别名:  ``VQC_Controlled_Hadamard`` 。
@@ -9622,7 +9643,7 @@ vqc_controlled_hadamard
 vqc_ccz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_ccz(wires, q_machine)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_ccz(wires, q_machine)
    :no-index:
 
     受控-受控-Z (controlled-controlled-Z) 逻辑门。该函数别名:  ``VQC_CCZ`` 。
@@ -9665,7 +9686,7 @@ vqc_ccz
 vqc_fermionic_single_excitation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_fermionic_single_excitation(weight, wires, q_machine)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_fermionic_single_excitation(weight, wires, q_machine)
    :no-index:
 
     对泡利矩阵的张量积求幂的耦合簇单激励算子。矩阵形式下式给出:
@@ -9706,7 +9727,7 @@ vqc_fermionic_double_excitation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_fermionic_double_excitation(weight, wires1, wires2, q_machine)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_fermionic_double_excitation(weight, wires1, wires2, q_machine)
    :no-index:
 
     对泡利矩阵的张量积求幂的耦合聚类双激励算子,矩阵形式由下式给出:
@@ -9760,7 +9781,7 @@ vqc_uccsd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_uccsd(weights, wires, s_wires, d_wires, init_state, q_machine)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_uccsd(weights, wires, s_wires, d_wires, init_state, q_machine)
    :no-index:
 
     实现酉耦合簇单激发和双激发拟设(UCCSD)。UCCSD 是 VQE 拟设,通常用于运行量子化学模拟。
@@ -9821,7 +9842,7 @@ vqc_uccsd
 vqc_zfeaturemap
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_zfeaturemap(input_feat, q_machine: pyvqnet.qnn.vqc.tn.native.TNQMachine, data_map_func=None, rep: int = 2)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_zfeaturemap(input_feat, q_machine: pyvqnet.qnn.vqc.tn.native.TNQMachine, data_map_func=None, rep: int = 2)
    :no-index:
 
     一阶泡利 Z 演化电路。
@@ -9861,7 +9882,7 @@ vqc_zfeaturemap
 vqc_zzfeaturemap
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_zzfeaturemap(input_feat, q_machine: pyvqnet.qnn.vqc.tn.native.TNQMachine, data_map_func=None, entanglement: Union[str, List[List[int]],Callable[[int], List[int]]] = "full",rep: int = 2)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_zzfeaturemap(input_feat, q_machine: pyvqnet.qnn.vqc.tn.native.TNQMachine, data_map_func=None, entanglement: Union[str, List[List[int]],Callable[[int], List[int]]] = "full",rep: int = 2)
    :no-index:
 
     二阶 Pauli-Z 演化电路。
@@ -9907,7 +9928,7 @@ vqc_zzfeaturemap
 vqc_allsinglesdoubles
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_allsinglesdoubles(weights, q_machine: pyvqnet.qnn.vqc.tn.native.TNQMachine, hf_state, wires, singles=None, doubles=None)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_allsinglesdoubles(weights, q_machine: pyvqnet.qnn.vqc.tn.native.TNQMachine, hf_state, wires, singles=None, doubles=None)
    :no-index:
 
     在这种情况下,我们有四个单激发和双激发来保留 Hartree-Fock 态的总自旋投影。
@@ -9946,7 +9967,7 @@ vqc_allsinglesdoubles
 vqc_basisrotation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:function:: pyvqnet.qnn.vqc.tn.vqc_basisrotation(q_machine: pyvqnet.qnn.vqc.tn.native.TNQMachine, wires, unitary_matrix: QTensor, check=False)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_basisrotation(q_machine: pyvqnet.qnn.vqc.tn.native.TNQMachine, wires, unitary_matrix: QTensor, check=False)
    :no-index:
 
     实现一个电路,提供可用于执行精确的单体基础旋转的整体。线路来自于 `arXiv:1711.04789 <https://arxiv.org/abs/1711.04789>`_\ 中给出的单粒子费米子确定的酉变换 :math:`U(u)`

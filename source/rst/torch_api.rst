@@ -8215,7 +8215,26 @@ vqc_angle_embedding
         print(qm.get_states())
 
 
+vqc_amplitude_embedding
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. py:function:: pyvqnet.qnn.vqc.tn.vqc_amplitude_embedding(input_feature, q_machine)
+
+    将 :math:`2^n` 特征编码为 :math:`n` 量子比特的振幅向量。该函数别名 `VQC_AmplitudeEmbedding` 。
+
+    :param input_feature: 表示参数的numpy数组。
+    :param q_machine: 量子虚拟机设备。
+    
+
+    Example::
+
+        import pyvqnet
+        pyvqnet.backends.set_backend("torch")
+        from pyvqnet.qnn.vqc.tn.torch import vqc_amplitude_embedding, TNQMachine
+        from pyvqnet.tensor import QTensor
+        qm  = TNQMachine(3)
+        vqc_amplitude_embedding(QTensor([3.2,-2,-2,0.3,12,0.1,2,-1]), q_machine=qm)
+        print(qm.get_states())
 
 
 vqc_iqp_embedding
