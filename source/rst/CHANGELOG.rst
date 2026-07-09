@@ -3,6 +3,28 @@ VQNet Changelog
 ######################
 
 
+[v2.18.1] - 2026-07-08
+***************************
+
+Added
+===================
+- 文档新增张量网络 ``torch`` 后端(``pyvqnet.qnn.vqc.tn.torch``)与 ``pyvqnet`` 后端(``pyvqnet.qnn.vqc.tn.native``)变分量子线路模块文档，包含 ``TNQModule``、``TNQMachine``、量子逻辑门、测量及模板等接口。
+- 文档新增 ``pyvqnet.torch.trl`` 大模型微调损失函数(``sft_loss``、``dpo_loss``、``ppo_loss``、``grpo_loss``、``reward_loss``)。
+- 文档新增 ``RMSNorm``、``RoPE``、``SwiGLU``、``fused_moe``、``scaled_*softmax`` 等 ``nn`` 模块文档。
+- 文档新增 ``pq3 torch`` 量子层(``TorchQpandaQuantumLayer``、``TorchQcloud3QuantumLayer``、``TorchQpanda3QuantumLayer``)。
+
+Changed
+===================
+- ``DistributeQMachine`` 重命名为 ``DistributedQMachine``，文档同步更新。
+- 统一 RST 文档中 ``Examples::`` 标记为 ``Example::``。
+- 修正 ``vqc.rst`` 与 ``vqc_demo.rst`` 示例导入路径为公共模块。
+
+Fixed
+===================
+- 修复张量网络后端文档示例，新增 ``CCZ`` 门文档，移除不支持的 ``vqc_amplitude_embedding``。
+- 修复多处 Sphinx 构建警告(标题下划线长度、标题层级不一致、重复对象描述)。
+
+
 [v2.18.0] - 2026-04-22
 ***************************
 
@@ -11,7 +33,7 @@ Added
 - ``vqnetrun`` 新增 ``--backend nccl`` 模式支持，可通过 ``--nproc_per_node``, ``--nnodes``, ``--node_rank``, ``--master_addr``, ``--master_port``, ``--nccl_socket_ifname`` 参数控制 NCCL 分布式启动。
 - 新增 ``VQCQCloudLayer`` 接口，用于将 VQC Module 提交到 QCloud 真实芯片或 pyqpanda3 本地模拟器执行，支持 parameter_shift 反向传播。
 - ``CommController`` 新增 ``destroy()`` 方法用于 NCCL 通信资源清理。
--
+- 
 
 Changed
 ===================
