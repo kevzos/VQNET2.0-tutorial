@@ -4470,9 +4470,8 @@ HermitianExpval
         qunatum_model = QModel(num_wires=2, dtype=pyvqnet.kcomplex64)
 
         batch_y = qunatum_model(input_x)
-        batch_y.backward()
+        batch_y.backward(pyvqnet.tensor.ones_like(batch_y))
 
-        print(batch_y)
 
 量子线路常见模板
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -5479,7 +5478,7 @@ QuantumLayerAdjoint
         adjoint_model = QuantumLayerAdjoint(qunatum_model)
         adjoint_model.train()
         batch_y = adjoint_model(input_x)
-        batch_y.backward()
+        batch_y.backward(pyvqnet.tensor.ones_like(batch_y))
 
 
 
@@ -5498,7 +5497,8 @@ QuantumLayerAdjoint
 
 .. warning::
 
-        使用本模块以下功能需额外安装 ``tensornetwork`` 和 ``torch``。默认安装 ``pyvqnet`` 不包含这两个依赖，请使用 ``pip install tensornetwork torch`` 安装。
+        使用本模块以下功能需额外安装 ``tensornetwork``。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install tensornetwork`` 安装。
+        使用本模块以下功能需额外安装 ``jax``。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install jax`` 或 ``pip install jax[cuda12]`` 安装。
 
 .. warning::
 

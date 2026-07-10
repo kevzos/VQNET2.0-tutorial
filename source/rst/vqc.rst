@@ -6768,6 +6768,7 @@ QNSPSAOptimizer
 .. warning::
 
         使用本模块以下功能需额外安装 ``tensornetwork``。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install tensornetwork`` 安装。
+        使用本模块以下功能需额外安装 ``jax``。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install jax`` 或 ``pip install jax[cuda12]`` 安装。
 
 .. warning::
 
@@ -8855,7 +8856,8 @@ VQC_VarMeasure
     Example::
 
         import pyvqnet
-        from pyvqnet.qnn.vqc.tn.native import TNQMachine, qcircuit, VQC_VarMeasure, TNQModule,PauliY
+        from pyvqnet.qnn.vqc.tn.native import TNQMachine, qcircuit, TNQModule, PauliY
+        from pyvqnet.qnn.vqc import VQC_VarMeasure
         from pyvqnet.tensor import QTensor
         from pyvqnet import kfloat64
         pyvqnet.backends.set_backend("pyvqnet")
