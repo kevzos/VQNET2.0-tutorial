@@ -446,8 +446,8 @@ CommController
             Comm_OP = CommController("nccl") # init nccl controller
             
             Comm_OP.getSize()
-            # vqnetrun -n 2 python test.py 
-            # 2
+            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+
 
  
     .. py:method:: getLocalRank()
@@ -463,7 +463,7 @@ CommController
             Comm_OP = CommController("nccl") # init nccl controller
             
             Comm_OP.getLocalRank()
-            # vqnetrun -n 2 python test.py 
+            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
  
 
@@ -688,7 +688,7 @@ CommController
 
             Comm_OP.allreduce_group(complex_data, c_op="sum",group = groups[0])
             print(f"allreduce_group after rank {get_rank()}: {complex_data}")
-            # vqnetrun -n 2 python test.py
+            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
     .. py:method:: reduce_group(tensor, root = 0, c_op = "avg", group = None)
         
@@ -716,7 +716,7 @@ CommController
 
             Comm_OP.reduce_group(complex_data, c_op="sum",group = groups[0])
             print(f"reduce_group after rank {get_rank()}: {complex_data}")
-            # vqnetrun -n 2 python test.py
+            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
  
     .. py:method:: broadcast_group(tensor, root = 0, group = None)
@@ -745,7 +745,7 @@ CommController
             Comm_OP.broadcast_group(complex_data,group = groups[0])
             Comm_OP.barrier()
             print(f"broadcast_group after rank {get_rank()}: {complex_data}")
-            # vqnetrun -n 2 python test.py
+            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
  
     .. py:method:: allgather_group(tensor, group = None)
@@ -781,7 +781,7 @@ CommController
             print(f" before rank {get_rank()}: {complex_data}")
             complex_data = Comm_OP.allgather_group(complex_data, group = groups[0])
             print(f"after rank {get_rank()}: {complex_data}")
-            # mpirun -n 2 python test.py
+            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
 
     .. py:method:: nccl_async_all_gather( output, input, group=None, async_op=False):
@@ -1368,7 +1368,7 @@ ColumnParallelLinear
 
     使用时与经典的Linear层的使用相似
 
-    多进程使用时基于 `vqnetrun -n 2 python test.py` 的方式进行
+    多进程使用时基于 `# vqnetrun --backend nccl --nproc_per_node 2 python test.py` 的方式进行
 
     Example::
 
@@ -1526,7 +1526,7 @@ RowParallelLinear
 .. py:class:: pyvqnet.distributed.RowParallelLinear(input_size,output_size,weight_initializer,bias_initializer,use_bias,dtype,name,tp_comm)
     
     张量并行计算,行并行线性层。
-
+    
     线性层的定义为 Y = XA + b。A 沿其一维并行,X 沿其二维并行。
     A = transpose([A_1 ... A_p]) X = [X_1, ..., X_p]。
 
@@ -1542,7 +1542,7 @@ RowParallelLinear
     以下使用 MNIST 数据库, 在2块GPU上训练一个MLP模型上的分类任务。
     使用时与经典的Linear层的使用相似
 
-    多进程使用时基于 `vqnetrun -n 2 python test.py` 的方式进行
+    多进程使用时基于 `# vqnetrun --backend nccl --nproc_per_node 2 python test.py` 的方式进行
 
     Example::
 
