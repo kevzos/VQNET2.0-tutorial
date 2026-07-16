@@ -4671,5 +4671,4 @@ Dropout是经典深度神经网络(DNN)的一种常用技术,可防止计算单�
             loss = mse(QTensor(batch_y,dtype=kfloat32),pred)
             loss.backward()
             optim.step()
-            print("i")
             print(loss)
