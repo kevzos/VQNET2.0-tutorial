@@ -122,7 +122,7 @@ n, np
         size = Comm_OP.getSize()
         print(f"rank: {rank}, size {size}")
 
-        # vqnetrun -n 2 python test.py
+        # vqnetrun --backend nccl --nproc_per_node 2 python test.py
         # vqnetrun -np 2 python test.py
 
 backend
@@ -384,17 +384,6 @@ cb, check-build
         # vqnetrun -cb
         # vqnetrun --check-build
 
-h
-^^^^^^^^^^^^^^^^^^^^^^
-
-``vqnetrun`` 接口中可以通过该标志, 输出vqnetrun支持的所有参数以及参数的详细介绍。
-
-执行代码如下
-
-    .. code-block::
-
-        # vqnetrun -h
-
 
 CommController
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -518,7 +507,7 @@ CommController
 
             Comm_OP.allreduce(num, "sum")
             print(f"rank {Comm_OP.getRank()}  {num}")
-            # vqnetrun -n 2 python test.py
+            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
 
     .. py:method:: reduce(tensor, root = 0, c_op = "avg")
@@ -541,7 +530,7 @@ CommController
             
             Comm_OP.reduce(num, 1)
             print(f"rank {Comm_OP.getRank()}  {num}")
-            # vqnetrun -n 2 python test.py
+            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
 
     
@@ -565,7 +554,7 @@ CommController
             
             Comm_OP.broadcast(num, 1)
             print(f"rank {Comm_OP.getRank()}  {num}")
-            # vqnetrun -n 2 python test.py
+            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
  
     .. py:method:: allgather(tensor)
@@ -586,7 +575,7 @@ CommController
 
             num = Comm_OP.allgather(num)
             print(f"rank {Comm_OP.getRank()}  {num}")
-            # vqnetrun -n 2 python test.py
+            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
 
     .. py:method:: send(tensor, dest)
@@ -613,7 +602,7 @@ CommController
             print(f"rank {Comm_OP.getRank()}  {num}")
             print(f"rank {Comm_OP.getRank()}  {recv}")
             
-            # vqnetrun -n 2 python test.py
+            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
  
     .. py:method:: recv(tensor, source)
@@ -640,7 +629,7 @@ CommController
             print(f"rank {Comm_OP.getRank()}  {num}")
             print(f"rank {Comm_OP.getRank()}  {recv}")
             
-            # vqnetrun -n 2 python test.py
+            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
     .. py:method:: split_groups(rankL)
         
@@ -669,7 +658,7 @@ CommController
 
         :param tensor: 输入数据.
         :param c_op: 计算方法.
-        :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
+        :param group: 当使用mpi后端时候，输入由 `init_groups` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
 
 
         Example::
@@ -697,7 +686,7 @@ CommController
         :param tensor: 输入数据.
         :param root: 指定进程号.
         :param c_op: 计算方法.
-        :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
+        :param group: 当使用mpi后端时候，输入由 `init_groups` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
 
 
         Example::
@@ -725,7 +714,7 @@ CommController
 
         :param tensor: 输入数据.
         :param root: 指定从哪个进程号广播， 默认为0.
-        :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
+        :param group: 当使用mpi后端时候，输入由 `init_groups` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
 
 
         Example::
@@ -753,16 +742,16 @@ CommController
         组内allgather通信接口。
 
         :param tensor: 输入数据.
-        :param group: 当使用mpi后端时候，输入由 `init_group` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
+        :param group: 当使用mpi后端时候，输入由 `init_groups` 或 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
 
 
         Example::
             
-            from pyvqnet.distributed import CommController,get_rank,init_group
+            from pyvqnet.distributed import CommController,get_rank
             from pyvqnet.tensor import tensor
             from pyvqnet import kcomplex64
             Comm_OP = CommController("mpi")
-            group = init_group([[0,1]])
+            group = init_groups([[0,1]])
             #mpi init group internally
             # A list of lists, where each sublist contains a communicator and the corresponding rank list.
             complex_data = tensor.QTensor([3+1j, 2, 1 + get_rank()],dtype=kcomplex64).reshape((3,1))
@@ -931,6 +920,24 @@ CommController
                 work = Comm_OP.nccl_async_recv(complex_data, 0 ,True)
             work.wait()
 
+
+    .. py:method:: destroy()
+
+        销毁 NCCL 通信器资源 / Destroy NCCL communicators explicitly.
+
+        在进程退出前应调用此方法以正确清理 NCCL 资源。若不调用，NCCL 通信器可能会泄漏内存或在 CUDA 驱动关闭时引发错误。
+
+        This method should be called before process exit to properly clean up
+        NCCL resources. If not called, NCCL communicators may leak memory or
+        cause errors during CUDA driver shutdown.
+
+        Example::
+
+            from pyvqnet.distributed import CommController
+            Comm_OP = CommController("nccl")
+            # ... 使用 Comm_OP / use Comm_OP ...
+            Comm_OP.destroy()  # 退出前调用 / Call before exit
+
 split_data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -971,7 +978,7 @@ get_local_rank
         from pyvqnet.distributed.ControlComm import get_local_rank
 
         print(get_local_rank())
-        # vqnetrun -n 2 python test.py
+        # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
 get_rank
 ~~~~~~~~~~~~~~~~~
@@ -987,13 +994,13 @@ get_rank
         from pyvqnet.distributed.ControlComm import get_rank
 
         print(get_rank())
-        # vqnetrun -n 2 python test.py
+        # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
-init_group
+init_groups
 ~~~~~~~~~~~~~~~~~~~
 
 
-.. py:function:: pyvqnet.distributed.ControlComm.init_group(rank_lists)
+.. py:function:: pyvqnet.distributed.ControlComm.init_groups(rank_lists)
 
     根据给出的进程数列表来对基于 `mpi` 后端的进程组进行初始化。
 
@@ -1007,18 +1014,18 @@ init_group
     Example::
 
         from pyvqnet.distributed import *
-
+        import numpy as np
         Comm_OP = CommController("mpi")
         num = tensor.to_tensor(np.random.rand(1, 5))
-        print(f"rank {Comm_OP.getRank()}  {num}")
-        
-        group_l = init_group([[0,2], [1]])
+        print(f"rank {Comm_OP.getRank()}  {num} before allreduce")
+
+        group_l = init_groups([[0,2], [1]])
 
         for comm_ in group_l:
-            if Comm_OP.getRank() in comm_[1]:
-                Comm_OP.allreduce_group(num, "sum", group = comm_[0])
-                print(f"rank {Comm_OP.getRank()}  {num} after")
-        
+            if Comm_OP.getRank() in comm_:
+                Comm_OP.allreduce_group(num, "sum", group = comm_)
+                print(f"rank {Comm_OP.getRank()}  {num} after allreduce")
+
         # vqnetrun -n 3 python test.py
 
 
