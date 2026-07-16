@@ -11,6 +11,10 @@ VQNet使用torch进行底层计算
         **如果安装GPU版本的torch，需要使用兼容cuda12.6版本的torch, 否则可能由于 NVIDIA CUDA 运行时库问题导致您的torch无法使用。**
         **本软件安装时候不自动安装 torch 。**
 
+    .. note::
+
+        基于 torch 后端的 ``rx``, ``ry``, ``rz``, ``cnot`` 等变分量子计算接口在 torch 2.11.0 + CUDA 12.6 环境下编译了高性能 CUDA kernel。当检测到 torch 与 CUDA 版本匹配时会自动启用该实现；若不匹配，则自动回退为 native torch 实现。
+
 自2.15.0版本开始,本软件支持使用 `pytorch` 作为计算后端进行底层运算,可接入基于pytorch的模型、代码、第三方库进行二次开发。
 
 
@@ -5487,6 +5491,10 @@ QuantumLayerAdjoint
 张量网络后端变分量子线路模块
 ============================================
 
+.. note::
+
+    本模块基于 ``jax`` 实现自动微分与 GPU 加速。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install jax``（CPU）或 ``pip install jax[cuda12]``（GPU，需 CUDA 12.6）安装。此外还需额外安装 ``tensornetwork``：``pip install tensornetwork``。
+
 张量网络（Tensor Network）通过将复杂的张量分解为多个低维张量的网络，显著降低了计算复杂度。
 
 矩阵乘积态（Matrix Product State, MPS）是张量网络的一种特殊形式，MPS 将量子态表示为一系列矩阵的乘积，从而有效减少参数数量，降低了计算复杂度。
@@ -5494,11 +5502,6 @@ QuantumLayerAdjoint
 下面接口则是基于 ``torch`` 后端，对张量网络构建量子线路的功能支持，包括对构建量子线路基类、量子逻辑门、量子线路以及测量方法，并通过自动微分模拟代替参数移位法计算参数梯度。
 
 以MPS方式构建量子线路弥补对大比特量子线路构建支持。
-
-.. warning::
-
-        使用本模块以下功能需额外安装 ``tensornetwork``。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install tensornetwork`` 安装。
-        使用本模块以下功能需额外安装 ``jax``。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install jax`` 或 ``pip install jax[cuda12]`` 安装。
 
 .. warning::
 

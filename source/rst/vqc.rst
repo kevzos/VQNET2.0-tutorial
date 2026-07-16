@@ -6757,6 +6757,10 @@ QNSPSAOptimizer
 张量网络后端变分量子线路模块
 ============================================
 
+.. note::
+
+    本模块基于 ``jax`` 实现自动微分与 GPU 加速。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install jax``（CPU）或 ``pip install jax[cuda12]``（GPU，需 CUDA 12.6）安装。此外还需额外安装 ``tensornetwork``：``pip install tensornetwork``。
+
 张量网络（Tensor Network）通过将复杂的张量分解为多个低维张量的网络，显著降低了计算复杂度。
 
 矩阵乘积态（Matrix Product State, MPS）是张量网络的一种特殊形式，MPS 将量子态表示为一系列矩阵的乘积，从而有效减少参数数量，降低了计算复杂度。
@@ -6764,11 +6768,6 @@ QNSPSAOptimizer
 下面接口则是基于 ``pyvqnet`` 后端（默认后端），对张量网络构建量子线路的功能支持，包括对构建量子线路基类、量子逻辑门、量子线路以及测量方法，并通过自动微分模拟代替参数移位法计算参数梯度。
 
 以MPS方式构建量子线路弥补对大比特量子线路构建支持。
-
-.. warning::
-
-        使用本模块以下功能需额外安装 ``tensornetwork``。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install tensornetwork`` 安装。
-        使用本模块以下功能需额外安装 ``jax``。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install jax`` 或 ``pip install jax[cuda12]`` 安装。
 
 .. warning::
 
