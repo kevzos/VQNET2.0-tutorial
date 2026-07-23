@@ -2706,7 +2706,7 @@ TorchQcloud3QuantumLayer
     :param dtype: 参数的数据类型。 默认值为 None,即使用默认数据类型pyvqnet.kfloat32。
     :param name: 模块的名称。 默认为空字符串。
     :param diff_method: 梯度计算的微分方法。 默认为“parameter_shift”,"random_coordinate_descent"。
-    :param submit_kwargs: 用于提交量子电路的附加关键字参数,默认:{"if_print_qcloud_log":False,"chip_id":"WK_C180","is_amend":True,"is_mapping":True,"is_optimization":True,"compile_level":3,"default_task_group_size":200,"test_qcloud_fake":False,"server_ip_address":""},当设置test_qcloud_fake为True则本地CPUQVM模拟。
+    :param submit_kwargs: 用于提交量子电路的附加关键字参数,默认:{"if_print_qcloud_log":False,"chip_id":"WK_C180","is_amend":True,"is_mapping":True,"is_optimization":True,"compile_level":3,"default_task_group_size":200,"test_qcloud_fake":False,"server_ip_address":"","use_qwc":True},当设置test_qcloud_fake为True则本地CPUQVM模拟。
     :param query_kwargs: 用于查询量子结果的附加关键字参数,默认:{"timeout":2,"print_query_info":True,"sub_circuits_split_size":1}。
     :return: 一个可以计算量子电路的模块。
 
@@ -5493,7 +5493,7 @@ QuantumLayerAdjoint
 
 .. note::
 
-    本模块基于 ``jax`` 实现自动微分与 GPU 加速。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install jax``（CPU）或 ``pip install jax[cuda12]``（GPU，需 CUDA 12.6）安装。此外还需额外安装 ``tensornetwork``：``pip install tensornetwork``。
+    本模块基于 ``jax`` 实现自动微分与 GPU 加速。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install jax``（CPU）或 ``pip install jax[cuda12]``（GPU，需 CUDA 12.6）安装。此外还需额外安装 ``tensornetwork``： ``pip install tensornetwork`` 。
 
 张量网络（Tensor Network）通过将复杂的张量分解为多个低维张量的网络，显著降低了计算复杂度。
 
@@ -5509,7 +5509,7 @@ QuantumLayerAdjoint
 
 .. warning::
         
-        批量化与经典模块下使用方式不同，基于vmap的方式，数据以及参数构建线路需降一维输入， 具体可查看下方接口中样例, 批次化执行必须同时基于  ``TNQMachine``  和  ``TNQModule`` 。
+        批量化与经典模块下使用方式不同，基于vmap的方式，数据以及参数构建线路需降一维输入，即对应态矢模拟时代码 ``x[:,i]`` 需要改为 ``x[i]``, 具体可查看下方接口中样例, 批次化执行必须同时基于 ``TNQMachine`` 和 ``TNQModule`` 并使用 ``TNQMachine`` 的 ``reset_states`` 显式指定批次大小。
 
 基类
 --------------------------------------------------

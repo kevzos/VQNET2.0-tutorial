@@ -6759,7 +6759,7 @@ QNSPSAOptimizer
 
 .. note::
 
-    本模块基于 ``jax`` 实现自动微分与 GPU 加速。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install jax``（CPU）或 ``pip install jax[cuda12]``（GPU，需 CUDA 12.6）安装。此外还需额外安装 ``tensornetwork``：``pip install tensornetwork``。
+    本模块基于 ``jax`` 实现自动微分与 GPU 加速。默认安装 ``pyvqnet`` 不包含该依赖，请使用 ``pip install jax``（CPU）或 ``pip install jax[cuda12]``（GPU，需 CUDA 12.6）安装。此外还需额外安装 ``tensornetwork`` ： ``pip install tensornetwork`` 。
 
 张量网络（Tensor Network）通过将复杂的张量分解为多个低维张量的网络，显著降低了计算复杂度。
 
@@ -6775,7 +6775,7 @@ QNSPSAOptimizer
 
 .. warning::
         
-        批量化与经典模块下使用方式不同，基于vmap的方式，数据以及参数构建线路需降一维输入， 具体可查看下方接口中样例, 批次化执行必须同时基于  ``TNQMachine``  和  ``TNQModule`` 。
+        批量化与经典模块下使用方式不同，基于vmap的方式，数据以及参数构建线路需降一维输入，即对应态矢模拟时代码 ``x[:,i]`` 需要改为 ``x[i]``, 具体可查看下方接口中样例, 批次化执行必须同时基于 ``TNQMachine`` 和 ``TNQModule`` 并使用 ``TNQMachine`` 的 ``reset_states`` 显式指定批次大小。
 
 基类
 --------------------------------------------------
