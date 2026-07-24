@@ -272,7 +272,7 @@ QuantumBatchAsyncQcloudLayer
             return m_prog
 
         l = QuantumBatchAsyncQcloudLayer(qfun,
-                        "3047DE8A59764BEDAC9C3282093B16AF1",
+                        "your_api_token",
                         2,
 
                         pauli_str_dict=None,
@@ -307,7 +307,7 @@ QuantumBatchAsyncQcloudLayer
             
             return m_prog
         l = QuantumBatchAsyncQcloudLayer(qfun2,
-                "3047DE8A59764BEDAC9C3282093B16AF",
+                "your_api_token",
                 2,
 
                 pauli_str_dict={'Z0 X1':10,'':-0.5,'Y2':-0.543,"":3333},
