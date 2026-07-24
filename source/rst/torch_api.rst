@@ -1697,7 +1697,7 @@ SDPA
 
             out_sdpa = model(query_p, key_p, value_p)
 
-            out_sdpa.backward()
+            out_sdpa.backward(pyvqnet.tensor.ones_like(out_sdpa))
 
 损失函数接口
 ------------------------
@@ -1810,7 +1810,7 @@ BinaryCrossEntropy
 
         loss_result = BinaryCrossEntropy()
         result = loss_result(y, x)
-        result.backward()
+        result.backward(pyvqnet.tensor.ones_like(result))
         print(result)
 
 
@@ -1908,7 +1908,7 @@ SoftmaxCrossEntropy
                     dtype=kint64)
         loss_result = SoftmaxCrossEntropy()
         result = loss_result(y, x)
-        result.backward()
+        result.backward(pyvqnet.tensor.ones_like(result))
         print(result)
 
 
@@ -2554,109 +2554,7 @@ reward_loss
 使用pyqpanda进行计算的量子变分线路训练函数
 ------------------------------------------
 
-以下是使用pyqpanda以及pyqpanda3进行线路计算的训练变分量子线路接口。
-
-.. warning::
-
-    以下 TorchQpandaQuantumLayer 的量子计算部分使用pyqpanda2 https://pyqpanda-toturial.readthedocs.io/zh/latest/。
-
-    您需要自行安装pyqpanda2, `pip install pyqpanda` 
-
-TorchQpandaQuantumLayer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-如您更加熟悉pyqpanda2语法,可以使用该接口TorchQpandaQuantumLayer,自定义量子比特 ``qubits`` ,经典比特 ``cbits`` ,后端模拟器 ``machine`` 加入TorchQpandaQuantumLayer的参数 ``qprog_with_measure`` 函数中。
-
-.. py:class:: pyvqnet.qnn.pq3.torch.qpanda_layer.TorchQpandaQuantumLayer(qprog_with_measure,para_num,diff_method:str = "parameter_shift",delta:float = 0.01,dtype=None,name="")
-
-	变分量子层的抽象计算模块。对一个参数化的量子线路使用pyqpanda2进行仿真,得到测量结果。该变分量子层继承了VQNet框架的梯度计算模块,可以使用参数移位法等计算线路参数的梯度,训练变分量子线路模型或将变分量子线路嵌入混合量子和经典模型。
-    
-    :param qprog_with_measure: 用pyqpanda3构建的量子线路 运行和测量函数。
-    :param para_num: `int` - 参数个数。
-    :param diff_method: 求解量子线路参数梯度的方法,"parameter_shift"或"finite_diff"，默认为 "parameter_shift"。 。
-    :param delta: 有限差分计算梯度时的 \delta。
-    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
-    :param name: 这个模块的名字, 默认为""。
-
-    :return: 一个可以计算量子线路的模块。
-
-    .. note::
-        qprog_with_measure是pyqpanda2中定义的量子线路函数 :https://pyqpanda-toturial.readthedocs.io/zh/latest/QCircuit.html。
-        
-        此函数必须包含以下参数作为函数入参（即使某个参数未实际使用）,否则无法在本函数中正常运行。
-
-        与QuantumLayer相比。该接口传入的变分线路运行函数中,用户应该手动创建量子比特和模拟器: https://pyqpanda-toturial.readthedocs.io/zh/latest/QuantumMachine.html,
-
-        如果qprog_with_measure需要quantum measure,用户还需要手动创建需要分配cbits: https://pyqpanda-toturial.readthedocs.io/zh/latest/Measure.html
-        
-        量子线路函数 qprog_with_measure (input,param)的使用可参考下面的例子。
-        
-        `input`: 输入一维经典数据。如果没有,输入 None。
-        
-        `param`: 输入一维的变分量子线路的待训练参数。
-
-
-    Example::
-
-        import pyqpanda as pq
-        from pyvqnet.qnn import ProbsMeasure
-        import numpy as np
-        from pyvqnet.tensor import QTensor
-        import pyvqnet
-        pyvqnet.backends.set_backend("torch")
-        from pyvqnet.qnn.vqc.sv.torch import TorchQpandaQuantumLayer
-        def pqctest (input,param):
-            num_of_qubits = 4
-
-            m_machine = pq.CPUQVM()# outside
-            m_machine.init_qvm()# outside
-            qubits = m_machine.qAlloc_many(num_of_qubits)
-
-            circuit = pq.QCircuit()
-            circuit.insert(pq.H(qubits[0]))
-            circuit.insert(pq.H(qubits[1]))
-            circuit.insert(pq.H(qubits[2]))
-            circuit.insert(pq.H(qubits[3]))
-
-            circuit.insert(pq.RZ(qubits[0],input[0]))
-            circuit.insert(pq.RZ(qubits[1],input[1]))
-            circuit.insert(pq.RZ(qubits[2],input[2]))
-            circuit.insert(pq.RZ(qubits[3],input[3]))
-
-            circuit.insert(pq.CNOT(qubits[0],qubits[1]))
-            circuit.insert(pq.RZ(qubits[1],param[0]))
-            circuit.insert(pq.CNOT(qubits[0],qubits[1]))
-
-            circuit.insert(pq.CNOT(qubits[1],qubits[2]))
-            circuit.insert(pq.RZ(qubits[2],param[1]))
-            circuit.insert(pq.CNOT(qubits[1],qubits[2]))
-
-            circuit.insert(pq.CNOT(qubits[2],qubits[3]))
-            circuit.insert(pq.RZ(qubits[3],param[2]))
-            circuit.insert(pq.CNOT(qubits[2],qubits[3]))
-
-            prog = pq.QProg()
-            prog.insert(circuit)
-
-            rlt_prob = ProbsMeasure([0,2],prog,m_machine,qubits)
-            return rlt_prob
-
-        pqc = TorchQpandaQuantumLayer(pqctest,3)
-
-        #classic data as input
-        input = QTensor([[1.0,2,3,4],[4,2,2,3],[3,3,2,2]],requires_grad=True)
-
-        #forward circuits
-        rlt = pqc(input)
-
-        print(rlt)
-
-        grad =  QTensor(np.ones(rlt.data.shape)*1000)
-        #backward circuits
-        rlt.backward(grad)
-
-        print(pqc.m_para.grad)
-        print(input.grad)
+以下是使用pyqpanda3进行线路计算的训练变分量子线路接口。
 
 
 
@@ -2664,7 +2562,6 @@ TorchQpandaQuantumLayer
 
     以下TorchQcloud3QuantumLayer,TorchQpanda3QuantumLayer接口的量子计算部分使用pyqpanda3 https://qcloud.originqc.com.cn/document/qpanda-3/index.html。
 
-    如果您使用了本模块下的QCloud功能,在代码中导入pyqpanda2 或 使用pyvqnet的pyqpanda2相关封装接口会有错误。
 
 TorchQcloud3QuantumLayer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2751,7 +2648,7 @@ TorchQcloud3QuantumLayer
         x = pyvqnet.tensor.QTensor([[0.56,1.2],[0.56,1.2],[0.56,1.2],[0.56,1.2],[0.56,1.2]],requires_grad= True)
         y = l(x)
         print(y)
-        y.backward()
+        y.backward(pyvqnet.tensor.ones_like(y))
         print(l.m_para.grad)
         print(x.grad)
 
@@ -2787,7 +2684,7 @@ TorchQcloud3QuantumLayer
         x = pyvqnet.tensor.QTensor([[0.56,1.2],[0.56,1.2],[0.56,1.2],[0.56,1.2]],requires_grad= True)
         y = l(x)
         print(y)
-        y.backward()
+        y.backward(pyvqnet.tensor.ones_like(y))
         print(l.m_para.grad)
         print(x.grad)
 
@@ -2878,7 +2775,7 @@ TorchQpanda3QuantumLayer
 
         print(rlt)
 
-        grad =  QTensor(np.ones(rlt.data.shape)*1000)
+        grad = pyvqnet.tensor.ones(rlt.data.shape)*1000
         #backward circuits
         rlt.backward(grad)
 
@@ -4775,7 +4672,7 @@ ExpressiveEntanglingAnsatz
         qunatum_model = QModel(num_wires=3, dtype=pyvqnet.kcomplex64)
 
         batch_y = qunatum_model(input_x)
-        batch_y.backward()
+        batch_y.backward(pyvqnet.tensor.ones_like(batch_y))
         print(batch_y)
 
 
@@ -8149,7 +8046,7 @@ ExpressiveEntanglingAnsatz
         qunatum_model = QModel(num_wires=3, dtype=pyvqnet.kcomplex64)
 
         batch_y = qunatum_model(input_x)
-        batch_y.backward()
+        batch_y.backward(pyvqnet.tensor.ones_like(batch_y))
         print(batch_y)
 
 
