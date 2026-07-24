@@ -656,7 +656,6 @@ Circuit-centric quantum classifiers算法示例
     from sklearn import datasets
     import seaborn as sns
 
-    from pyqpanda import *
     from pyvqnet.qnn.vqc import isingxx,isingyy,isingzz,u3,cnot,VQC_AmplitudeEmbedding,rxx,ryy,rzz,rzx
     from pyvqnet.qnn.vqc import QMachine
     from pyvqnet.qnn.vqc.common import probs
@@ -3498,7 +3497,6 @@ QMLP模型示例
     from pyvqnet.qnn.measure import expval
     from pyvqnet.nn.parameter import Parameter
     from pyvqnet.dtype import *
-    from pyqpanda import *
     import pyvqnet
     from pyvqnet.qnn.vqc import ry, QMachine, cnot, rz
 

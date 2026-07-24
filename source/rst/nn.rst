@@ -306,43 +306,49 @@ ModuleList
 
         from pyvqnet.tensor import *
         from pyvqnet.nn import Module,Linear,ModuleList
-        from pyvqnet.qnn import ProbsMeasure,QuantumLayer
-        import pyqpanda as pq
-        def pqctest (input,param,qubits,cbits,m_machine):
+        from pyvqnet.qnn.pq3 import ProbsMeasure,QuantumLayer
+        import pyqpanda3.core as pq
+        def pqctest (input,param):
+            num_of_qubits = 4
+
+            m_machine = pq.CPUQVM()# outside
+            
+            qubits = range(num_of_qubits)
+
             circuit = pq.QCircuit()
-            circuit.insert(pq.H(qubits[0]))
-            circuit.insert(pq.H(qubits[1]))
-            circuit.insert(pq.H(qubits[2]))
-            circuit.insert(pq.H(qubits[3]))
+            circuit << pq.H(qubits[0])
+            circuit << pq.H(qubits[1])
+            circuit << pq.H(qubits[2])
+            circuit << pq.H(qubits[3])
 
-            circuit.insert(pq.RZ(qubits[0],input[0]))
-            circuit.insert(pq.RZ(qubits[1],input[1]))
-            circuit.insert(pq.RZ(qubits[2],input[2]))
-            circuit.insert(pq.RZ(qubits[3],input[3]))
+            circuit << pq.RZ(qubits[0],input[0])
+            circuit << pq.RZ(qubits[1],input[1])
+            circuit << pq.RZ(qubits[2],input[2])
+            circuit << pq.RZ(qubits[3],input[3])
 
-            circuit.insert(pq.CNOT(qubits[0],qubits[1]))
-            circuit.insert(pq.RZ(qubits[1],param[0]))
-            circuit.insert(pq.CNOT(qubits[0],qubits[1]))
+            circuit << pq.CNOT(qubits[0],qubits[1])
+            circuit << pq.RZ(qubits[1],param[0])
+            circuit << pq.CNOT(qubits[0],qubits[1])
 
-            circuit.insert(pq.CNOT(qubits[1],qubits[2]))
-            circuit.insert(pq.RZ(qubits[2],param[1]))
-            circuit.insert(pq.CNOT(qubits[1],qubits[2]))
+            circuit << pq.CNOT(qubits[1],qubits[2])
+            circuit << pq.RZ(qubits[2],param[1])
+            circuit << pq.CNOT(qubits[1],qubits[2])
 
-            circuit.insert(pq.CNOT(qubits[2],qubits[3]))
-            circuit.insert(pq.RZ(qubits[3],param[2]))
-            circuit.insert(pq.CNOT(qubits[2],qubits[3]))
+            circuit << pq.CNOT(qubits[2],qubits[3])
+            circuit << pq.RZ(qubits[3],param[2])
+            circuit << pq.CNOT(qubits[2],qubits[3])
 
             prog = pq.QProg()
-            prog.insert(circuit)
+            prog << circuit
 
-            rlt_prob = ProbsMeasure([0,2],prog,m_machine,qubits)
+            rlt_prob = ProbsMeasure(m_machine,prog,[0,2])
             return rlt_prob
 
 
         class M(Module):
             def __init__(self):
                 super(M, self).__init__()
-                self.pqc2 = ModuleList([QuantumLayer(pqctest,3,"cpu",4,1), Linear(4,1)
+                self.pqc2 = ModuleList([QuantumLayer(pqctest,3), Linear(4,1)
                 ])
 
             def forward(self, x, *args, **kwargs):

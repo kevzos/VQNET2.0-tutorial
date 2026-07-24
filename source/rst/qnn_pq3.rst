@@ -963,7 +963,7 @@ CCZ
     :param qubits: 量子比特索引。
 
     :return:
-            pyqpanda QCircuit 
+            pyqpanda3 QCircuit 
 
     Example::
 
@@ -995,7 +995,7 @@ FermionicSingleExcitation
     :param qubits: 量子比特索引。
 
     :return:
-            pyqpanda QCircuit
+            pyqpanda3 QCircuit
 
     Example::
 
@@ -1044,7 +1044,7 @@ FermionicDoubleExcitation
     :param qubits:  量子比特索引。
 
     :return:
-        pyqpanda QCircuit
+        pyqpanda3 QCircuit
 
     Example::
 
@@ -1129,7 +1129,7 @@ QuantumPoolingCircuit
     :param qubits: 量子比特索引。
 
     :return:
-        pyqpanda QCircuit
+        pyqpanda3 QCircuit
 
     Example:: 
 
@@ -1182,7 +1182,7 @@ HardwareEfficientAnsatz
 BasicEntanglerTemplate
 ============================
 
-.. py:class:: pyvqnet.qnn.pq3.template.BasicEntanglerTemplate(weights=None, num_qubits=1, rotation=pyqpanda.RX)
+.. py:class:: pyvqnet.qnn.pq3.template.BasicEntanglerTemplate(weights=None, num_qubits=1, rotation=pyqpanda3.core.RX)
 
     由每个量子位上的单参数单量子位旋转组成的层,后跟一个闭合链或环组合的多个CNOT 门。
 
@@ -1194,7 +1194,7 @@ BasicEntanglerTemplate
 
     :param weights: 形状的权重张量 `(L, len(qubits))`。 每个权重都用作量子含参门中的参数。默认值为: ``None`` ,则使用 `(1,1)` 正态分布随机数作为权重。
     :param num_qubits: 量子比特数,默认为1。
-    :param rotation: 使用单参数单量子比特门,``pyqpanda.RX`` 被用作默认值。
+    :param rotation: 使用单参数单量子比特门, ``pyqpanda3.core.RX`` 被用作默认值。
 
     Example::
 
@@ -1385,8 +1385,6 @@ QuantumMeasure
 
     计算量子线路测量。返回通过蒙特卡罗方法获得的测量结果。
 
-    更多详情请访问  https://pyqpanda-toturial.readthedocs.io/zh/latest/Measure.html?highlight=measure_all 。
-
     QuantumMeasure api现在只支持QPanda ``CPUQVM`` 或 ``QCloud`` 。
 
 
@@ -1431,7 +1429,6 @@ ProbsMeasure
 
 	计算线路概率测量。
 
-    更多详情请访问 https://pyqpanda-toturial.readthedocs.io/zh/latest/PMeasure.html。
 
     ProbsMeasure api现在只支持pyQPanda ``CPUQVM`` 或 ``QCloud`` 。
 

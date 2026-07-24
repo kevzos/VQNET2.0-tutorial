@@ -1623,11 +1623,11 @@ Quantum circuit structure learning任务的核心目标就是找到最优的带�
     import numpy as np
     def circuit(x ,weights):
         num_qubits = 1
-        #pyqpanda 创建模拟器
+        #pyqpanda3 创建模拟器
         machine = pq.CPUQVM()
-        #pyqpanda 分配量子比特
+        #pyqpanda3 分配量子比特
         qubits = range(num_qubits)
-        #pyqpanda 分配经典比特辅助测量
+        #pyqpanda3 分配经典比特辅助测量
         cbits = range(num_qubits)
         #构建线路
         circuit = pq.QCircuit()
