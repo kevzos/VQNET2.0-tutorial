@@ -2826,19 +2826,19 @@ QUnet主要是用于解决图像分割的技术。
 
             out5 = self.u1(out4)
             out5_pad_out4 = tensor.pad2d(out5, (1, 0, 1, 0), 0)
-            cat_out5 = tensor.concatenate([out5_pad_out4, out_4], axis=1)
+            cat_out5 = tensor.concatenate([out5_pad_out4, out_4], dim=1)
 
             out6 = self.u2(cat_out5)
             out6_pad_out_3 = tensor.pad2d(out6, (1, 0, 1, 0), 0)
-            cat_out6 = tensor.concatenate([out6_pad_out_3, out_3], axis=1)
+            cat_out6 = tensor.concatenate([out6_pad_out_3, out_3], dim=1)
 
             out7 = self.u3(cat_out6)
             out7_pad_out_2 = tensor.pad2d(out7, (1, 0, 1, 0), 0)
-            cat_out7 = tensor.concatenate([out7_pad_out_2, out_2], axis=1)
+            cat_out7 = tensor.concatenate([out7_pad_out_2, out_2], dim=1)
 
             out8 = self.u4(cat_out7)
             out8_pad_out_1 = tensor.pad2d(out8, (1, 0, 1, 0), 0)
-            cat_out8 = tensor.concatenate([out8_pad_out_1, out_1], axis=1)
+            cat_out8 = tensor.concatenate([out8_pad_out_1, out_1], dim=1)
 
             out = self.conv1(cat_out8)
             out = self.BatchNorm2d1(out)

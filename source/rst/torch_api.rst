@@ -2115,7 +2115,7 @@ Softsign
 Softmax
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.nn.torch.Softmax(axis:int = -1,name:str="")
+.. py:class:: pyvqnet.nn.torch.Softmax(dim:int = -1,name:str="")
 
     Softmax 激活函数层。
 
@@ -2127,7 +2127,7 @@ Softmax
 
         该类继承于 ``pyvqnet.nn.torch.TorchModule`` ,可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param axis: 计算的维度(最后一个轴为-1),默认值 = -1。
+    :param dim: 计算的维度(最后一个轴为-1),默认值 = -1。
     :param name: 激活函数层的命名,默认为""。
 
     :return: 一个Softmax 激活函数层实例。

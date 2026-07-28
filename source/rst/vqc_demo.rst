@@ -137,7 +137,7 @@ Circuit-centric quantum classifiers算法示例
         
         loss = (labels - predictions) ** 2
 
-        loss = tensor.mean(loss,axis=0)
+        loss = tensor.mean(loss, dim=0)
         return loss
     def run2():
         """
