@@ -47,19 +47,17 @@ set_backend
 
 .. py:function:: pyvqnet.backends.set_backend(backend_name)
 
-    该用于切换计算和数据存储后端，可选择使用 pyvqnet 原生计算、C++自动微分、或基于 PyTorch 的后端，从而在不同性能和兼容性需求间灵活切换。默认为 "pyvqnet-ad",可设置为 "torch"。
+    该用于切换计算和数据存储后端，可选择使用 pyvqnet 原生计算、C++自动微分、或基于 PyTorch 的后端，从而在不同性能和兼容性需求间灵活切换。默认为 "pyvqnet-ad",可设置为 "torch"(``torch-native`` 与 ``torch`` 已合并,二者效果一致)。
     
     使用 ``pyvqnet.backends.set_backend("pyvqnet")`` 后,VQNet ``QTensor`` 的 ``data`` 成员变量均使用 ``pyvqnet._core.Tensor`` 储存数据,并使用pyvqnet c++库计算,
-    自动微分在python完成。
-
-    使用 ``pyvqnet.backends.set_backend("pyvqnet-ad")`` 后,VQNet ``QTensor`` 的 ``data`` 成员变量均使用 ``pyvqnet._core.Tensor`` 储存数据,并使用pyvqnet c++库计算,
     自动微分在C++完成。
 
-    使用 ``pyvqnet.backends.set_backend("torch")`` 后,接口保持不变,VQNet的 ``QTensor`` 的 ``data`` 成员变量均使用 ``torch.Tensor`` 储存数据。
-    :ref:`qtensor_api`， :ref:`vqc_api` 以及 `pyvqnet.nn.torch` 下的接口输入接受 ``QTensor`` 类型，输出为 ``QTensor`` 类型。
+    使用 ``pyvqnet.backends.set_backend("pyvqnet-ad")`` 与 ``pyvqnet.backends.set_backend("pyvqnet")`` 效果一致。
 
-    使用 ``pyvqnet.backends.set_backend("torch-native")`` 后,接口保持不变, :ref:`qtensor_api`， :ref:`vqc_api` 以及 `pyvqnet.nn.torch` 下的接口
-    输入可直接接受 ``torch.Tensor`` 类型或 ``QTensor`` 类型，输出为 ``torch.Tensor`` ，不再转换为 ``QTensor`` ，减少了数据转换。
+    使用 ``pyvqnet.backends.set_backend("torch")`` 后,接口保持不变,VQNet的 ``QTensor`` 的 ``data`` 成员变量均使用 ``torch.Tensor`` 储存数据。
+    :ref:`qtensor_api`， :ref:`vqc_api` 以及 `pyvqnet.nn.torch` 下的接口输入接受 ``QTensor`` 或 ``torch.Tensor`` 类型，输出为 ``torch.Tensor``。
+
+    使用 ``pyvqnet.backends.set_backend("torch-native")`` 与 ``pyvqnet.backends.set_backend("torch")`` 效果一致。
     
 
     .. warning::
