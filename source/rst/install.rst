@@ -4,7 +4,7 @@ VQNet 安装步骤
 VQNet python包安装
 ----------------------------------
 
-我们提供了Linux, Windows, macOS 13+ (arm64) 上的python预编译包供安装,需要 **python3.10, python3.11, python3.12** 。
+我们提供了 Linux、Windows、macOS 13+ (arm64) 上的 Python 预编译包供安装，需要 **Python 3.10～Python 3.14** 。
 
 安装命令如下：
 
@@ -12,7 +12,7 @@ VQNet python包安装
 
     pip install pyvqnet --upgrade
 
-对于Windows, Linux系统, pyvqnet在安装时通过 pip 自动安装基于 CUDA 12.6 的 NVIDIA 运行时库（版本由 ``pyvqnet`` 的安装依赖声明指定），以支持经典神经网络计算加速。
+对于 Windows、Linux 系统，pyvqnet 在安装时通过 pip 自动安装基于 CUDA 12.6 的 NVIDIA 运行时库（版本由 ``pyvqnet`` 的安装依赖声明指定），以支持经典神经网络计算加速。
 软件包编译时针对以下 CUDA 架构进行了优化：
 **sm_80** (NVIDIA A100, A30 系列数据中心 GPU) 和 **sm_86** (NVIDIA GeForce RTX 30 系列消费级 GPU)，请确保使用支持上述架构的 GPU，否则程序可能无法正常运行。
 

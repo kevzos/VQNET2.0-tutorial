@@ -50,7 +50,7 @@ CPU下模型训练
 GPU下模型训练
 =================================
 
-您需要安装linux版本下的pyvqnet才能使用GPU。需要保证数据QTensor以及Module均在GPU上。可使用 `toGPU` 转移数据或者 `gpu` 创建副本,或者在数据创建函数中使用device指定。
+您需要安装 Linux 版本下的 pyvqnet 才能使用 GPU。需要保证数据 QTensor 以及 Module 均在 GPU 上。可使用 `toGPU` 转移数据或者 `gpu` 创建副本,或者在数据创建函数中使用device指定。
 
 请参考以下例子:
 
@@ -2152,7 +2152,7 @@ SDPA
 
     .. note::
 
-            请注意,跟pytorch等框架不同的是,以下loss函数的前向函数中,第一个参数为标签,第二个参数为预测值。
+            请注意,跟 PyTorch 等框架不同的是,以下loss函数的前向函数中,第一个参数为标签,第二个参数为预测值。
 
 MeanSquaredError
 =================================
@@ -2185,7 +2185,7 @@ MeanSquaredError
 
     .. note::
 
-            请注意,跟pytorch等框架不同的是,以下MeanSquaredError函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
+            请注意,跟 PyTorch 等框架不同的是,以下MeanSquaredError函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
 
     Example::
 
@@ -2235,7 +2235,7 @@ BinaryCrossEntropy
 
     .. note::
 
-            请注意,跟pytorch等框架不同的是,BinaryCrossEntropy函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
+            请注意,跟 PyTorch 等框架不同的是,BinaryCrossEntropy函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
 
     Example::
 
@@ -2275,7 +2275,7 @@ CategoricalCrossEntropy
 
     .. note::
 
-            请注意,跟pytorch等框架不同的是,CategoricalCrossEntropy函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
+            请注意,跟 PyTorch 等框架不同的是,CategoricalCrossEntropy函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
 
     Example::
 
@@ -2316,7 +2316,7 @@ SoftmaxCrossEntropy
 
     .. note::
 
-            请注意,跟pytorch等框架不同的是,SoftmaxCrossEntropy函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
+            请注意,跟 PyTorch 等框架不同的是,SoftmaxCrossEntropy函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
 
     Example::
 
@@ -2362,7 +2362,7 @@ NLL_Loss
 
     .. note::
 
-            请注意,跟pytorch等框架不同的是,NLL_Loss函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
+            请注意,跟 PyTorch 等框架不同的是,NLL_Loss函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
 
     Example::
 
@@ -2412,7 +2412,7 @@ CrossEntropyLoss
 
     .. note::
 
-            请注意,跟pytorch等框架不同的是,CrossEntropyLoss函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
+            请注意,跟 PyTorch 等框架不同的是,CrossEntropyLoss函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
 
     Example::
 
@@ -3856,21 +3856,21 @@ auc_calculate
 
 
 
-兼容triton
+兼容 Triton
 *********************************************************
 
-`triton <https://triton-lang.org/main/index.html>`_  是一种用于编写高效深度学习GPU核函数的语言和编译器。
-用户用Python编写类似NumPy的代码，然后Triton将其编译为高效的GPU代码（类似CUDA但更高级）。
-triton依赖于pytorch的部分接口，VQNet实现了类似pytorch的接口，使得可以接入triton编写的代码进行模型前传反传功能。
+`Triton <https://triton-lang.org/main/index.html>`_ 是一种用于编写高效深度学习 GPU 核函数的语言和编译器。
+用户用 Python 编写类似 NumPy 的代码，然后 Triton 将其编译为高效的 GPU 代码（类似 CUDA 但更高级）。
+Triton 依赖于 PyTorch 的部分接口，VQNet 实现了类似 PyTorch 的接口，使得可以接入 Triton 编写的代码进行模型前传反传功能。
 
-安装triton:
+安装 Triton:
 
 .. code-block::
 
     pip install triton
 
-以下示例修改于triton官方示例： `layer-norm <https://triton-lang.org/main/getting-started/tutorials/05-layer-norm.html>`_ 。
-该示例需要有GPU的Linux上运行，同时需要安装trito 和 pytorch(对比计算正确性时候使用）：
+以下示例修改于 Triton 官方示例： `layer-norm <https://triton-lang.org/main/getting-started/tutorials/05-layer-norm.html>`_ 。
+该示例需要在有 GPU 的 Linux 上运行，同时需要安装 Triton 和 PyTorch（对比计算正确性时候使用）：
 
 .. code-block::
 

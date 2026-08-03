@@ -217,7 +217,7 @@ QuantumBatchAsyncQcloudLayer
 
     .. note::
 
-        qcloud_token 为您到 https://qcloud.originqc.com.cn/ 中申请的api token。
+        qcloud_token 为您到 https://qcloud.originqc.com.cn/ 中申请的 API token。
         origin_qprog_func 需要返回pyqpanda3.core.QProg类型的数据,如果没有设置测量的观测量pauli_str_dict,需要保证该QProg中已经插入了measure。
         origin_qprog_func 的形式必须按照如下:
 
@@ -612,7 +612,7 @@ QLinear 实现了一种量子全连接算法。首先将数据编码到量子态
 
     :param input_channels: `int` - 输入通道数。
     :param output_channels: `int` - 输出通道数。
-    :param machine: `str` - 使用的虚拟机,默认使用CPU模拟。
+    :param machine: `str` - 使用的虚拟机,默认使用 CPU 模拟。
     :return: 量子全连接层。
 
     Example::
@@ -661,7 +661,7 @@ Qconv是一种量子卷积算法接口。
     :param stride: `tuple` - 步长,默认为（1,1）。
     :param padding: `tuple` - 填充,默认为（0,0）。
     :param kernel_initializer: `callable` - 默认为正态分布。
-    :param machine: `str` - 使用的虚拟机,默认使用CPU模拟。
+    :param machine: `str` - 使用的虚拟机,默认使用 CPU 模拟。
     :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
     :param name: 这个模块的名字, 默认为""。
 
@@ -1348,7 +1348,7 @@ expval
     如果观测值是 :math:`0.7Z\otimes X\otimes I+0.2I\otimes Z\otimes I`,
     那么 Hamiltonian dict 将是 ``{{'Z0, X1':0.7} ,{'Z1':0.2}}`` 。
 
-    expval api现在支持pyqpanda3 的模拟器 。
+    expval API 现在支持pyqpanda3 的模拟器 。
 
     :param machine: 由pyQPanda创建的量子虚拟机。
     :param prog: pyQPanda创建的量子程序。
@@ -1385,7 +1385,7 @@ QuantumMeasure
 
     计算量子线路测量。返回通过蒙特卡罗方法获得的测量结果。
 
-    QuantumMeasure api现在只支持QPanda ``CPUQVM`` 或 ``QCloud`` 。
+    QuantumMeasure API 现在只支持QPanda ``CPUQVM`` 或 ``QCloud`` 。
 
 
 
@@ -1430,7 +1430,7 @@ ProbsMeasure
 	计算线路概率测量。
 
 
-    ProbsMeasure api现在只支持pyQPanda ``CPUQVM`` 或 ``QCloud`` 。
+    ProbsMeasure API 现在只支持pyQPanda ``CPUQVM`` 或 ``QCloud`` 。
 
     :param measure_qubits: 列表包含测量比特索引
     :param prog: qpanda创建的量子程序。

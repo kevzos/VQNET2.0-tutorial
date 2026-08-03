@@ -15,7 +15,7 @@ VQNet使用torch进行底层计算
 
         基于 torch 后端的 ``rx``, ``ry``, ``rz``, ``cnot`` 等变分量子计算接口在 torch 2.11.0 + CUDA 12.6 环境下编译了高性能 CUDA kernel。当检测到 torch 与 CUDA 版本匹配时会自动启用该实现；若不匹配，则自动回退为 native torch 实现。
 
-自2.15.0版本开始,本软件支持使用 `pytorch` 作为计算后端进行底层运算,可接入基于pytorch的模型、代码、第三方库进行二次开发。
+自2.15.0版本开始,本软件支持使用 `pytorch` 作为计算后端进行底层运算,可接入基于 PyTorch 的模型、代码、第三方库进行二次开发。
 
 
     .. important::
@@ -80,7 +80,7 @@ get_backend
 
     如果 t 为 None,则获取当前计算后端。
     如果 t 是 QTensor,则根据其 ``data`` 属性返回创建 QTensor 时使用的计算后端。
-    如果 "torch" 是使用的后端,则返回 pyvqnet torch api 后端。
+    如果 "torch" 是使用的后端,则返回 pyvqnet torch API 后端。
     如果 "pyvqnet" 是使用的后端, 则简单地返回“pyvqnet”。
     
     :param t: 当前张量,默认值: None。
@@ -1738,7 +1738,7 @@ MeanSquaredError
 
     .. note::
 
-            请注意,跟pytorch等框架不同的是,以下MeanSquaredError函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
+            请注意,跟 PyTorch 等框架不同的是,以下MeanSquaredError函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
 
 
     Example::
@@ -1795,7 +1795,7 @@ BinaryCrossEntropy
 
     .. note::
 
-            请注意,跟pytorch等框架不同的是,BinaryCrossEntropy函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
+            请注意,跟 PyTorch 等框架不同的是,BinaryCrossEntropy函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
 
 
 
@@ -1838,7 +1838,7 @@ CategoricalCrossEntropy
 
     .. note::
 
-            请注意,跟pytorch等框架不同的是,CategoricalCrossEntropy函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
+            请注意,跟 PyTorch 等框架不同的是,CategoricalCrossEntropy函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
 
     .. warning::
 
@@ -1886,7 +1886,7 @@ SoftmaxCrossEntropy
 
     .. note::
 
-            请注意,跟pytorch等框架不同的是,SoftmaxCrossEntropy函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
+            请注意,跟 PyTorch 等框架不同的是,SoftmaxCrossEntropy函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
 
     .. warning::
 
@@ -1939,7 +1939,7 @@ NLL_Loss
 
     .. note::
 
-        请注意,跟pytorch等框架不同的是,NLL_Loss函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
+        请注意,跟 PyTorch 等框架不同的是,NLL_Loss函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
 
     .. warning::
 
@@ -1994,7 +1994,7 @@ CrossEntropyLoss
 
     .. note::
 
-            请注意,跟pytorch等框架不同的是,CrossEntropyLoss函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
+            请注意,跟 PyTorch 等框架不同的是,CrossEntropyLoss函数的前向函数中,第一个参数为目标值,第二个参数为预测值。
 
     .. warning::
 
@@ -2575,7 +2575,7 @@ TorchQcloud3QuantumLayer
 
     .. note::
 
-        qcloud_token 为您到 https://qcloud.originqc.com.cn/ 中申请的api token。
+        qcloud_token 为您到 https://qcloud.originqc.com.cn/ 中申请的 API token。
         origin_qprog_func 需要返回pypqanda3.core.QProg类型的数据,如果没有设置测量观测量pauli_str_dict,需要保证该QProg中已经插入了measure。
         origin_qprog_func 的形式必须按照如下:
 
@@ -8638,9 +8638,9 @@ vqc_basisrotation
 
 .. note::
 
-    请参考 `torch分布式接口 <https://pytorch.org/docs/stable/distributed.html>`_  中启动分布式的方法启动。
-    当使用CPU上进行分布式,请使用 ``gloo`` 而不是 ``mpi`` 。
-    当使用GPU上进行分布式,请使用 ``nccl``。
+    请参考 `torch 分布式接口 <https://pytorch.org/docs/stable/distributed.html>`_  中启动分布式的方法启动。
+    当使用 CPU 上进行分布式,请使用 ``gloo`` 而不是 ``mpi`` 。
+    当使用 GPU 上进行分布式,请使用 ``nccl``。
 
     :ref:`vqnet_dist` 下VQNet自己实现的分布式接口不适用 ``torch`` 计算后端。
 

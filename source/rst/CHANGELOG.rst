@@ -63,7 +63,7 @@ Added
 - 增加bfloat16数据类型。
 - 增加异步的NCCL通信接口： ``nccl_async_all_gather``, ``nccl_async_all_reduce``, ``nccl_async_reduce``, ``nccl_async_broadcast``, ``nccl_async_send``, ``nccl_async_recv`` 。
 - 增加对最新本源量子芯片的支持，芯片ID为 ``WK_C180``
-- 增加 ``data_ptr`` 等接口，实验性增加对 `triton <https://triton-lang.org/main/index.html>`_ 的支持。
+- 增加 ``data_ptr`` 等接口，实验性增加对 `Triton <https://triton-lang.org/main/index.html>`_ 的支持。
 - 
 
 Changed
@@ -104,7 +104,7 @@ Changed
 - 增加 `QiskitLayer`, `CirqLayer` 接口;
 - 为 `QuantumBatchAsyncQcloudLayer` 层增加 `if_print_qcloud_log` 支持打印qcloud 日志;
 - 安装命令改为 ``pip install pyvqnet --upgrade``
-- 支持的python版本改为 `python3.10` , `python3.11` , `python3.12` ;
+- 支持的 Python 版本改为 `Python 3.10` , `Python 3.11` , `Python 3.12` ;
 - 修改指定mpicxx安装命令;
 
 Fixed
@@ -184,7 +184,7 @@ Changed
 - VQC_QuantumEmbedding接口修改
 - 安装本软件包时不再同时安装pyqpanda, 而是同时安装pyqpanda3.
 - VQC接口支持入参使用 `x[:,:2]`,原先只支持 `x[:,[2]]` 形式。
-- 本软件支持3.9,3.10,3.11版本python 不再支持python3.8
+- 本软件支持3.9,3.10,3.11版本 Python 不再支持 Python 3.8
 
 Fixed
 ===================
@@ -233,7 +233,7 @@ Added
 Changed
 ===================
 - 移除了xtensor部分。
-- api文档进行部分修改。区分了基于自动微分的量子机器学习示例以及基于qpanda的机器学习示例,区别基于自动微分的量子机器学习接口以及基于qpanda的机器学习示例接口。
+- API 文档进行部分修改。区分了基于自动微分的量子机器学习示例以及基于qpanda的机器学习示例,区别基于自动微分的量子机器学习接口以及基于qpanda的机器学习示例接口。
 - `matmul` 支持1d@1d,2d@1d,1d@2d。
 - 增加了一些量子计算层别名: `QpandaQCircuitVQCLayer`` = `QuantumLayer` , `QpandaQCircuitVQCLayerLite` = `QuantumLayerV2`, `QpandaQProgVQCLayer` = `QuantumLayerV3`.
 
@@ -306,7 +306,7 @@ Added
 ===================
 
 - 添加新的 `QNG` (量子自然梯度)API 和演示。
-- 添加量子电路优化,例如 `wrapper_single_qubit_op_fuse` , `wrapper_commute_controlled` , `wrapper_merge_rotations` api 和 demo。
+- 添加量子电路优化,例如 `wrapper_single_qubit_op_fuse` , `wrapper_commute_controlled` , `wrapper_merge_rotations` API 和 demo。
 - 添加 `CY`, `SparseHamiltonian` , `HermitianExpval` 。
 - 添加 `is_csr`、 `is_dense`、 `dense_to_csr` 、 `csr_to_dense` 。
 - 添加 `QuantumBatchAsyncQcloudLayer` 支持pyqpanda的QCloud真实芯片计算, `expval_qcloud`。
@@ -319,7 +319,7 @@ Changed
 - 将 `VQC_CSWAP` 电路重构为 `CSWAP`。
 - 移除旧的 QNG 文档。
 - 从 `pyvqnet.qnn.vqc` 中移除函数和类无用的 `num_wires` 参数。
-- 重构 `MeasureAll`, `Probability` api。
+- 重构 `MeasureAll`, `Probability` API。
 - 为 `QuantumMeasure` 增加qtype参数。
 
 Fixed

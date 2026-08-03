@@ -6107,7 +6107,7 @@ QNSPSAOptimizer
 
   RY(data) → [RY(param) → CRZ(param) → RY(param) → CRZ(param)] × L
 
-每层包含 40 个参数（4 组 × 10 qubit），参数总数 400。batch size 测试范围 1～1024。各框架 trials 次数：VQNet / TQ / DQ 为 20 次，PL / MQ 为 2 次（后两者在批量数据运行下较慢，仅允许2次节约时间）。
+每层包含 40 个参数（4 组 × 10 qubit），参数总数 400。batch size 测试范围 1～1024。各框架 trials 次数：VQNet / TQ / DQ 为 20 次，PL / MQ 为 2 次（后两者在批量数据运行下较慢，仅运行 2 次节约时间）。
 
 .. image:: ./images/grad_benchmarks_10q_ry_crz.png
    :width: 600 px

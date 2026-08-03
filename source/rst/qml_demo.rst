@@ -3700,7 +3700,7 @@ QUnet主要是用于解决图像分割的技术。
 1.3.1 环境准备
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-环境采用python3.10,建议使用conda进行环境配置,自带numpy,scipy,matplotlib,sklearn等工具包,方便使用,如果采用的是python环境,需要安装相关的包
+环境采用 Python 3.10，建议使用 conda 进行环境配置，自带 numpy、scipy、matplotlib、sklearn 等工具包，方便使用，如果采用的是 Python 环境，需要安装相关的包
 还需要准备如下环境pyvqnet
 
 1.3.2 数据准备

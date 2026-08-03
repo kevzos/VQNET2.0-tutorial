@@ -3391,8 +3391,8 @@ QMLP模型示例
             return self.q_fourier_series(x)
 
 
-训练代码,我们此处使用GPU进行训练,我们需要将模型 `Model` 以及输入的 `data` , `label` 使用 ``toGPU`` 或者指定 `device` 的方式将数据放到GPU上。
-其他接口与使用CPU进行训练的代码没有区别。
+训练代码,我们此处使用 GPU 进行训练,我们需要将模型 `Model` 以及输入的 `data` , `label` 使用 ``toGPU`` 或者指定 `device` 的方式将数据放到 GPU 上。
+其他接口与使用 CPU 进行训练的代码没有区别。
 
 .. code-block::
 

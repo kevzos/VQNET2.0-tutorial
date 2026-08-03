@@ -36,7 +36,7 @@ MPI为CPU间通信的常用库, **VQNet中CPU的分布式计算功能则基于MP
 
 |
 
-为mpi4py与python版本之间不兼容的问题, 可以通过以下方法解决
+为mpi4py与 Python 版本之间不兼容的问题, 可以通过以下方法解决
 
 .. code-block::
 
@@ -58,7 +58,7 @@ NCCL为GPU间通信的常用库, **VQNet中GPU的分布式计算功能则基于N
 节点间通信环境部署
 ^^^^^^^^^^^^^^^^^^^^^^
 
-在多节点上实现分布式计算,首先 **需要保证多节点上mpich环境的一致,python环境一致** ,其次,需要设置 **节点间的免密通信** 。
+在多节点上实现分布式计算,首先 **需要保证多节点上mpich环境的一致,Python 环境一致** ,其次,需要设置 **节点间的免密通信** 。
 
 假设需要设置node0(主节点)、node1、node2三个节点的免密通信。
 
@@ -1170,7 +1170,7 @@ ZeroModelInitial
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. py:class:: pyvqnet.distributed.ZeroModelInitial(args,model,optimizer)
     
-    Zero1 api接口, 目前仅用于linux平台下基于GPU并行计算。
+    Zero1 API 接口, 目前仅用于 Linux 平台下基于 GPU 并行计算。
 
     :param args: 参数字典。参见示例。
     :param model: 输入模型。
