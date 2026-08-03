@@ -8642,7 +8642,7 @@ CommController
 -------------------------
 
 .. py:class:: pyvqnet.distributed.ControlComm.CommController(backend,rank=None,world_size=None)
-   :no-index:
+   :noindex:
 
     CommController用于控制在cpu、gpu下数据通信的控制器, 通过设置参数 `backend` 来生成cpu(gloo)、gpu(nccl)的控制器。
     这个类会调用 backend,rank,world_size 初始化 ``torch.distributed.init_process_group(backend,rank,world_size)``
@@ -8697,7 +8697,7 @@ CommController
         #python test.py
 
     .. py:method:: getRank()
-        :no-index:
+        :noindex:
 
         用于获得当前进程的进程号。
 
@@ -8738,7 +8738,7 @@ CommController
 
 
     .. py:method:: getSize()
-        :no-index:
+        :noindex:
 
         用于获得总共启动的进程数。
 
@@ -8780,7 +8780,7 @@ CommController
 
 
     .. py:method:: getLocalRank()
-        :no-index:
+        :noindex:
 
         在每个进程中通过 ``os.environ['LOCAL_RANK'] = rank`` 获取每个机器的局部进程号。
         需要事先对环境变量 `LOCAL_RANK` 进行设置。
@@ -8821,7 +8821,7 @@ CommController
             #python test.py
  
     .. py:method:: split_groups(rankL)
-        :no-index:
+        :noindex:
 
         根据入参设置的进程号列表用于划分多个通信组。
 
@@ -8868,7 +8868,7 @@ CommController
                     p.join()
             #python test.py
     .. py:method:: barrier()
-        :no-index:
+        :noindex:
 
         不同进程的同步。
 
@@ -8907,7 +8907,7 @@ CommController
             #python test.py
 
     .. py:method:: allreduce(tensor, c_op = "avg")
-        :no-index:
+        :noindex:
 
         支持对数据作allreduce通信。
 
@@ -8954,7 +8954,7 @@ CommController
 
  
     .. py:method:: reduce(tensor, root = 0, c_op = "avg")
-        :no-index:
+        :noindex:
 
         支持对数据作reduce通信。
 
@@ -9001,7 +9001,7 @@ CommController
             #python test.py
  
     .. py:method:: broadcast(tensor, root = 0)
-        :no-index:
+        :noindex:
 
         将指定进程root上的数据广播到所有进程上。
 
@@ -9048,7 +9048,7 @@ CommController
 
  
     .. py:method:: allgather(tensor)
-        :no-index:
+        :noindex:
 
         将所有进程上数据allgather到一起。本接口只支持nccl后端。
 
@@ -9092,7 +9092,7 @@ CommController
             #python test.py
 
     .. py:method:: send(tensor, dest)
-        :no-index:
+        :noindex:
 
         p2p通信接口。
 
@@ -9140,7 +9140,7 @@ CommController
             #python test.py
  
     .. py:method:: recv(tensor, source)
-        :no-index:
+        :noindex:
 
         p2p通信接口。
 
@@ -9188,7 +9188,7 @@ CommController
             #python test.py
 
     .. py:method:: allreduce_group(tensor, c_op = "avg", group = None)
-        :no-index:
+        :noindex:
 
         组内allreduce通信接口。
 
@@ -9243,7 +9243,7 @@ CommController
             #python test.py
 
     .. py:method:: reduce_group(tensor, root = 0, c_op = "avg", group = None)
-        :no-index:
+        :noindex:
 
         组内reduce通信接口。
 
@@ -9296,7 +9296,7 @@ CommController
 
  
     .. py:method:: broadcast_group(tensor, root = 0, group = None)
-        :no-index:
+        :noindex:
 
         组内broadcast通信接口。
 
@@ -9350,7 +9350,7 @@ CommController
             #python test.py
 
     .. py:method:: allgather_group(tensor, group = None)
-        :no-index:
+        :noindex:
 
         组内allgather通信接口,仅支持 `nccl` 后端。
 
