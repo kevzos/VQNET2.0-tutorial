@@ -8632,238 +8632,29 @@ vqc_basisrotation
 分布式接口
 =================================================
 
-分布式相关功能,当使用 ``torch`` 计算后端时候,封装使用了torch的 ``torch.distributed`` 的接口,
+分布式相关功能,当使用 ``torch`` 计算后端时候,封装使用了torch的 ``torch.distributed`` 的功能, 同样使用 CommController。
 
 
 
-.. note::
 
-    请参考 `torch 分布式接口 <https://pytorch.org/docs/stable/distributed.html>`_  中启动分布式的方法启动。
-    当使用 CPU 上进行分布式,请使用 ``gloo`` 而不是 ``mpi`` 。
-    当使用 GPU 上进行分布式,请使用 ``nccl``。
-
-    :ref:`vqnet_dist` 下VQNet自己实现的分布式接口不适用 ``torch`` 计算后端。
 
 CommController
 -------------------------
 
-
-大模型微调损失函数 (``pyvqnet.torch.trl``)
-==========================================================
-
-以下损失函数用于基于强化学习/偏好的大模型微调(RLHF/DPO/PPO/GRPO/SFT)。
-
-sft_loss
------------------------------
-
-.. py:function:: pyvqnet.torch.trl.sft_loss(model, input_ids, labels, ignore_index=-100)
-   :no-index:
-
-    监督式微调(SFT)交叉熵损失。
-
-    :param model: 神经网络模块,前向传播返回 logits (B, L, V)。
-    :param input_ids: 输入 token ID 序列 (B, L)。
-    :param labels: 目标 token ID 标签 (B, L)。
-    :param ignore_index: 忽略的标签索引,默认为 -100。
-    :return: SFT 损失值。
-
-    Example::
-
-        import torch
-        torch.manual_seed(42)
-        import torch.nn as nn
-        from pyvqnet.torch.trl import sft_loss
-
-        class TinyLM(nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.embed = nn.Embedding(8, 8)
-                self.head = nn.Linear(8, 8)
-            def forward(self, x):
-                return self.head(self.embed(x))
-
-        loss = sft_loss(TinyLM(), torch.tensor([[1,2,3,4]]), torch.tensor([[2,3,4,5]]))
-        print(loss.item())
-        # 2.1718
-
-dpo_loss
------------------------------
-
-.. py:function:: pyvqnet.torch.trl.dpo_loss(policy_model, ref_model, chosen_ids, rejected_ids, chosen_mask, rejected_mask, beta=0.1)
-   :no-index:
-
-    DPO (Direct Preference Optimization) 标准 sigmoid 偏好损失。通过最大化偏好与非偏好序列之间的隐式奖励差异进行优化。
-
-    :param policy_model: 策略网络,前向传播返回 logits (B, L, V)。
-    :param ref_model: 参考网络,前向传播返回 logits (B, L, V)。
-    :param chosen_ids: 偏好序列的 token ID (B, L_chosen)。
-    :param rejected_ids: 非偏好序列的 token ID (B, L_rejected)。
-    :param chosen_mask: 偏好序列的注意力掩码。
-    :param rejected_mask: 非偏好序列的注意力掩码。
-    :param beta: KL 正则化系数,默认为 0.1。
-    :return: DPO 损失值。
-
-    Example::
-
-        import torch
-        torch.manual_seed(42)
-        import torch.nn as nn
-        from pyvqnet.torch.trl import dpo_loss
-
-        class TinyLM(nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.embed = nn.Embedding(8, 8)
-                self.head = nn.Linear(8, 8)
-            def forward(self, x):
-                return self.head(self.embed(x))
-
-        policy, ref = TinyLM(), TinyLM()
-        loss = dpo_loss(policy, ref,
-            torch.tensor([[0,1,2,3,4,5]]), torch.tensor([[5,4,3,2,1,0]]),
-            torch.tensor([[1,1,1,1,1,1]]), torch.tensor([[1,1,1,1,1,1]]),
-            beta=0.1)
-        print(loss.item())
-        # 0.7008
-
-ppo_loss
------------------------------
-
-.. py:function:: pyvqnet.torch.trl.ppo_loss(policy_model, value_model, ref_model, query_responses, context_length, response_mask, old_logprobs, old_values, advantages, returns, cliprange=0.2, cliprange_value=0.2, vf_coef=1.0, temperature=1.0)
-   :no-index:
-
-    PPO (Proximal Policy Optimization) 策略与价值函数联合损失。包含裁剪的替代策略损失和价值函数损失。
-
-    :param policy_model: 策略网络,前向传播返回 logits。
-    :param value_model: 价值网络,前向传播返回标量值。
-    :param ref_model: 参考网络,用于 KL 惩罚。
-    :param query_responses: 查询与响应拼接的 token ID 序列 (B, L)。
-    :param context_length: 查询部分的长度,用于区分查询与响应。
-    :param response_mask: 响应部分掩码 (B, L),1=响应 token。
-    :param old_logprobs: 旧策略下的对数概率。
-    :param old_values: 旧价值网络的估计值。
-    :param advantages: 优势函数估计。
-    :param returns: 折扣回报。
-    :param cliprange: 策略裁剪范围,默认为 0.2。
-    :param cliprange_value: 价值函数裁剪范围,默认为 0.2。
-    :param vf_coef: 价值函数损失系数,默认为 1.0。
-    :param temperature: 采样温度,默认为 1.0。
-    :return: PPO 损失值。
-
-    Example::
-
-        import torch
-        torch.manual_seed(42)
-        import torch.nn as nn
-        from pyvqnet.torch.trl import ppo_loss
-
-        class TinyLM(nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.embed = nn.Embedding(8, 8)
-                self.head = nn.Linear(8, 8)
-            def forward(self, x):
-                return self.head(self.embed(x))
-
-        class TinyValue(nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.embed = nn.Embedding(8, 8)
-                self.head = nn.Linear(8, 1)
-            def forward(self, x):
-                return self.head(self.embed(x)).squeeze(-1)
-
-        loss = ppo_loss(TinyLM(), TinyValue(), TinyLM(),
-            torch.tensor([[0,1,2,3,4,5,6,7]]), 2,
-            torch.ones(1,6), torch.zeros(1,6), torch.zeros(1,6),
-            torch.ones(1,6), torch.ones(1,6))
-        print(loss.item())
-        # 1.3638
-
-grpo_loss
------------------------------
-
-.. py:function:: pyvqnet.torch.trl.grpo_loss(policy_model, ref_model, input_ids, completion_mask, old_per_token_logps, advantages, beta=0.0, epsilon=0.2, epsilon_low=None, epsilon_high=None)
-   :no-index:
-
-    GRPO (Group Relative Policy Optimization) 裁剪替代损失。将多个补全结果分组计算优势。
-
-    :param policy_model: 策略网络,前向传播返回 logits。
-    :param ref_model: 参考网络或 None。
-    :param input_ids: 提示与补全拼接的 token ID 序列 (B*G, L),其中 G 为组大小。
-    :param completion_mask: 补全部分掩码 (B*G, L),1=补全 token,0=提示/填充。
-    :param old_per_token_logps: 旧策略下的逐 token 对数概率 (B*G, T)。
-    :param advantages: 组内的优势函数估计。
-    :param beta: KL 惩罚系数,默认为 0.0。
-    :param epsilon: PPO 裁剪范围,默认为 0.2。
-    :param epsilon_low: 裁剪下限,默认为 None(使用 epsilon)。
-    :param epsilon_high: 裁剪上限,默认为 None(使用 epsilon)。
-    :return: GRPO 损失值。
-
-    Example::
-
-        import torch
-        torch.manual_seed(42)
-        import torch.nn as nn
-        from pyvqnet.torch.trl import grpo_loss
-
-        class TinyLM(nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.embed = nn.Embedding(8, 8)
-                self.head = nn.Linear(8, 8)
-            def forward(self, x):
-                return self.head(self.embed(x))
-
-        loss = grpo_loss(TinyLM(), TinyLM(),
-            torch.tensor([[0,1,2,3,4],[5,6,7,0,1]]),
-            torch.tensor([[0,0,1,1,1],[0,1,1,1,1]]),
-            torch.zeros(2,3), torch.tensor([1.0, -0.5]),
-            beta=0.0, epsilon=0.2)
-        print(loss.item())
-        # 0.1405
-
-reward_loss
------------------------------
-
-.. py:function:: pyvqnet.torch.trl.reward_loss(model, chosen_ids, rejected_ids, margin=None, center_coef=None)
-   :no-index:
-
-    奖励模型对比损失。通过最大化偏好与非偏好序列之间的奖励差异训练奖励模型。
-
-    :param model: 奖励模型,前向传播返回标量奖励值。
-    :param chosen_ids: 偏好序列的 token ID。
-    :param rejected_ids: 非偏好序列的 token ID。
-    :param margin: 对比间隔,默认为 None。
-    :param center_coef: 奖励中心化系数,默认为 None。
-    :return: 奖励模型损失值。
-
-    Example::
-
-        import torch
-        torch.manual_seed(42)
-        import torch.nn as nn
-        from pyvqnet.torch.trl import reward_loss
-
-        class TinyLM(nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.embed = nn.Embedding(8, 8)
-                self.head = nn.Linear(8, 8)
-            def forward(self, x):
-                return self.head(self.embed(x))
-
-        loss = reward_loss(TinyLM(), torch.tensor([[1,2,3]]), torch.tensor([[3,2,1]]))
-        print(loss.item())
-        # 0.7172
-
-.. py:class:: pyvqnet.distributed.ControlComm.CommController(backend,rank=None,world_size=None)
-   :no-index:
 .. py:class:: pyvqnet.distributed.ControlComm.CommController(backend,rank=None,world_size=None)
    :no-index:
 
     CommController用于控制在cpu、gpu下数据通信的控制器, 通过设置参数 `backend` 来生成cpu(gloo)、gpu(nccl)的控制器。
     这个类会调用 backend,rank,world_size 初始化 ``torch.distributed.init_process_group(backend,rank,world_size)``
+
+
+    .. note::
+
+        请参考 `torch 分布式接口 <https://pytorch.org/docs/stable/distributed.html>`_  中启动分布式的方法启动。
+        当使用 CPU 上进行分布式,请使用 ``gloo`` 而不是 ``mpi`` 配置backend。
+        当使用 GPU 上进行分布式,请使用 ``nccl`` 启动  配置backend。
+
+    :ref:`vqnet_dist` 下VQNet自己实现的分布式接口不适用 ``torch`` 计算后端。
 
     :param backend: 用于生成cpu或者gpu的数据通信控制器,'gloo' 或 'nccl'。
     :param rank: 当前程序所在的进程号。
