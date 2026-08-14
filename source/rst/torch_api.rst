@@ -5425,6 +5425,10 @@ TNQModule
 
     .. note::
 
+        开启 ``use_jit`` 后，模型会使用 ``jax`` 的 ``jit`` 进行即时编译，首次运行将会进行编译，会耗时较长。
+
+    .. note::
+
         该类以及其派生类仅适用于 ``pyvqnet.backends.set_backend("torch")`` , 不要与默认 ``pyvqnet.nn`` 下的 ``Module`` 混用。
 
     Example::
