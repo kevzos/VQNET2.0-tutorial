@@ -297,7 +297,7 @@ TorchModuleList
 TorchParameterList
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.nn.torch.TorchParameterList(value=None)
+.. py:class:: pyvqnet.nn.torch.TorchParameterList(values=None)
 
     该模块用于将子 ``pyvqnet.nn.Parameter`` 保存在列表中。 TorchParameterList 可以像普通的 Python 列表一样被索引, 它包含的Parameter的内部参数等可以被保存起来。
 
@@ -579,7 +579,7 @@ ConvT2D
 AvgPool1D
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.nn.torch.AvgPool1D(kernel, stride, padding=0, name = "")
+.. py:class:: pyvqnet.nn.torch.AvgPool1D(kernel, stride, padding=0, dtype=None, name="")
 
     对一维输入进行平均池化。输入具有形状(batch_size, input_channels, in_height)。
 
@@ -619,7 +619,7 @@ AvgPool1D
 MaxPool1D
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.nn.torch.MaxPool1D(kernel, stride, padding=0,name="")
+.. py:class:: pyvqnet.nn.torch.MaxPool1D(kernel, stride, padding=0, dtype=None, name="")
 
     对一维输入进行最大池化。输入具有形状(batch_size, input_channels, in_height)。
 
@@ -659,7 +659,7 @@ MaxPool1D
 AvgPool2D
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.nn.torch.AvgPool2D( kernel, stride, padding=(0,0),name="")
+.. py:class:: pyvqnet.nn.torch.AvgPool2D(kernel, stride, padding=(0,0), dtype=None, name="")
 
     对二维输入进行平均池化。输入具有形状(batch_size, input_channels, height, width)。
 
@@ -699,7 +699,7 @@ AvgPool2D
 MaxPool2D
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.nn.torch.MaxPool2D(kernel, stride, padding=(0,0),name="")
+.. py:class:: pyvqnet.nn.torch.MaxPool2D(kernel, stride, padding=(0,0), dtype=None, name="")
 
     对二维输入进行最大池化。输入具有形状(batch_size, input_channels, height, width)。
 
@@ -922,7 +922,7 @@ LayerNorm2d
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.nn.torch.LayerNorm2d(norm_size:int, epsilon:float = 1e-5, affine=True, dtype=None, name="")
+.. py:class:: pyvqnet.nn.torch.LayerNorm2d(normalized_shape: Union[int, List[int], Tuple[int, ...]], epsilon:float=1e-5, affine=True, dtype=None, name="")
 
     在 4D 输入上进行层归一化。具体方式如论文所述:
     `Layer Normalization <https://arxiv.org/abs/1607.06450>`__。
@@ -930,7 +930,7 @@ LayerNorm2d
     .. math::
         y = \frac{x - \mathrm{E}[x]}{ \sqrt{\mathrm{Var}[x] + \epsilon}} * \gamma + \beta
 
-    平均值和标准差是在除去第一个维度以外的剩余维度数据上计算的。对于像 (B,C,H,W) 这样的输入, ``norm_size`` 应该等于 C * H * W。
+    平均值和标准差是在除去第一个维度以外的剩余维度数据上计算的。对于像 (B,C,H,W) 这样的输入, ``normalized_shape`` 应该等于 C * H * W。
 
     .. warning::
 
@@ -939,7 +939,7 @@ LayerNorm2d
         该类的 ``_buffers`` 中的数据为 ``torch.Tensor`` 类型。
         该类的 ``_parmeters`` 中的数据为 ``torch.nn.Parameter`` 类型。
 
-    :param norm_size: `float` - 归一化大小,应该等于 C * H * W。
+    :param normalized_shape: `Union[int, List[int], Tuple[int, ...]]` - 归一化大小,应该等于 C * H * W。
     :param epsilon: `float` - 数值稳定性常数,默认为 1e-5。
     :param affine: `bool` - 一个布尔值,当设置为 ``True`` 时,此模块具有可学习的每通道仿射参数,初始化为 1(用于权重)和 0(用于偏差)。默认值:``True``。
     :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
@@ -967,7 +967,7 @@ LayerNorm1d
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.nn.torch.LayerNorm1d(norm_size:int, epsilon:float = 1e-5, affine=True, dtype=None, name="")
+.. py:class:: pyvqnet.nn.torch.LayerNorm1d(normalized_shape: Union[int, List[int], Tuple[int, ...]], epsilon:float=1e-5, affine=True, dtype=None, name="")
     
     在 2D 输入上进行层归一化。具体方式如论文所述:
     `Layer Normalization <https://arxiv.org/abs/1607.06450>`__。
@@ -975,7 +975,7 @@ LayerNorm1d
     .. math::
         y = \frac{x - \mathrm{E}[x]}{ \sqrt{\mathrm{Var}[x] + \epsilon}} * \gamma + \beta
 
-    均值和标准差是在最后一个维度大小上计算的,其中“norm_size” 是 ``norm_size`` 的值。
+    均值和标准差是在最后一个维度大小上计算的,其中 ``normalized_shape`` 是归一化大小。
 
 
     .. warning::
@@ -985,7 +985,7 @@ LayerNorm1d
         该类的 ``_buffers`` 中的数据为 ``torch.Tensor`` 类型。
         该类的 ``_parmeters`` 中的数据为 ``torch.nn.Parameter`` 类型。
 
-    :param norm_size: `float` - 归一化大小,应该等于最后一维大小。
+    :param normalized_shape: `Union[int, List[int], Tuple[int, ...]]` - 归一化大小,应该等于最后一维大小。
     :param epsilon: `float` - 数值稳定性常数,默认为 1e-5。
     :param affine: `bool` - 一个布尔值,当设置为 ``True`` 时,此模块具有可学习的每通道仿射参数,初始化为 1(用于权重)和 0(用于偏差)。默认值:``True``。
     :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
@@ -1055,7 +1055,7 @@ Dropout
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.nn.torch.Dropout(dropout_rate = 0.5)
+.. py:class:: pyvqnet.nn.torch.Dropout(dropout_rate: float = 0.5, name: str = "")
 
     Dropout 模块。dropout 模块将一些单元的输出随机设置为零,同时根据给定的 dropout_rate 概率升级其他单元。
 
@@ -1180,7 +1180,7 @@ Pixel_Unshuffle
 GRU
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.nn.torch.GRU(input_size, hidden_size, num_layers=1, nonlinearity='tanh', batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
+.. py:class:: pyvqnet.nn.torch.GRU(input_size, hidden_size, num_layers=1, batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
 
 
     门控循环单元 (GRU) 模块。支持多层堆叠,双向配置。单层单向GRU的计算公式如下:
@@ -2873,7 +2873,7 @@ QMachine
 I
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.I(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.I(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个I逻辑门类 。
 
@@ -2882,7 +2882,6 @@ I
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params: 是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -2906,7 +2905,7 @@ I
 Hadamard
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.Hadamard(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.Hadamard(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个Hadamard逻辑门类 。
 
@@ -2915,7 +2914,6 @@ Hadamard
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -2939,7 +2937,7 @@ Hadamard
 T
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.T(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.T(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个T逻辑门类 。
 
@@ -2948,7 +2946,6 @@ T
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -2973,7 +2970,7 @@ T
 S
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.S(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.S(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个S逻辑门类 。
 
@@ -2982,7 +2979,6 @@ S
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3006,7 +3002,7 @@ S
 PauliX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.PauliX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.PauliX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个PauliX逻辑门类 。
 
@@ -3016,7 +3012,6 @@ PauliX
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3040,7 +3035,7 @@ PauliX
 PauliY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.PauliY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.PauliY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个PauliY逻辑门类 。
 
@@ -3050,7 +3045,6 @@ PauliY
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3075,7 +3069,7 @@ PauliY
 PauliZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.PauliZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.PauliZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个PauliZ逻辑门类 。
 
@@ -3085,7 +3079,6 @@ PauliZ
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3110,7 +3103,7 @@ PauliZ
 X1
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.X1(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.X1(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个X1逻辑门类 。
 
@@ -3119,7 +3112,6 @@ X1
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3143,7 +3135,7 @@ X1
 RX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.RX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.RX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RX逻辑门类 。
 
@@ -3153,7 +3145,6 @@ RX
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3167,7 +3158,7 @@ RX
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = RX(has_params= True, trainable= True, wires=0)
+        layer = RX(trainable=True, wires=0)
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3178,7 +3169,7 @@ RX
 RY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.RY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.RY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RY逻辑门类 。
 
@@ -3187,7 +3178,6 @@ RY
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3201,7 +3191,7 @@ RY
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = RY(has_params= True, trainable= True, wires=0)
+        layer = RY(trainable=True, wires=0)
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3211,7 +3201,7 @@ RY
 RZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.RZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.RZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RZ逻辑门类 。
 
@@ -3220,7 +3210,6 @@ RZ
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3234,7 +3223,7 @@ RZ
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = RZ(has_params= True, trainable= True, wires=0)
+        layer = RZ(trainable=True, wires=0)
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3244,7 +3233,7 @@ RZ
 CRX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.CRX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.CRX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CRX逻辑门类 。
 
@@ -3253,7 +3242,6 @@ CRX
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3267,7 +3255,7 @@ CRX
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = CRX(has_params= True, trainable= True, wires=[0,2])
+        layer = CRX(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3277,7 +3265,7 @@ CRX
 CRY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.CRY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.CRY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CRY逻辑门类 。
 
@@ -3286,7 +3274,6 @@ CRY
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3300,7 +3287,7 @@ CRY
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = CRY(has_params= True, trainable= True, wires=[0,2])
+        layer = CRY(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3311,7 +3298,7 @@ CRZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.CRZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.CRZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CRZ逻辑门类 。
 
@@ -3320,7 +3307,6 @@ CRZ
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3334,7 +3320,7 @@ CRZ
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = CRZ(has_params= True, trainable= True, wires=[0,2])
+        layer = CRZ(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3345,7 +3331,7 @@ CRZ
 U1
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.U1(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.U1(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个U1逻辑门类 。
 
@@ -3354,7 +3340,6 @@ U1
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3368,7 +3353,7 @@ U1
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = U1(has_params= True, trainable= True, wires=0)
+        layer = U1(trainable=True, wires=0)
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3378,7 +3363,7 @@ U2
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.U2(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.U2(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个U2逻辑门类 。
 
@@ -3387,7 +3372,6 @@ U2
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3401,7 +3385,7 @@ U2
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = U2(has_params= True, trainable= True, wires=1)
+        layer = U2(trainable=True, wires=1)
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3412,7 +3396,7 @@ U3
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.U3(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.U3(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个U3逻辑门类 。
 
@@ -3421,7 +3405,6 @@ U3
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3435,7 +3418,7 @@ U3
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = U3(has_params= True, trainable= True, wires=1)
+        layer = U3(trainable=True, wires=1)
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3446,7 +3429,7 @@ U3
 CNOT
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.CNOT(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.CNOT(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CNOT逻辑门类,也可称为CX。
 
@@ -3455,7 +3438,6 @@ CNOT
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3478,7 +3460,7 @@ CNOT
 CY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.CY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.CY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CY逻辑门类 。
 
@@ -3487,7 +3469,6 @@ CY
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3511,7 +3492,7 @@ CY
 CZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.CZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.CZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CZ逻辑门类 。
 
@@ -3520,7 +3501,6 @@ CZ
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3546,7 +3526,7 @@ CZ
 CR
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.CR(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.CR(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CR逻辑门类 。
 
@@ -3555,7 +3535,6 @@ CR
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3570,7 +3549,7 @@ CR
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
         device = QMachine(4)
-        layer = CR(has_params= True, trainable= True, wires=[0,2])
+        layer = CR(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3582,7 +3561,7 @@ SWAP
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.SWAP(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.SWAP(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个SWAP逻辑门类 。
 
@@ -3591,7 +3570,6 @@ SWAP
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3615,7 +3593,7 @@ SWAP
 CSWAP
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.CSWAP(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.CSWAP(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个SWAP逻辑门类 。
 
@@ -3635,7 +3613,6 @@ CSWAP
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3659,7 +3636,7 @@ RXX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.RXX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.RXX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RXX逻辑门类 。
 
@@ -3668,7 +3645,6 @@ RXX
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3682,7 +3658,7 @@ RXX
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = RXX(has_params= True, trainable= True, wires=[0,2])
+        layer = RXX(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3691,7 +3667,7 @@ RXX
 RYY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.RYY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.RYY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RYY逻辑门类 。
 
@@ -3700,7 +3676,6 @@ RYY
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3714,7 +3689,7 @@ RYY
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = RYY(has_params= True, trainable= True, wires=[0,2])
+        layer = RYY(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3724,7 +3699,7 @@ RYY
 RZZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.RZZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.RZZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RZZ逻辑门类 。
 
@@ -3733,7 +3708,6 @@ RZZ
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3747,7 +3721,7 @@ RZZ
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = RZZ(has_params= True, trainable= True, wires=[0,2])
+        layer = RZZ(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3758,7 +3732,7 @@ RZZ
 RZX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.RZX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.RZX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RZX逻辑门类 。
 
@@ -3767,7 +3741,6 @@ RZX
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3781,7 +3754,7 @@ RZX
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = RZX(has_params= True, trainable= True, wires=[0,2])
+        layer = RZX(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3791,7 +3764,7 @@ Toffoli
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.Toffoli(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.Toffoli(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个Toffoli逻辑门类 。
 
@@ -3800,7 +3773,6 @@ Toffoli
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3824,7 +3796,7 @@ IsingXX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.IsingXX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.IsingXX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个IsingXX逻辑门类 。
 
@@ -3833,7 +3805,6 @@ IsingXX
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3847,7 +3818,7 @@ IsingXX
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = IsingXX(has_params= True, trainable= True, wires=[0,2])
+        layer = IsingXX(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3858,7 +3829,7 @@ IsingYY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.IsingYY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.IsingYY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个IsingYY逻辑门类 。
 
@@ -3867,7 +3838,6 @@ IsingYY
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3881,7 +3851,7 @@ IsingYY
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = IsingYY(has_params= True, trainable= True, wires=[0,2])
+        layer = IsingYY(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3891,7 +3861,7 @@ IsingYY
 IsingZZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.IsingZZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.IsingZZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个IsingZZ逻辑门类 。
 
@@ -3901,7 +3871,6 @@ IsingZZ
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3915,7 +3884,7 @@ IsingZZ
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = IsingZZ(has_params= True, trainable= True, wires=[0,2])
+        layer = IsingZZ(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3926,7 +3895,7 @@ IsingXY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.IsingXY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.IsingXY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个IsingXY逻辑门类 。
 
@@ -3935,7 +3904,6 @@ IsingXY
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3949,7 +3917,7 @@ IsingXY
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = IsingXY(has_params= True, trainable= True, wires=[0,2])
+        layer = IsingXY(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3960,7 +3928,7 @@ PhaseShift
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.PhaseShift(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.PhaseShift(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个PhaseShift逻辑门类 。
 
@@ -3969,7 +3937,6 @@ PhaseShift
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -3983,7 +3950,7 @@ PhaseShift
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = PhaseShift(has_params= True, trainable= True, wires=1)
+        layer = PhaseShift(trainable=True, wires=1)
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -3993,7 +3960,7 @@ PhaseShift
 MultiRZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.MultiRZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.MultiRZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个MultiRZ逻辑门类 。
 
@@ -4002,7 +3969,6 @@ MultiRZ
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -4016,7 +3982,7 @@ MultiRZ
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = MultiRZ(has_params= True, trainable= True, wires=[0,2])
+        layer = MultiRZ(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -4028,7 +3994,7 @@ SDG
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.SDG(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.SDG(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个SDG逻辑门类 。
 
@@ -4037,7 +4003,6 @@ SDG
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -4063,7 +4028,7 @@ SDG
 TDG
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.TDG(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.TDG(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个SDG逻辑门类 。
 
@@ -4072,7 +4037,6 @@ TDG
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -4098,7 +4062,7 @@ ControlledPhaseShift
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.ControlledPhaseShift(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.ControlledPhaseShift(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个ControlledPhaseShift逻辑门类 。
 
@@ -4107,7 +4071,6 @@ ControlledPhaseShift
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -4121,7 +4084,7 @@ ControlledPhaseShift
         import pyvqnet
         pyvqnet.backends.set_backend("torch")
         device = QMachine(4)
-        layer = ControlledPhaseShift(has_params= True, trainable= True, wires=[0,2])
+        layer = ControlledPhaseShift(trainable=True, wires=[0,2])
         batchsize = 2
         device.reset_states(batchsize)
         layer(q_machine = device)
@@ -4132,7 +4095,7 @@ ControlledPhaseShift
 MultiControlledX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.MultiControlledX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False,control_values=None)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.MultiControlledX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False,control_values=None)
     
     定义一个MultiControlledX逻辑门类 。
 
@@ -4141,7 +4104,6 @@ MultiControlledX
         该类继承于 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
     
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -4211,7 +4173,7 @@ Probability
 MeasureAll
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.MeasureAll(obs=None, name="")
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.MeasureAll(obs, name="")
 
     计算量子线路的测量结果,支持输入观测量 ``obs``。其格式可以为字典格式，用于表示一个由多个Pauli算符组合而成的可观测量；列表形式,表示多个期望值的可观测量列表。
  
@@ -4340,8 +4302,7 @@ HermitianExpval
                 self._dtype = dtype
                 self.qm = QMachine(num_wires, dtype=dtype)
                 self.rx_layer1 = VQC_RotCircuit
-                self.ry_layer2 = RY(has_params=True,
-                                    trainable=True,
+                self.ry_layer2 = RY(trainable=True,
                                     wires=0,
                                     init_params=tensor.QTensor([-0.5]))
                 self.xlayer = PauliX(wires=0)
@@ -5297,13 +5258,12 @@ vqc_quantumpooling_circuit
 QuantumLayerAdjoint
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.QuantumLayerAdjoint(general_module, use_qpanda=False,name="")
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.QuantumLayerAdjoint(vqc_module, name="")
 
 
     使用伴随矩阵方式进行梯度计算的可自动微分的变分量子线路层,参考  `Efficient calculation of gradients in classical simulations of variational quantum algorithms <https://arxiv.org/abs/2009.02823>`_ 。
 
-    :param general_module: 一个仅使用 ``pyvqnet.qnn.vqc.sv.torch`` 下量子线路接口搭建的 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 实例。
-    :param use_qpanda: 是否使用qpanda线路进行前传,默认:False。
+    :param vqc_module: 一个仅使用 ``pyvqnet.qnn.vqc.sv.torch`` 下量子线路接口搭建的 ``pyvqnet.qnn.vqc.sv.torch.QModule`` 实例。
     :param name: 该层名字,默认为""。
     :return: 返回一个 QuantumLayerAdjoint 类实例。
 
@@ -5317,7 +5277,7 @@ QuantumLayerAdjoint
 
     .. note::
 
-        general_module 的 QMachine 应设置 grad_method = "adjoint".
+        vqc_module 的 QMachine 应设置 grad_method = "adjoint".
 
         当前支持由如下含参逻辑门 `RX`, `RY`, `RZ`, `PhaseShift`, `RXX`, `RYY`, `RZZ`, `RZX`, `U1`, `U2`, `U3` 以及其他不含参逻辑门构成的变分线路。
 
@@ -5338,10 +5298,10 @@ QuantumLayerAdjoint
                 self._num_wires = num_wires
                 self._dtype = dtype
                 self.qm = QMachine(num_wires, dtype=dtype, grad_mode=grad_mode)
-                self.rx_layer = RX(has_params=True, trainable=False, wires=0)
-                self.ry_layer = RY(has_params=True, trainable=False, wires=1)
-                self.rz_layer = RZ(has_params=True, trainable=False, wires=1)
-                self.rz_layer2 = RZ(has_params=True, trainable=True, wires=1)
+                self.rx_layer = RX(trainable=False, wires=0)
+                self.ry_layer = RY(trainable=False, wires=1)
+                self.rz_layer = RZ(trainable=False, wires=1)
+                self.rz_layer2 = RZ(trainable=True, wires=1)
 
                 self.rot = VQC_HardwareEfficientAnsatz(6, ["rx", "RY", "rz"],
                                                     entangle_gate="cnot",
@@ -5414,7 +5374,7 @@ TNQModule
 
 基于张量网络编写变分量子线路模型需要继承于 ``TNQModule``
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.TNQModule(use_jit=False,vectorized_argnums=0,name="")
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.TNQModule(use_jit=True,vectorized_argnums: Union[int, Sequence[int]]=0, name="", mesh=None, cotengra_options=None, tree_path=None)
 
     在 `torch` 后端下,定义张量网络下量子变分线路模型 `Module` 应该继承的基类。
     该类用于使用张量网络来模块来用语执行量子线路。
@@ -5604,7 +5564,7 @@ TNQMachine
 I
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.I(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.I(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个I逻辑门类 。
 
@@ -5613,7 +5573,6 @@ I
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params: 是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -5654,7 +5613,7 @@ I
 Hadamard
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.Hadamard(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.Hadamard(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个Hadamard逻辑门类 。
 
@@ -5663,7 +5622,6 @@ Hadamard
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -5704,7 +5662,7 @@ Hadamard
 T
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.T(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.T(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个T逻辑门类 。
 
@@ -5713,7 +5671,6 @@ T
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -5754,7 +5711,7 @@ T
 S
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.S(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.S(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个S逻辑门类 。
 
@@ -5763,7 +5720,6 @@ S
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -5804,7 +5760,7 @@ S
 PauliX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.PauliX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.PauliX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个PauliX逻辑门类 。
 
@@ -5814,7 +5770,6 @@ PauliX
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -5854,7 +5809,7 @@ PauliX
 PauliY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.PauliY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.PauliY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个PauliY逻辑门类 。
 
@@ -5864,7 +5819,6 @@ PauliY
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -5905,7 +5859,7 @@ PauliY
 PauliZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.PauliZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.PauliZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个PauliZ逻辑门类 。
 
@@ -5915,7 +5869,6 @@ PauliZ
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -5958,7 +5911,7 @@ PauliZ
 RX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.RX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.RX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RX逻辑门类 。
 
@@ -5968,7 +5921,6 @@ RX
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -5987,7 +5939,7 @@ RX
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = RX(wires=0,has_params=True)
+                self.layer = RX(wires=0)
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6010,7 +5962,7 @@ RX
 RY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.RY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.RY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RY逻辑门类 。
 
@@ -6019,7 +5971,6 @@ RY
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6038,7 +5989,7 @@ RY
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = RY(wires=0,has_params=True)
+                self.layer = RY(wires=0)
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6059,7 +6010,7 @@ RY
 RZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.RZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.RZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RZ逻辑门类 。
 
@@ -6068,7 +6019,6 @@ RZ
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6087,7 +6037,7 @@ RZ
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = RZ(wires=0,has_params=True)
+                self.layer = RZ(wires=0)
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6108,7 +6058,7 @@ RZ
 CRX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.CRX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.CRX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CRX逻辑门类 。
 
@@ -6117,7 +6067,6 @@ CRX
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6136,7 +6085,7 @@ CRX
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = CRX(has_params= True, trainable= True, wires=[0,2])
+                self.layer = CRX(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6157,7 +6106,7 @@ CRX
 CRY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.CRY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.CRY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CRY逻辑门类 。
 
@@ -6166,7 +6115,6 @@ CRY
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6185,7 +6133,7 @@ CRY
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = CRY(has_params= True, trainable= True, wires=[0,2])
+                self.layer = CRY(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6207,7 +6155,7 @@ CRZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.CRZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.CRZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CRZ逻辑门类 。
 
@@ -6216,7 +6164,6 @@ CRZ
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6235,7 +6182,7 @@ CRZ
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = CRZ(has_params= True, trainable= True, wires=[0,2])
+                self.layer = CRZ(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6258,7 +6205,7 @@ CRZ
 U1
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.U1(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.U1(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个U1逻辑门类 。
 
@@ -6267,7 +6214,6 @@ U1
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6286,7 +6232,7 @@ U1
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = U1(has_params= True, trainable= True, wires=0)
+                self.layer = U1(trainable=True, wires=0)
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6308,7 +6254,7 @@ U2
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.U2(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.U2(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个U2逻辑门类 。
 
@@ -6317,7 +6263,6 @@ U2
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6336,7 +6281,7 @@ U2
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = U2(has_params= True, trainable= True, wires=0)
+                self.layer = U2(trainable=True, wires=0)
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6359,7 +6304,7 @@ U3
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.U3(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.U3(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个U3逻辑门类 。
 
@@ -6368,7 +6313,6 @@ U3
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6387,7 +6331,7 @@ U3
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = U3(has_params= True, trainable= True, wires=0)
+                self.layer = U3(trainable=True, wires=0)
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6409,7 +6353,7 @@ U3
 CNOT
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.CNOT(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.CNOT(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CNOT逻辑门类,也可称为CX。
 
@@ -6418,7 +6362,6 @@ CNOT
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6458,7 +6401,7 @@ CNOT
 CY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.CY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.CY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CY逻辑门类 。
 
@@ -6467,7 +6410,6 @@ CY
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6508,7 +6450,7 @@ CY
 CZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.CZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.CZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CZ逻辑门类 。
 
@@ -6517,7 +6459,6 @@ CZ
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6558,7 +6499,7 @@ CZ
 CR
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.CR(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.CR(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个CR逻辑门类 。
 
@@ -6567,7 +6508,6 @@ CR
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6586,7 +6526,7 @@ CR
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = CR(has_params= True, trainable= True, wires=[0,2])
+                self.layer = CR(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6609,7 +6549,7 @@ SWAP
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.SWAP(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.SWAP(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个SWAP逻辑门类 。
 
@@ -6618,7 +6558,6 @@ SWAP
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6658,7 +6597,7 @@ SWAP
 CSWAP
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.CSWAP(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.CSWAP(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个SWAP逻辑门类 。
 
@@ -6678,7 +6617,6 @@ CSWAP
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6719,7 +6657,7 @@ RXX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.RXX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.RXX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RXX逻辑门类 。
 
@@ -6728,7 +6666,6 @@ RXX
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6747,7 +6684,7 @@ RXX
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = RXX(has_params= True, trainable= True, wires=[0,2])
+                self.layer = RXX(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6768,7 +6705,7 @@ RXX
 RYY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.RYY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.RYY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RYY逻辑门类 。
 
@@ -6777,7 +6714,6 @@ RYY
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6796,7 +6732,7 @@ RYY
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = RYY(has_params= True, trainable= True, wires=[0,2])
+                self.layer = RYY(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6817,7 +6753,7 @@ RYY
 RZZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.RZZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.RZZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RZZ逻辑门类 。
 
@@ -6826,7 +6762,6 @@ RZZ
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6845,7 +6780,7 @@ RZZ
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = RZZ(has_params= True, trainable= True, wires=[0,2])
+                self.layer = RZZ(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6867,7 +6802,7 @@ RZZ
 RZX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.RZX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.RZX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个RZX逻辑门类 。
 
@@ -6876,7 +6811,6 @@ RZX
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6895,7 +6829,7 @@ RZX
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = RZX(has_params= True, trainable= True, wires=[0,2])
+                self.layer = RZX(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -6917,7 +6851,7 @@ Toffoli
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.Toffoli(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.Toffoli(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个Toffoli逻辑门类 。
 
@@ -6926,7 +6860,6 @@ Toffoli
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6967,7 +6900,7 @@ IsingXX
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.IsingXX(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.IsingXX(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个IsingXX逻辑门类 。
 
@@ -6976,7 +6909,6 @@ IsingXX
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -6995,7 +6927,7 @@ IsingXX
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = IsingXX(has_params= True, trainable= True, wires=[0,2])
+                self.layer = IsingXX(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -7018,7 +6950,7 @@ IsingYY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.IsingYY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.IsingYY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个IsingYY逻辑门类 。
 
@@ -7027,7 +6959,6 @@ IsingYY
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -7046,7 +6977,7 @@ IsingYY
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = IsingYY(has_params= True, trainable= True, wires=[0,2])
+                self.layer = IsingYY(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -7067,7 +6998,7 @@ IsingYY
 IsingZZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.IsingZZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.IsingZZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个IsingZZ逻辑门类 。
 
@@ -7077,7 +7008,6 @@ IsingZZ
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -7096,7 +7026,7 @@ IsingZZ
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = IsingZZ(has_params= True, trainable= True, wires=[0,2])
+                self.layer = IsingZZ(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -7118,7 +7048,7 @@ IsingXY
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.IsingXY(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.IsingXY(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个IsingXY逻辑门类 。
 
@@ -7127,7 +7057,6 @@ IsingXY
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -7146,7 +7075,7 @@ IsingXY
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = IsingXY(has_params= True, trainable= True, wires=[0,2])
+                self.layer = IsingXY(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -7168,7 +7097,7 @@ PhaseShift
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.PhaseShift(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.PhaseShift(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个PhaseShift逻辑门类 。
 
@@ -7177,7 +7106,6 @@ PhaseShift
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -7196,7 +7124,7 @@ PhaseShift
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = PhaseShift(has_params= True, trainable= True, wires=1)
+                self.layer = PhaseShift(trainable=True, wires=1)
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -7217,7 +7145,7 @@ PhaseShift
 MultiRZ
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.MultiRZ(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.MultiRZ(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个MultiRZ逻辑门类 。
 
@@ -7226,7 +7154,6 @@ MultiRZ
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -7245,7 +7172,7 @@ MultiRZ
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = MultiRZ(has_params= True, trainable= True, wires=[0,2])
+                self.layer = MultiRZ(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -7268,7 +7195,7 @@ SDG
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.SDG(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.SDG(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个SDG逻辑门类 。
 
@@ -7277,7 +7204,6 @@ SDG
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -7319,7 +7245,7 @@ SDG
 TDG
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.TDG(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.TDG(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个SDG逻辑门类 。
 
@@ -7328,7 +7254,6 @@ TDG
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -7370,7 +7295,7 @@ ControlledPhaseShift
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.ControlledPhaseShift(has_params: bool = False,trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.ControlledPhaseShift(trainable: bool = False,init_params=None,wires=None,dtype=pyvqnet.kcomplex64,use_dagger=False)
     
     定义一个ControlledPhaseShift逻辑门类 。
 
@@ -7379,7 +7304,6 @@ ControlledPhaseShift
         该类继承于 ``pyvqnet.qnn.vqc.tn.torch.QModule`` 以及 ``torch.nn.Module``。
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param has_params:  是否具有参数,例如RX,RY等门需要设置为True,不含参数的需要设置为False,默认为False。
     :param trainable: 是否自带含待训练参数,如果该层使用外部输入数据构建逻辑门矩阵,设置为False,如果待训练参数需要从该层初始化,则为True,默认为False。
     :param init_params: 初始化参数,用来编码经典数据QTensor,默认为None。
     :param wires: 线路作用的比特索引,默认为None。
@@ -7398,7 +7322,7 @@ ControlledPhaseShift
             def __init__(self, num_wires, dtype,batch_size=2):
                 super(QModel, self).__init__()
                 self.device = TNQMachine(num_wires)
-                self.layer = ControlledPhaseShift(has_params= True, trainable= True, wires=[0,2])
+                self.layer = ControlledPhaseShift(trainable=True, wires=[0,2])
                 self.batch_size = batch_size
                 self.num_wires = num_wires
                 
@@ -7422,7 +7346,7 @@ ControlledPhaseShift
 VQC_Purity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:function:: pyvqnet.qnn.vqc.tn.torch.VQC_Purity(state, qubits_idx, num_wires, use_tn=False)
+.. py:function:: pyvqnet.qnn.vqc.tn.torch.VQC_Purity(qubits_idx, num_wires, qmachine)
 
     从态矢中计算特定量子比特 ``qubits_idx`` 上的纯度。
 
@@ -7433,10 +7357,9 @@ VQC_Purity
     其中 :math:`d` 是希尔伯特空间的维数。
     纯态的纯度是1。
 
-    :param state: TNQMachine.get_states() 获取的量子态
     :param qubits_idx: 要计算纯度的量子比特位索引
     :param num_wires: 量子比特数
-    :param use_tn: 张量网络后端时改成True, 默认False
+    :param qmachine: TNQMachine 或 TNQModule 实例。
 
     :return: 对应比特位置上的纯度。
 
@@ -7526,13 +7449,13 @@ VQC_VarMeasure
 VQC_DensityMatrixFromQstate
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:function:: pyvqnet.qnn.vqc.tn.torch.VQC_DensityMatrixFromQstate(state, indices, use_tn=False)
+.. py:function:: pyvqnet.qnn.vqc.tn.torch.VQC_DensityMatrixFromQstate(indices, num_wires, qmachine)
 
     计算量子态在一组特定量子比特上的密度矩阵。
 
-    :param state: 一维列表状态向量。 这个列表的大小应该是 ``(2**N,)`` 对于量子比特个数 ``N`` ,qstate 应该从 000 ->111 开始。
     :param indices: 所考虑子系统中的量子比特索引列表。
-    :param use_tn: 张量网络后端时改成True, 默认False.
+    :param num_wires: 量子比特数。
+    :param qmachine: TNQMachine 或 TNQModule 实例。
     :return: 大小为“(b, 2**len(indices), 2**len(indices))”的密度矩阵,其中b为 q_machine.reset_states(b)的批处理数量b。
 
     Example::
@@ -7586,7 +7509,7 @@ Probability
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.Probability(wires=None, name="")
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.Probability(wires, name="")
 
     计算量子线路在特定比特上概率测量结果。
 
@@ -7616,7 +7539,7 @@ Probability
 MeasureAll
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.MeasureAll(obs=None, name="")
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.MeasureAll(obs, name="")
 
     计算量子线路的测量结果,支持输入obs为多个或单个泡利算子或哈密顿量。
     例如:
@@ -7690,7 +7613,7 @@ Samples
 HermitianExpval
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.HermitianExpval(obs=None, name="")
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.HermitianExpval(obs, name="")
 
     计算量子线路某个厄密特量的期望。
 
@@ -7722,8 +7645,7 @@ HermitianExpval
                 self._dtype = dtype
                 self.qm = TNQMachine(num_wires, dtype=dtype)
                 self.rx_layer1 = VQC_RotCircuit
-                self.ry_layer2 = RY(has_params=True,
-                                    trainable=True,
+                self.ry_layer2 = RY(trainable=True,
                                     wires=0,
                                     init_params=tensor.QTensor([-0.5]))
                 self.xlayer = PauliX(wires=0)

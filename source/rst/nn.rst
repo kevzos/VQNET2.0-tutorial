@@ -95,7 +95,7 @@ abstract calculation module
 Module
 =================================
 
-.. py:class:: pyvqnet.nn.module.Module
+.. py:class:: pyvqnet.nn.module.Module(name="", *args, **kwargs)
 
     所有神经网络模块的基类,包括量子模块或经典模块。您的模型也应该是此类的子类,用于 autograd 计算。
     模块还可以包含其他Module类,允许将它们嵌套在树状结构。 您可以将子模块分配为常规属性::
@@ -160,7 +160,7 @@ forward
 state_dict 
 =================================
 
-.. py:function:: pyvqnet.nn.module.Module.state_dict(destination=None, prefix='')
+.. py:function:: pyvqnet.nn.module.Module.state_dict(destination=None, prefix="", keep_vars=False)
 
     返回包含模块整个状态的字典:包括参数和缓存值。
     键是对应的参数和缓存值名称。
@@ -293,7 +293,7 @@ load_parameters
 
 ModuleList
 *********************************************************
-.. py:class:: pyvqnet.nn.module.ModuleList([pyvqnet.nn.module.Module])
+.. py:class:: pyvqnet.nn.module.ModuleList(modules=None)
 
 
     将子模块保存在列表中。 ModuleList 可以像普通的 Python 列表一样被索引, 它包含的Module的内部参数等可以被保存起来。
@@ -362,12 +362,12 @@ ModuleList
 
 ParameterList
 *********************************************************
-.. py:class:: pyvqnet.nn.module.ParameterList([pyvqnet.nn.module.Module])
+.. py:class:: pyvqnet.nn.module.ParameterList(values=None)
 
 
     将参数保存在列表中, ParameterList 可以像普通的 Python 列表一样被索引, 它包含的Parameter的内部参数等可以被保存起来。
 
-    :param modules: nn.Parameter 列表
+    :param values: nn.Parameter 列表
 
     :return: 一个参数列表
 
@@ -391,7 +391,7 @@ ParameterList
 
 Sequential
 *********************************************************
-.. py:class:: pyvqnet.nn.module.Sequential([pyvqnet.nn.module.Module])
+.. py:class:: pyvqnet.nn.module.Sequential(*args)
 
     模块将按照传递的顺序添加模块。或者,也可以将模块的 ``OrderedDict`` 传入。``Sequential`` 的 ``forward()`` 方法接受任何输入,并将其转发给它的第一个模块。
     然后将输出依次 "链 "到其后每个模块的输入、最后返回最后一个模块的输出。
@@ -1240,7 +1240,7 @@ Linear
 Dropout
 =================================
 
-.. py:class:: pyvqnet.nn.dropout.Dropout(dropout_rate = 0.5)
+.. py:class:: pyvqnet.nn.dropout.Dropout(dropout_rate: float = 0.5, name: str = "")
 
     Dropout 模块。dropout 模块将一些单元的输出随机设置为零,同时根据给定的 dropout_rate 概率升级其他单元。
 
@@ -1354,7 +1354,7 @@ Pixel_Unshuffle
 GRU
 =================================
 
-.. py:class:: pyvqnet.nn.gru.GRU(input_size, hidden_size, num_layers=1, nonlinearity='tanh', batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
+.. py:class:: pyvqnet.nn.gru.GRU(input_size, hidden_size, num_layers=1, batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
 
 
     门控循环单元 (GRU) 模块。支持多层堆叠,双向配置。单层单向GRU的计算公式如下:
@@ -2790,7 +2790,7 @@ fused_moe (融合专家混合)
 
 Activation
 =================================
-.. py:class:: pyvqnet.nn.activation.Activation()
+.. py:class:: pyvqnet.nn.activation.Activation(name: str = "")
 
     激活的基类。 特定的激活函数继承了这个类。
 
@@ -3098,12 +3098,12 @@ Tanh
 
 Optimizer
 =================================
-.. py:class:: pyvqnet.optim.optimizer.Optimizer( params, lr=0.01)
+.. py:class:: pyvqnet.optim.optimizer.Optimizer(params, lr=0.1, defaults=None)
 
     所有优化器的基类。
 
     :param params: 需要优化的模型参数。
-    :param lr: 学习率,默认值:0.01。
+    :param lr: 学习率,默认值:0.1。
 
 Adadelta
 =================================

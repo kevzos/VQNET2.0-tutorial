@@ -10,16 +10,14 @@ VQNet量子机器学习所使用的数据结构QTensor的python接口介绍。QT
 QTensor 的函数与属性
 ******************************************
 
-.. py:class:: pyvqnet.tensor.tensor.QTensor(data, requires_grad=False, nodes=None, device=pyvqnet.DEV_CPU, dtype=None, name="")
+.. py:class:: pyvqnet.tensor.tensor.QTensor(data, requires_grad=False, device=pyvqnet.DEV_CPU, dtype=None)
 
     具有动态计算图构造和自动微分的张量。
 
     :param data: 输入数据,可以是 _core.Tensor 或numpy 数组。
     :param requires_grad: 是否应该跟踪张量的梯度,默认为 False。
-    :param nodes: 计算图中的后继者列表,默认为无。
     :param device: 储存在哪个设备上,默认: pyvqnet.DEV_CPU,在CPU上。
     :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
-    :param name: QTensor的名字,default:""。
     :return: 输出 QTensor。
 
     Example::

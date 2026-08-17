@@ -388,7 +388,7 @@ cb, check-build
 CommController
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-.. py:class:: pyvqnet.distributed.ControlComm.CommController(backend,rank=None,world_size=None)
+.. py:class:: pyvqnet.distributed.ControlComm.CommController(backend="mpi", rank=None, world_size=None)
 
     CommController用于控制在cpu、gpu下数据通信的控制器, 通过设置参数 `backend` 来生成cpu(mpi)、gpu(nccl)的控制器。(目前分布式计算的功能仅支持linux操作系系统下使用)
 
@@ -1168,7 +1168,7 @@ PipelineParallelTrainingWrapper
 
 ZeroModelInitial
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. py:class:: pyvqnet.distributed.ZeroModelInitial(args,model,optimizer)
+.. py:class:: pyvqnet.distributed.ZeroModelInitial(args=None, model=None, optimizer=None)
     
     Zero1 API 接口, 目前仅用于 Linux 平台下基于 GPU 并行计算。
 

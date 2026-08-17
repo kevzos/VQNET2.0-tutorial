@@ -525,8 +525,8 @@ VQCQCloudLayer
                 self._num_wires = num_wires
                 self._dtype = dtype
                 self.qm = QMachine(num_wires, dtype=dtype, save_ir=True)
-                self.rx_layer = RX(has_params=True, trainable=False, wires=0)
-                self.u1 = U1(has_params=True, trainable=True, wires=[1])
+                self.rx_layer = RX(trainable=False, wires=0)
+                self.u1 = U1(trainable=True, wires=[1])
                 self.cnot = CNOT(wires=[0, 1])
 
             def forward(self, x, *args, **kwargs):
@@ -709,12 +709,12 @@ Qconv是一种量子卷积算法接口。
 AmplitudeEmbeddingCircuit
 ============================
 
-.. py:function:: pyvqnet.qnn.pq3.template.AmplitudeEmbeddingCircuit(input_feat,qubits)
+.. py:function:: pyvqnet.qnn.pq3.template.AmplitudeEmbeddingCircuit(input_feat,qlist)
 
     将 :math:`2^n` 特征编码为 :math:`n` 量子比特的振幅向量。为了表示一个有效的量子态向量, ``features`` 的L2范数必须是1。
 
     :param input_feat: 表示参数的numpy数组。
-    :param qubits: 量子比特索引列表。
+    :param qlist: 量子比特索引列表。
     :return: 量子线路。
 
     Example::
@@ -756,7 +756,7 @@ BasicEmbeddingCircuit
 AngleEmbeddingCircuit
 ============================
 
-.. py:function:: pyvqnet.qnn.pq3.template.AngleEmbeddingCircuit(input_feat,qubits,rotation:str='X')
+.. py:function:: pyvqnet.qnn.pq3.template.AngleEmbeddingCircuit(input_feat,qlist,rotation:str='X')
 
     将 :math:`N` 特征编码到 :math:`n` 量子比特的旋转角度中, 其中 :math:`N \leq n`。
 
@@ -771,7 +771,7 @@ AngleEmbeddingCircuit
      ``features`` 的长度必须小于或等于量子比特的数量。如果 ``features`` 中的长度少于量子比特,则线路不应用剩余的旋转门。
 
     :param input_feat: 表示参数的numpy数组。
-    :param qubits: 量子比特索引。
+    :param qlist: 量子比特索引。
     :param rotation: 使用什么旋转,默认为“X”。
     :return: 量子线路。
 
@@ -793,7 +793,7 @@ AngleEmbeddingCircuit
 IQPEmbeddingCircuits
 ============================
 
-.. py:function:: pyvqnet.qnn.pq3.template.IQPEmbeddingCircuits(input_feat,qubits,rep:int = 1)
+.. py:function:: pyvqnet.qnn.pq3.template.IQPEmbeddingCircuits(input_feat,qlist,rep:int = 1)
 
     使用IQP线路的对角门将 :math:`n` 特征编码为 :math:`n` 量子比特。
 
@@ -802,7 +802,7 @@ IQPEmbeddingCircuits
     通过指定 ``n_repeats`` ,可以重复基本IQP线路。
 
     :param input_feat: 表示参数的numpy数组。
-    :param qubits: 量子比特索引列表。
+    :param qlist: 量子比特索引列表。
     :param rep: 重复量子线路块,默认次数1。
     :return: 量子线路。
 
@@ -818,7 +818,7 @@ IQPEmbeddingCircuits
 RotCircuit
 ============================
 
-.. py:function:: pyvqnet.qnn.pq3.template.RotCircuit(para,qubits)
+.. py:function:: pyvqnet.qnn.pq3.template.RotCircuit(para,qlist)
 
     任意单量子比特旋转。qlist的数量应该是1,参数的数量应该是3。
 
@@ -831,7 +831,7 @@ RotCircuit
 
 
     :param para: 表示参数  :math:`[\phi, \theta, \omega]` 的numpy数组。
-    :param qubits: 量子比特索引,只接受单个量子比特。
+    :param qlist: 量子比特索引,只接受单个量子比特。
     :return: 量子线路。
 
     Example::
@@ -850,7 +850,7 @@ RotCircuit
 CRotCircuit
 ============================
 
-.. py:function:: pyvqnet.qnn.pq3.template.CRotCircuit(para,control_qubits,rot_qubits)
+.. py:function:: pyvqnet.qnn.pq3.template.CRotCircuit(para,control_qlists,rot_qlists)
 
 	受控Rot操作符。
 
@@ -862,8 +862,8 @@ CRotCircuit
         \end{bmatrix}.
     
     :param para: 表示参数  :math:`[\phi, \theta, \omega]` 的numpy数组。
-    :param control_qubits: 量子比特索引,量子比特的数量应为1。
-    :param rot_qubits: Rot量子比特索引,量子比特的数量应为1。
+    :param control_qlists: 量子比特索引,量子比特的数量应为1。
+    :param rot_qlists: Rot量子比特索引,量子比特的数量应为1。
     :return: 量子线路。
 
     Example::
@@ -882,7 +882,7 @@ CRotCircuit
 CSWAPcircuit
 ============================
 
-.. py:function:: pyvqnet.qnn.pq3.template.CSWAPcircuit(qubits)
+.. py:function:: pyvqnet.qnn.pq3.template.CSWAPcircuit(qlists)
 
     受控SWAP线路。
 
@@ -899,7 +899,7 @@ CSWAPcircuit
 
     .. note:: 提供的第一个量子比特对应于 **control qubit** 。
 
-    :param qubits: 量子比特索引列表第一个量子比特是控制量子比特。qlist的长度必须为3。
+    :param qlists: 量子比特索引列表第一个量子比特是控制量子比特。qlist的长度必须为3。
     :return: 量子线路。
 
     Example::
@@ -1292,13 +1292,13 @@ ComplexEntanglingTemplate
 Quantum_Embedding
 ============================
 
-.. py:class:: pyvqnet.qnn.pq3.Quantum_Embedding(qubits, machine, num_repetitions_input, depth_input, num_unitary_layers, num_repetitions)
+.. py:class:: pyvqnet.qnn.pq3.Quantum_Embedding(num_qubits, machine, num_repetitions_input, depth_input, num_unitary_layers, num_repetitions)
 
     使用 RZ,RY,RZ 创建变分量子电路,将经典数据编码为量子态。
     参考 `Quantum embeddings for machine learning <https://arxiv.org/abs/2001.03622>`_。
     在初始化该类后,其成员函数 ``compute_circuit`` 为运行函数,可作为参数输入 ``QpandaQCircuitVQCLayerLite`` 类构成量子机器学习模型的一层。
 
-    :param qubits: 使用pyqpanda 申请的量子比特。
+    :param num_qubits: 量子比特个数。
     :param machine: 使用pyqpanda 申请的量子虚拟机。
     :param num_repetitions_input: 在子模块中对输入进行编码的重复次数。
     :param depth_input: 输入数据的特征维度。
