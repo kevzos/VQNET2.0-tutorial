@@ -12,190 +12,12 @@
 量子计算层
 ***********************************
 
-.. _QuantumLayer:
-
-QuantumLayer
-============================
-
-QuantumLayer是一个支持量子含参线路作为参数的自动求导模块的封装类。用户定义一个函数作为参数 ``qprog_with_measure`` ,该函数需要包含pyqpanda2定义的量子线路:一般包含量子线路的编码线路,演化线路和测量操作。
-该类可以嵌入量子经典混合机器学习模型,通过经典的梯度下降法,使得量子经典混合模型的目标函数或损失函数最小。
-用户可通过参数 ``diff_method`` 指定 ``QuantumLayer`` 层中量子线路参数的梯度计算方式, ``QuantumLayer`` 当前支持有限差分法 ``finite_diff`` 以及 ``parameter-shift`` 方法。
-
-有限差分法是估算函数梯度最传统和最常用的数值方法之一。主要思想是用差分代替偏导数:
-
-.. math::
-
-    f^{\prime}(x)=\lim _{h \rightarrow 0} \frac{f(x+h)-f(x)}{h}
-
-
-若使用 ``parameter-shift`` 方法,我们使用如下目标函数:
-
-.. math:: O(\theta)=\left\langle 0\left|U^{\dagger}(\theta) H U(\theta)\right| 0\right\rangle
-
-理论上可以通过 ``parameter-shift`` 这一更精确的方法计算量子线路中参数对哈密顿量的梯度:
-
-.. math::
-
-    \nabla O(\theta)=
-    \frac{1}{2}\left[O\left(\theta+\frac{\pi}{2}\right)-O\left(\theta-\frac{\pi}{2}\right)\right]
-
-.. py:class:: pyvqnet.qnn.quantumlayer.QuantumLayer(qprog_with_measure,para_num,machine_type_or_cloud_token,num_of_qubits:int,num_of_cbits:int = 1,diff_method:str = "parameter_shift",delta:float = 0.01,dtype=None,name="")
-
-    变分量子层的抽象计算模块。对一个参数化的量子线路进行仿真,得到测量结果。该变分量子层继承了VQNet框架的梯度计算模块,可以计算线路参数的梯度,训练变分量子线路模型或将变分量子线路嵌入混合量子和经典模型。
-
-    :param qprog_with_measure: 用pyqpanda2构建的量子线路运行和测量函数。
-    :param para_num: `int` - 参数个数。
-    :param machine_type_or_cloud_token: qpanda量子虚拟机类型 "CPU"。
-    :param num_of_qubits: 量子比特数。
-    :param num_of_cbits: 经典比特数,默认为1。
-    :param diff_method: 求解量子线路参数梯度的方法,"parameter_shift"或"finite_diff"，默认为 "parameter_shift"。 。
-    :param delta: 有限差分计算梯度时的 \delta。
-    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
-    :param name: 这个模块的名字, 默认为""。
-
-    :return: 一个可以计算量子线路的模块。
-
-    .. note::
-
-        qprog_with_measure是pyqpanda2中定义的量子线路函数 :https://pyqpanda-toturial.readthedocs.io/zh/latest/QCircuit.html。
-        
-        此函数必须包含以下参数作为函数入参(即使某个参数未实际使用),否则无法在QuantumLayer中正常运行。
-
-        qprog_with_measure (input,param,qubits,cbits,machine)
-        
-            `input`: 输入一维经典数据。如果没有输入可以输入 None。
-            
-            `param`: 输入一维的变分量子线路的待训练参数。
-            
-            `qubits`: 该QuantumLayer分配的量子比特,类型为pyqpanda.pyQPanda.Qubit。
-            
-            `cbits`: 由QuantumLayer分配的经典比特,用来辅助测量函数,类型为 pyqpanda.pyQpanda.ClassicalCondition。如果线路不使用cbits,也应保留此参数。
-            
-            `machine`: 由QuantumLayer创建的模拟器,例如CPUQVM,GPUQVM,QCloud等。
-
-        使用QuantumLayer的 `m_para` 属性获取变分量子线路的训练参数。该参数为QTensor类,可使用to_numpy()接口转化为numpy数组。
-
-    .. note::
-
-        该类具有别名 `QpandaQCircuitVQCLayer` 。
-
-    .. note::
-
-        该类计算梯度需要额外使用pyqpanda进行线路计算个数与参数个数、数据个数、数据维度的乘积线性相关。
-
-    Example::
-
-        import pyqpanda as pq
-        from pyvqnet.qnn.measure import ProbsMeasure
-        from pyvqnet.qnn.quantumlayer import QuantumLayer
-        import numpy as np 
-        from pyvqnet.tensor import QTensor
-        def pqctest (input,param,qubits,cbits,machine):
-            circuit = pq.QCircuit()
-            circuit.insert(pq.H(qubits[0]))
-            circuit.insert(pq.H(qubits[1])) 
-            circuit.insert(pq.H(qubits[2]))
-            circuit.insert(pq.H(qubits[3]))    
-
-            circuit.insert(pq.RZ(qubits[0],input[0]))  
-            circuit.insert(pq.RZ(qubits[1],input[1])) 
-            circuit.insert(pq.RZ(qubits[2],input[2]))
-            circuit.insert(pq.RZ(qubits[3],input[3]))
-
-            circuit.insert(pq.CNOT(qubits[0],qubits[1]))
-            circuit.insert(pq.RZ(qubits[1],param[0]))  
-            circuit.insert(pq.CNOT(qubits[0],qubits[1]))
-
-            circuit.insert(pq.CNOT(qubits[1],qubits[2]))
-            circuit.insert(pq.RZ(qubits[2],param[1]))  
-            circuit.insert(pq.CNOT(qubits[1],qubits[2]))
-
-            circuit.insert(pq.CNOT(qubits[2],qubits[3]))
-            circuit.insert(pq.RZ(qubits[3],param[2]))  
-            circuit.insert(pq.CNOT(qubits[2],qubits[3]))
-
-            prog = pq.QProg()    
-            prog.insert(circuit)    
-            # pauli_dict  = {'Z0 X1':10,'Y2':-0.543}
-            rlt_prob = ProbsMeasure([0,2],prog,machine,qubits)
-            return rlt_prob
-
-        pqc = QuantumLayer(pqctest,3,"CPU",4,1)
-        #classic data as input       
-        input = QTensor([[1,2,3,4],[40,22,2,3],[33,3,25,2.0]] )
-        #forward circuits
-        rlt = pqc(input)
-        grad =  QTensor(np.ones(rlt.data.shape)*1000)
-        #backward circuits
-        rlt.backward(grad)
-        print(rlt)
-        # [
-        # [0.2500000, 0.2500000, 0.2500000, 0.2500000],
-        # [0.2500000, 0.2500000, 0.2500000, 0.2500000],
-        # [0.2500000, 0.2500000, 0.2500000, 0.2500000]
-        # ]
-
-    如果使用 GPU，参考下面的例子:
-
-
-    Example::
-
-        import pyqpanda as pq
-        from pyvqnet.qnn.measure import ProbsMeasure
-        from pyvqnet.qnn.quantumlayer import QuantumLayer
-        import numpy as np
-        from pyvqnet.tensor import QTensor,DEV_GPU_0
-        def pqctest (input,param,qubits,cbits,machine):
-            circuit = pq.QCircuit()
-            circuit.insert(pq.H(qubits[0]))
-            circuit.insert(pq.H(qubits[1]))
-            circuit.insert(pq.H(qubits[2]))
-            circuit.insert(pq.H(qubits[3]))
-
-            circuit.insert(pq.RZ(qubits[0],input[0]))
-            circuit.insert(pq.RZ(qubits[1],input[1]))
-            circuit.insert(pq.RZ(qubits[2],input[2]))
-            circuit.insert(pq.RZ(qubits[3],input[3]))
-
-            circuit.insert(pq.CNOT(qubits[0],qubits[1]))
-            circuit.insert(pq.RZ(qubits[1],param[0]))
-            circuit.insert(pq.CNOT(qubits[0],qubits[1]))
-
-            circuit.insert(pq.CNOT(qubits[1],qubits[2]))
-            circuit.insert(pq.RZ(qubits[2],param[1]))
-            circuit.insert(pq.CNOT(qubits[1],qubits[2]))
-
-            circuit.insert(pq.CNOT(qubits[2],qubits[3]))
-            circuit.insert(pq.RZ(qubits[3],param[2]))
-            circuit.insert(pq.CNOT(qubits[2],qubits[3]))
-
-            prog = pq.QProg()
-            prog.insert(circuit)
-            # pauli_dict  = {'Z0 X1':10,'Y2':-0.543}
-            rlt_prob = ProbsMeasure([0,2],prog,machine,qubits)
-            return rlt_prob
-
-        #这里的"CPU" 指的是qpanda量子计算模拟器使用 CPU,跟pyvqnet是否使用 GPU 无关。
-        pqc = QuantumLayer(pqctest,3,"CPU",4,1)
-        #这里使用toGPU将QuantumLayer 移动到GPU上
-        pqc.toGPU()
-        #classic data as input
-        input = QTensor([[1,2,3,4],[40,22,2,3],[33,3,25,2.0]] )
-        input.toGPU()
-        #forward circuits
-        rlt = pqc(input)
-        grad =  QTensor(np.ones(rlt.data.shape)*1000,device=DEV_GPU_0)
-        #backward circuits
-        rlt.backward(grad)
-        print(rlt)
-
-
 QpandaQCircuitVQCLayerLite
 ============================
 
 如您更加熟悉pyqpanda2语法,可以使用该接口QpandaQCircuitVQCLayerLite,自定义量子比特 ``qubits`` ,经典比特 ``cbits`` ,后端模拟器 ``machine`` 加入QpandaQCircuitVQCLayerLite的参数 ``qprog_with_measure`` 函数中。
 
-.. py:class:: pyvqnet.qnn.quantumlayer.QpandaQCircuitVQCLayerLite(qprog_with_measure,para_num,diff_method:str = "parameter_shift",delta:float = 0.01,dtype=None,name="")
+.. py:class:: pyvqnet.qnn.pq3.quantumlayer.QpandaQCircuitVQCLayerLite(qprog_with_measure,para_num,diff_method:str = "parameter_shift",delta:float = 0.01,dtype=None,name="")
 
 	变分量子层的抽象计算模块。对一个参数化的量子线路使用pyqpanda2进行仿真,得到测量结果。该变分量子层继承了VQNet框架的梯度计算模块,可以使用参数移位法等计算线路参数的梯度,训练变分量子线路模型或将变分量子线路嵌入混合量子和经典模型。
     
@@ -235,7 +57,7 @@ QpandaQCircuitVQCLayerLite
 
         import pyqpanda as pq
         from pyvqnet.qnn.measure import ProbsMeasure
-        from pyvqnet.qnn.quantumlayer import QpandaQCircuitVQCLayerLite
+        from pyvqnet.qnn.pq3.quantumlayer import QpandaQCircuitVQCLayerLite
         import numpy as np
         from pyvqnet.tensor import QTensor
         def pqctest (input,param):
@@ -299,7 +121,7 @@ QpandaQCircuitVQCLayerLite
 
         import pyqpanda as pq
         from pyvqnet.qnn.measure import ProbsMeasure
-        from pyvqnet.qnn.quantumlayer import QpandaQCircuitVQCLayerLite
+        from pyvqnet.qnn.pq3.quantumlayer import QpandaQCircuitVQCLayerLite
         import numpy as np
         from pyvqnet.tensor import QTensor,DEV_GPU_0
         def pqctest (input,param):
@@ -355,148 +177,6 @@ QpandaQCircuitVQCLayerLite
 
 
 
-
-NoiseQuantumLayer
-=========================
-
-在真实的量子计算机中,受制于量子比特自身的物理特性,常常存在不可避免的计算误差。为了能在量子虚拟机中更好的模拟这种误差,VQNet同样支持含噪声量子虚拟机。含噪声量子虚拟机的模拟更贴近真实的量子计算机,我们可以自定义支持的逻辑门类型,自定义逻辑门支持的噪声模型。
-现有可支持的量子噪声模型依据QPanda中定义,具体参考链接 `QPANDA2 <https://pyqpanda-toturial.readthedocs.io/zh/latest/NoiseQVM.html>`_ 中的介绍。
-
-使用 NoiseQuantumLayer 定义一个量子线路自动微分类,该类支持QPanda噪声虚拟机。用户定义一个函数作为参数 ``qprog_with_measure`` ,该函数需要包含pyqpanda2定义的量子线路,同样需要传入一个参数 ``noise_set_config``,使用pyqpanda2接口,设置噪声模型。
-
-.. py:class:: pyvqnet.qnn.quantumlayer.NoiseQuantumLayer(qprog_with_measure,para_num,machine_type,num_of_qubits:int,num_of_cbits:int=1,diff_method:str= "parameter_shift",delta:float=0.01,noise_set_config = None, dtype=None,name="")
-
-	变分量子层的抽象计算模块。对一个参数化的量子线路进行仿真,得到测量结果。该变分量子层继承了VQNet框架的梯度计算模块,可以计算线路参数的梯度,训练变分量子线路模型或将变分量子线路嵌入混合量子和经典模型。
-
-    这一层可以在量子线路中使用噪声模型。
-
-    :param qprog_with_measure: 用pyqpanda2构建的量子线路运行和测量函数。
-    :param para_num: `int` - 参数个数。
-    :param machine_type: qpanda机器类型。
-    :param num_of_qubits: 量子比特数。
-    :param num_of_cbits: 经典比特数,默认为1。
-    :param diff_method: 求解量子线路参数梯度的方法,"parameter_shift"或"finite_diff"，默认为 "parameter_shift"。 。
-    :param delta: 有限差分计算梯度时的 \delta。
-    :param noise_set_config: 噪声设置函数。
-    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
-    :param name: 这个模块的名字, 默认为""。
-
-    :return: 一个可以计算含噪声量子线路的模块。
-
-
-    .. note::
-        qprog_with_measure是pyqpanda2中定义的量子线路函数 :https://pyqpanda-toturial.readthedocs.io/zh/latest/QCircuit.html。
-        
-        此函数必须包含以下参数作为函数入参(即使某个参数未实际使用),否则无法在NoiseQuantumLayer中正常运行。
-        
-        qprog_with_measure (input,param,qubits,cbits,machine)
-        
-            `input`: 输入一维经典数据。如果没有输入可以输入 None。
-            
-            `param`: 输入一维的变分量子线路的待训练参数。
-            
-            `qubits`: 该NoiseQuantumLayer分配的量子比特,类型为pyqpanda.pyQPanda.Qubit。
-            
-            `cbits`: cbits由NoiseQuantumLayer分配的经典比特,用来辅助测量函数,类型为 pyqpanda.pyQpanda.ClassicalCondition。如果线路不使用cbits,也应保留此参数。
-            
-            `machine`: 由NoiseQuantumLayer创建的模拟器。
-
-    .. note::
-
-        该类计算梯度需要额外使用pyqpanda进行线路计算个数与参数个数、数据个数、数据维度的乘积线性相关。
-
-
-    Example::
-
-        import pyqpanda as pq
-        from pyvqnet.qnn.measure import ProbsMeasure
-        from pyvqnet.qnn.quantumlayer import NoiseQuantumLayer
-        import numpy as np
-        from pyqpanda import * 
-        from pyvqnet.tensor import QTensor
-        def circuit(weights,param,qubits,cbits,machine):
-
-            circuit = pq.QCircuit()
-
-            circuit.insert(pq.H(qubits[0]))
-            circuit.insert(pq.RY(qubits[0], weights[0]))
-            circuit.insert(pq.RY(qubits[0], param[0]))
-            prog = pq.QProg()
-            prog.insert(circuit)
-            prog << measure_all(qubits, cbits)
-
-            result = machine.run_with_configuration(prog, cbits, 100)
-
-            counts = np.array(list(result.values()))
-            states = np.array(list(result.keys())).astype(float)
-            # Compute probabilities for each state
-            probabilities = counts / 100
-            # Get state expectation
-            expectation = np.sum(states * probabilities)
-            return expectation
-
-        def default_noise_config(qvm,q):
-
-            p = 0.01
-            qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.PAULI_X_GATE, p)
-            qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.PAULI_Y_GATE, p)
-            qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.PAULI_Z_GATE, p)
-            qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.RX_GATE, p)
-            qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.RY_GATE, p)
-            qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.RZ_GATE, p)
-            qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.RY_GATE, p)
-            qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.HADAMARD_GATE, p)
-            qves =[]
-            for i in range(len(q)-1):
-                qves.append([q[i],q[i+1]])#
-            qves.append([q[len(q)-1],q[0]])
-            qvm.set_noise_model(NoiseModel.DAMPING_KRAUS_OPERATOR, GateType.CNOT_GATE, p, qves)
-
-            return qvm
-
-        qvc = NoiseQuantumLayer(circuit,24,"noise",1,1,diff_method= "parameter_shift", delta=0.01,noise_set_config = default_noise_config)
-        input = QTensor([
-            [0., 1., 1., 1.],
-
-            [0., 0., 1., 1.],
-
-            [1., 0., 1., 1.]
-            ] )
-        rlt = qvc(input)
-        grad =  QTensor(np.ones(rlt.data.shape)*1000)
-
-        rlt.backward(grad)
-        print(qvc.m_para.grad)
-
-        #[1195., 105., 70., 0., 
-        # 45., -45., 50., 15., 
-        # -80., 50., 10., -30., 
-        # 10., 60., 75., -110., 
-        # 55., 45., 25., 5., 
-        # 5., 50., -25., -15.]
-
-下面给出一个 ``noise_set_config`` 的例子,这里使得 ``RX`` , ``RY`` , ``RZ`` , ``X`` , ``Y`` , ``Z`` , ``H`` 等逻辑门加入了 p = 0.01 的 BITFLIP_KRAUS_OPERATOR噪声模型。
-
-.. code-block::
-
-	def noise_set_config(qvm,q):
-
-		p = 0.01
-		qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.PAULI_X_GATE, p)
-		qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.PAULI_Y_GATE, p)
-		qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.PAULI_Z_GATE, p)
-		qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.RX_GATE, p)
-		qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.RY_GATE, p)
-		qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.RZ_GATE, p)
-		qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.RY_GATE, p)
-		qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.HADAMARD_GATE, p)
-		qves =[]
-		for i in range(len(q)-1):
-			qves.append([q[i],q[i+1]])#
-		qves.append([q[len(q)-1],q[0]])
-		qvm.set_noise_model(NoiseModel.DAMPING_KRAUS_OPERATOR, GateType.CNOT_GATE, p, qves)
-
-		return qvm
 
 QiskitLayer
 =================================

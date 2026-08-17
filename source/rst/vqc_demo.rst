@@ -3721,17 +3721,15 @@ VQNet当前提供4种方式对用户自定义的变分量子线路中的量子�
 
             self.s = S(wires=0)
 
-            self.ps = PhaseShift(has_params=True,
-                                    trainable=True,
+            self.ps = PhaseShift(trainable=True,
                                     wires=0,
                                     dtype=dtype)
 
-            self.cps = ControlledPhaseShift(has_params=True,
-                                            trainable=True,
+            self.cps = ControlledPhaseShift(trainable=True,
                                             wires=(1, 0),
                                             dtype=dtype)
             self.t = T(wires=0)
-            self.rz = RZ(has_params=True, wires=1, dtype=dtype)
+            self.rz = RZ(wires=1, dtype=dtype)
 
             self.measure = MeasureAll(obs={
                     "Z1":1
@@ -3783,17 +3781,15 @@ VQNet当前提供4种方式对用户自定义的变分量子线路中的量子�
 
             self.s = S(wires=0)
 
-            self.ps = PhaseShift(has_params=True,
-                                    trainable=True,
+            self.ps = PhaseShift(trainable=True,
                                     wires=0,
                                     dtype=dtype)
 
-            self.cps = ControlledPhaseShift(has_params=True,
-                                            trainable=True,
+            self.cps = ControlledPhaseShift(trainable=True,
                                             wires=(1, 0),
                                             dtype=dtype)
             self.t = T(wires=0)
-            self.rz = RZ(has_params=True, wires=1, dtype=dtype)
+            self.rz = RZ(wires=1, dtype=dtype)
 
             self.measure = MeasureAll(obs={
                 "Z1":1
