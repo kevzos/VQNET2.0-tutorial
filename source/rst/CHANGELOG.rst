@@ -3,6 +3,25 @@ VQNet Changelog
 ######################
 
 
+[v2.18.2] - 2026-08-17
+***************************
+
+Added
+===================
+- 文档新增统一量子层 ``VQCLayer``(``pyvqnet.qnn.pq3.vqclayer.VQCLayer``)接口，通过 ``submit_kwargs["backend"]`` 选择执行后端(``vqc_autograd`` / ``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``)，支持期望值与概率两种互斥测量方式。
+- 文档新增 torch 后端统一量子层 ``TorchVQCLayer``(``pyvqnet.qnn.pq3.torch.torchvqclayer.TorchVQCLayer``)，与原生 ``VQCLayer`` 功能一致，输入在 forward 边界包装为 ``torch.Tensor``。
+
+Changed
+===================
+- ``torch_api.rst`` 中"使用pyqpanda3进行计算的量子变分线路训练函数"章节标题提升一级，与经典神经模块同级。
+- 源码 ``VQCLayer``、``TorchVQCLayer`` docstring 补充可运行示例及完整的 ``submit_kwargs`` / ``query_kwargs`` 键列表。
+- 修正 ``VQCLayer``、``TorchVQCLayer`` 后端状态描述：``qcloud_service`` / ``qpanda_runtime`` 为已实现(非暂未实现)。
+
+Fixed
+===================
+- 修复 ``qnn_pq3.rst``、``torch_api.rst`` 中 Sphinx 标题下划线长度、标题层级不一致及行内代码解析警告。
+
+
 [v2.18.1] - 2026-07-08
 ***************************
 
