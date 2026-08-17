@@ -25,6 +25,26 @@ Changed
 
 Fixed
 ===================
+- 修复 ``QuantumLayerV3`` 中 CRX/CRY/CRZ 参数移位规则系数错误(原系数为正确值的 16 倍，导致梯度偏大)，并新增与解析梯度 ``sin(theta)/2`` 对比的回归测试。
+- 修复 ``CRot`` 默认模式梯度错误(经链式原位赋值构造矩阵导致仅最后一个赋值保留梯度)，改用 ``tensor.stack`` 重构矩阵；同时启用 ``Rot``、``CR``、``CRot`` 的 adjoint 梯度。
+- 实现 ``CRX``、``CRY``、``CRZ`` 的 ``generator()`` 方法，使 adjoint 梯度可用于这三个受控旋转门。
+- 修复 ``he_uniform_for_linear`` 初始化器 fan 计算错误：原先在转置后的权重上计算 fan，导致 ``fan_in`` 取成输出维度，权重随输入宽度增大而过量缩放；改为在未转置的 ``(output, input)`` 形状上计算，与 ``he_uniform`` 一致。
+- 修复 ``SPSA._step()`` 两个导致参数发散的问题：``delta_list`` 在所有迭代中复用(未每次刷新随机方向)，以及梯度公式误用加法替代乘法；并新增 CPU/GPU 批量测试。
+- 修复张量别名场景下 ``setitem``/``copy`` 的重叠检测：原先仅比较 storage 基地址与整体大小，共享同一 storage 的两个张量被误判为相同，导致 ``copy_tensor`` 静默跳过拷贝；现与 PyTorch 的 ``get_overlap_status``/``is_same_data`` 语义对齐。
+- 修复 ``empty_like_raii``、``pow_scalar``、``tanh`` 的梯度输出与 ``torch`` 不一致的问题(零步长梯度未保证连续)。
+- 修复 ``tensoriterator`` 在 ``build(false)`` 中 ``compute_shape`` 之后 ``size_`` 未按 ``numel()`` 更新，并统一 CUDA ``mult``/``div``/``sign`` 走 ``build(false)`` 路径。
+- 修复 ``cpu_basic_indexing`` 的 ``set-select`` 梯度：恢复 ``build()`` 调用，保证扁平 ``numel`` 语义(回退此前引入的回归)。
+- 修复 ``MultiTensorIterationHelper::build()`` 丢失 ``is_contiguous_`` 赋值的问题：此前 ``is_contiguous()`` 恒为 ``false``，CPU 逐元素运算回退到标量非 SIMD 路径，性能下降 10-50 倍(ResNet18 较 2.18.0 慢约 80%)；恢复赋值后与 ``c10`` 的 ``compute_fast_setup_type`` 语义一致。
+- 修复 CUDA ``expval`` 在 ``float64`` 且元素数小于 4 时越界、以及 fused-crz 在 ``M>32`` 时零梯度的问题，并新增回归测试。
+- 修复跨设备 autograd 与 ``PyTorch`` 行为不一致的问题：补全 ``InputBuffer`` 的 ``opt_accum_streams``/``ready_events``/``ready_streams`` 字段与事件同步模式，在 ``toDeviceAutograd`` 中增加同设备快速路径。
+- 修复 ``_decompose_pauli_qwc`` 的跨 pdict QWC 分组：原先各 pdict 独立分组导致每个可观测量生成一条线路，现跨 pdict 共享测量线路(4 个单 Z 可观测量由 4 条线路降为 1 条)。
+- 修复 ``VQCQCloudLayer`` 真实芯片路径：``get_result_sync()`` 返回嵌套列表而 ``FakeBackend`` 返回扁平列表，新增类型判断统一展平；并修复 ``batch=1`` 时 ``(1, N)`` 被展平为 ``(N,)`` 导致二维索引失败的问题。
+- 修复 ``VQCQCloudLayer`` 真实芯片提交路径：``CoreTensor`` 无 ``to_numpy()`` 方法，改用 ``qlayer._saved_x``；以解析后的线路(``circuits()``)替代参数化 ``AnsatzObservableBinding``/``AnsatzParamsBinding`` 提交，并按任务上限(200 条线路/任务)分块。
+- 修复 ``qpanda3_runtime`` 路径缺失可配置提交参数的问题：新增 ``submit_kwargs``(``specified_block``、``is_amend``、``is_mapping``、``is_optimization``、``default_task_group_size``)与 ``query_kwargs``(``timeout``、``print_query_info``)透传，支持 ``server_ip_address`` 作为 ``runtime_url`` 别名。
+- 修复 ``logger.info()`` 误用 print 风格逗号参数的问题(``qaoa.py``、``topo.py`` 等)，改为格式化字符串方式。
+- 修复 ``tn_core`` 在缺少 ``jax``/``torch`` 可选依赖时导入失败的问题，改为优雅降级。
+- 修复 cotengra/autoray 兼容性断言缺失：在惰性导入路径上显式校验版本兼容性。
+- 修复 ``pq_utils`` 反复打印 ``'shots is be set 0'`` 警告的问题。
 - 修复 ``qnn_pq3.rst``、``torch_api.rst`` 中 Sphinx 标题下划线长度、标题层级不一致及行内代码解析警告。
 - 修复 ``vqc_demo.rst`` 示例中残留的 ``has_params`` 参数。
 
