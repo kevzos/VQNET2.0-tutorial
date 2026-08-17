@@ -13,6 +13,12 @@ Added
 
 Changed
 ===================
+- 同步量子逻辑门类 API 签名与源码一致：移除 ``has_params`` 参数，``trainable`` 调整为第一位置参数(148 处)。
+- 同步 ``QTensor`` 接口：移除 ``name``、``nodes`` 参数。
+- 同步 ``QuantumLayerAdjoint`` 接口：移除 ``use_qpanda`` 参数，``general_module`` 重命名为 ``vqc_module``。
+- 同步 ``TNQModule`` 接口：新增 ``mesh``、``cotengra_options``、``tree_path`` 参数，修正 ``use_jit`` 默认值。
+- 修正既有文档偏差：``nn`` 模块各层(``name``/``dtype``/``GRU`` nonlinearity/``ModuleList``/``ParameterList``/``Sequential``)、``LayerNorm`` ``normalized_shape``、优化器 ``lr``、测量类 ``obs``/``wires`` 必填、``pq3`` 模板 ``qubits`` 改名为 ``qlist`` 等。
+- 移除源码中已删除接口的文档章节：``QuantumLayer``、``NoiseQuantumLayer``(含 MNIST 示例章节)，并更新 ``QpandaQCircuitVQCLayerLite`` 路径至 ``pq3`` 命名空间。
 - ``torch_api.rst`` 中"使用pyqpanda3进行计算的量子变分线路训练函数"章节标题提升一级，与经典神经模块同级。
 - 源码 ``VQCLayer``、``TorchVQCLayer`` docstring 补充可运行示例及完整的 ``submit_kwargs`` / ``query_kwargs`` 键列表。
 - 修正 ``VQCLayer``、``TorchVQCLayer`` 后端状态描述：``qcloud_service`` / ``qpanda_runtime`` 为已实现(非暂未实现)。
@@ -20,6 +26,7 @@ Changed
 Fixed
 ===================
 - 修复 ``qnn_pq3.rst``、``torch_api.rst`` 中 Sphinx 标题下划线长度、标题层级不一致及行内代码解析警告。
+- 修复 ``vqc_demo.rst`` 示例中残留的 ``has_params`` 参数。
 
 
 [v2.18.1] - 2026-07-08
