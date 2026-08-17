@@ -2549,8 +2549,8 @@ reward_loss
 对于继承于 `TorchModule` 的VQNet的经典和量子线路模块,其中参数同样可以被 `torch.nn.Module.parameters()` 获取,可同样使用 torch 的优化器进行优化。
 
 
-使用pyqpanda进行计算的量子变分线路训练函数
-------------------------------------------
+使用pyqpanda3进行计算的量子变分线路训练函数
+============================================
 
 以下是使用pyqpanda3进行线路计算的训练变分量子线路接口。
 
@@ -2561,8 +2561,140 @@ reward_loss
     以下TorchQcloud3QuantumLayer,TorchQpanda3QuantumLayer接口的量子计算部分使用pyqpanda3 https://qcloud.originqc.com.cn/document/qpanda-3/index.html。
 
 
+TorchVQCLayer
+---------------------------------------------
+
+.. py:class:: pyvqnet.qnn.pq3.torch.torchvqclayer.TorchVQCLayer(vqc_module, qcloud_token=None, shots=1000, diff_method="parameter_shift", submit_kwargs=None, query_kwargs=None, name="")
+
+    TorchVQCLayer 是一个统一的量子层接口,与原生 ``VQCLayer`` 功能一致,将包含 ``QMachine`` 的 torch 后端 VQC Module 包装为可训练的量子层,通过 ``submit_kwargs["backend"]`` 选择执行后端:
+
+    * ``vqc_autograd`` (默认):在 torch 后端本地通过 VQC autograd 计算梯度,不进行线路提交。
+    * ``qcloud_fake``:提交到本地 pyqpanda3 QVM(FakeBackend)模拟器,使用参数移位法计算梯度。
+    * ``qcloud_service``:提交到 QCloud 真实芯片。设置 ``submit_kwargs["test_qcloud_fake"]=True`` 可在本地模拟器干跑同一 OriginIR 路径,无需消耗芯片额度。
+    * ``qpanda_runtime``:提交到 qpanda3_runtime 真实芯片。
+
+    测量由该层统一管理,两种测量方式互斥:
+
+    * ``submit_kwargs["pauli_str_dict"]``:期望值测量。
+    * ``query_kwargs["measure_qubits"]``:概率测量。
+
+    .. note::
+
+        使用前必须先设置 torch 后端:``pyvqnet.backends.set_backend("torch")``。
+
+    .. note::
+
+        ``vqc_module`` 必须包含 ``save_ir=True`` 的 ``QMachine``,提交后端需要据此构建 OriginIR。
+        例如:``QMachine(num_wires, dtype=dtype, save_ir=True)``。
+
+    .. note::
+
+        必须且只能指定一种测量方式:``submit_kwargs["pauli_str_dict"]``(期望值)
+        与 ``query_kwargs["measure_qubits"]``(概率)二选一,同时指定或都不指定会抛出 ``ValueError``。
+
+    .. note::
+
+        当 ``diff_method="random_coordinate_descent"`` 时,该层每次反向传播随机选择单个参数计算梯度,
+        其余参数保持为零。参考:https://arxiv.org/abs/2311.00088
+
+    :param vqc_module: 包含 ``save_ir=True`` 的 ``QMachine`` 的 torch 后端 VQC Module(``TorchModule``)。
+    :param qcloud_token: ``str|None`` - 提交后端(``qcloud_fake`` / ``qcloud_service``)的 QCloud token。``vqc_autograd`` 后端忽略此参数。默认 None。
+    :param shots: ``int`` - 测量次数。默认 1000。
+    :param diff_method: ``str`` - 梯度计算方法,默认 ``"parameter_shift"``。可选 ``"random_coordinate_descent"``。
+    :param submit_kwargs: ``dict|None`` - 执行与测量设置,默认 None(``{}``)。可识别键:
+        ``backend``: 执行后端,``vqc_autograd`` 默认 / ``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``;
+        ``pauli_str_dict``: 期望值测量,与 ``query_kwargs["measure_qubits"]`` 互斥;
+        ``if_print_qcloud_log``: 是否打印提交日志,默认 False;
+        ``chip_id``: 芯片 ID,默认 "WK_C180";
+        ``set_specified_block``: 指定芯片块,默认 [];
+        ``is_amend``: 是否纠错,默认 True;
+        ``is_mapping``: 是否映射,默认 True;
+        ``is_optimization``: 是否线路优化,默认 True;
+        ``default_task_group_size``: 任务分组大小,默认 200;
+        ``test_qcloud_fake``: True 时本地模拟器执行,``qcloud_fake`` 后端强制为 True;
+        ``fake_async_delay``: 本地模拟器异步延迟秒数,默认 None;
+        ``print_ir``: 是否打印 OriginIR,默认 False;
+        ``server_ip_address``: QCloud 服务器地址,默认 "";
+        ``use_qwc``: 是否使用 QWC 任务分组,默认 True;
+        ``streaming``: 是否启用流式梯度,默认 False;
+        ``block_b`` / ``block_o`` / ``block_k``: 块化收缩的批/输出/核心维度,默认 0 不启用。
+    :param query_kwargs: ``dict|None`` - 查询设置,默认 None(``{}``)。可识别键:
+        ``measure_qubits``: 概率测量,与 ``submit_kwargs["pauli_str_dict"]`` 互斥;
+        ``total_timeout``: 总超时秒数,默认 60,本地模拟器为 3600;
+        ``timeout``: 单次查询超时秒数,默认 1,本地模拟器为 0.01;
+        ``print_query_info``: 是否打印查询信息,默认 False;
+        ``sub_circuits_split_size``: 子线路拆分大小,默认 1。
+    :param name: ``str`` - 模块名称。默认 ""。
+    :return: 一个可以计算量子线路的统一量子层。
+
+    Example::
+
+        import pyvqnet
+
+        pyvqnet.backends.set_backend("torch")
+        import torch
+        from pyvqnet.tensor import QTensor
+        from pyvqnet.qnn.vqc.sv.torch import QMachine, RY, TorchModule
+        from pyvqnet.qnn.pq3.torch import TorchVQCLayer
+
+        # 定义 torch 后端 VQC 模块:wire0 为可训练参数 RY(w) 旋转,wire1 编码经典数据 RY(x)。
+        class QModel(TorchModule):
+            def __init__(self):
+                super().__init__()
+                self.qm = QMachine(2, save_ir=True)
+                self.ry_w = RY(trainable=True, wires=0, init_params=QTensor([[0.4]]))
+                self.ry_x = RY(trainable=False, wires=1)
+
+            def forward(self, x):
+                self.qm.reset_states(x.shape[0])
+                self.ry_w(q_machine=self.qm)
+                self.ry_x(params=x[:, [0]], q_machine=self.qm)
+                return x
+
+        # 后端 1:vqc_autograd(默认),期望值测量。
+        layer = TorchVQCLayer(
+            QModel(),
+            submit_kwargs={"backend": "vqc_autograd", "pauli_str_dict": {"Z0 Z1": 1}},
+        )
+        x = QTensor([[0.3], [0.7]], requires_grad=True)
+        y = layer(x)
+        y.backward(torch.ones_like(y))
+        print(y.detach().cpu().numpy())          # Z0*Z1 的期望值,形状 (2, 1)
+        print(x.grad.detach().cpu().numpy())     # d<Z0 Z1>/dx
+
+        # 后端 1 的概率测量(与 pauli_str_dict 互斥)。
+        layer = TorchVQCLayer(
+            QModel(),
+            submit_kwargs={"backend": "vqc_autograd"},
+            query_kwargs={"measure_qubits": [1]},
+        )
+        x = QTensor([[0.6]], requires_grad=True)
+        y = layer(x)      # wire1 上的概率向量,形状 (1, 2)
+        print(y.detach().cpu().numpy())
+
+        # 后端 2:qcloud_fake(本地 pyqpanda3 QVM + 参数移位法梯度,无需真实芯片)。
+        from pyvqnet.utils import set_random_seed
+
+        set_random_seed(42)
+        layer = TorchVQCLayer(
+            QModel(),
+            qcloud_token="your_qcloud_token",
+            shots=8000,
+            submit_kwargs={
+                "backend": "qcloud_fake",
+                "test_qcloud_fake": True,
+                "pauli_str_dict": {"Z0 Z1": 1},
+            },
+        )
+        x = QTensor([[0.3]], requires_grad=True)
+        y = layer(x)
+        y.backward(torch.ones_like(y))
+        print(y.detach().cpu().numpy())          # 采样得到的期望值,形状 (1, 1)
+        print(layer.vqc_module.ry_w.params.grad.detach().cpu().numpy())
+
+
 TorchQcloud3QuantumLayer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------------
 
 当您安装最新版本pyqpanda3,可以使用本接口定义一个变分线路,并提交到originqc的真实芯片上运行。
 
@@ -2689,7 +2821,7 @@ TorchQcloud3QuantumLayer
 
 
 TorchQpanda3QuantumLayer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------------
 
 如您更加熟悉pyqpanda3语法,可以使用该接口TorchQpanda3QuantumLayer。
 
