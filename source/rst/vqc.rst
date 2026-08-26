@@ -4669,7 +4669,7 @@ DataParallelVQCAdjointLayer
 
     Example::
 
-        #mpirun -n 2 python test.py
+        # vqnetrun --nproc_per_node 2 python test.py
 
         import sys
         sys.path.insert(0,"../../")
@@ -4757,7 +4757,7 @@ DataParallelVQCAdjointLayer
 
         pyvqnet.utils.set_random_seed(42)
 
-        Comm_OP = CommController("mpi")
+        Comm_OP = CommController("gloo")
 
         input_x = tensor.QTensor([[0.1, 0.2, 0.3]])
         input_x = tensor.broadcast_to(input_x, [bsize, 3])
@@ -4772,7 +4772,7 @@ DataParallelVQCAdjointLayer
         l.train()
         y = l(input_x)
 
-        y.backward()    
+        y.backward()
 
 
 
@@ -4794,7 +4794,7 @@ DataParallelVQCLayer
 
     Example::
 
-        #mpirun -n 2 python xxx.py
+        # vqnetrun --nproc_per_node 2 python xxx.py
 
         import pyvqnet.backends
 
@@ -4848,7 +4848,7 @@ DataParallelVQCLayer
 
         input = tensor.ones([b, 3 * n * l])
 
-        Comm = CommController("mpi")
+        Comm = CommController("gloo")
         
         input.requires_grad = True
         qunatum_model = QModel(num_wires=n, num_layer=l, dtype=pyvqnet.kcomplex64)

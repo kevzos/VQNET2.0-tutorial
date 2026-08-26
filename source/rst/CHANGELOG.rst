@@ -8,11 +8,13 @@ VQNet Changelog
 
 Added
 ===================
-- 文档新增统一量子层 ``VQCLayer``(``pyvqnet.qnn.pq3.vqclayer.VQCLayer``)接口，通过 ``submit_kwargs["backend"]`` 选择执行后端(``vqc_autograd`` / ``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``)，支持期望值与概率两种互斥测量方式。
-- 文档新增 torch 后端统一量子层 ``TorchVQCLayer``(``pyvqnet.qnn.pq3.torch.torchvqclayer.TorchVQCLayer``)，与原生 ``VQCLayer`` 功能一致，输入在 forward 边界包装为 ``torch.Tensor``。
-
+- 新增统一量子层 ``VQCLayer``(``pyvqnet.qnn.pq3.vqclayer.VQCLayer``)接口，通过 ``submit_kwargs["backend"]`` 选择执行后端(``vqc_autograd`` / ``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``)，支持期望值与概率两种互斥测量方式。
+- 新增 torch 后端统一量子层 ``TorchVQCLayer``(``pyvqnet.qnn.pq3.torch.torchvqclayer.TorchVQCLayer``)，与原生 ``VQCLayer`` 功能一致。
+- 新增混合量子+经典的多级分布式训练接口 `ParallelTrainingWrapper` 。
 Changed
 ===================
+- 分布式计算模块移除 MPI 后端，CPU 通信统一使用 ``gloo``；``CommController`` 默认 backend 从 ``mpi`` 改为 ``gloo``，``init_groups`` 移除 MPI-only 限制。
+- ``VQCLayer`` / ``TorchVQCLayer`` 的 ``submit_kwargs["backend"]`` 参数值 ``vqc_autograd`` 重命名为 ``vqnet_native``，更准确地反映其"vqnet 原生执行引擎"的语义。
 - 同步量子逻辑门类 API 签名与源码一致：移除 ``has_params`` 参数，``trainable`` 调整为第一位置参数(148 处)。
 - 同步 ``QTensor`` 接口：移除 ``name``、``nodes`` 参数。
 - 同步 ``QuantumLayerAdjoint`` 接口：移除 ``use_qpanda`` 参数，``general_module`` 重命名为 ``vqc_module``。

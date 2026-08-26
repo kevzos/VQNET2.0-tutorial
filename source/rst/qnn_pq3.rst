@@ -558,7 +558,7 @@ VQCLayer
 
     VQCLayer 是一个统一的量子层接口,将包含 ``QMachine`` 的 VQC Module 包装为可训练的量子层,通过 ``submit_kwargs["backend"]`` 选择执行后端:
 
-    * ``vqc_autograd`` (默认):完全在 VQNet 本地通过 autograd 计算梯度,不进行线路提交。
+    * ``vqnet_native`` (默认):完全在 VQNet 本地通过 autograd 计算梯度,不进行线路提交。
     * ``qcloud_fake``:提交到本地 pyqpanda3 QVM(FakeBackend)模拟器,使用参数移位法计算梯度。
     * ``qpanda_runtime``:提交到 qpanda3_runtime 真实芯片。
     * ``qcloud_service``:提交到 QCloud 真实芯片。设置 ``submit_kwargs["test_qcloud_fake"]=True`` 可在本地模拟器干跑同一 OriginIR 路径,无需消耗芯片额度。
@@ -584,11 +584,11 @@ VQCLayer
         其余参数保持为零。参考:https://arxiv.org/abs/2311.00088
 
     :param vqc_module: 包含 ``save_ir=True`` 的 ``QMachine`` 的 VQC Module。
-    :param qcloud_token: ``str|None`` - 提交后端(``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``)的 QCloud token。``vqc_autograd`` 后端忽略此参数。默认 None。
+    :param qcloud_token: ``str|None`` - 提交后端(``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``)的 QCloud token。``vqnet_native`` 后端忽略此参数。默认 None。
     :param shots: ``int`` - 测量次数。默认 1000。
     :param diff_method: ``str`` - 梯度计算方法,默认 ``"parameter_shift"``。可选 ``"random_coordinate_descent"``。
     :param submit_kwargs: ``dict|None`` - 执行与测量设置,默认 None(``{}``)。可识别键:
-        ``backend``: 执行后端, ``vqc_autograd`` 默认 / ``qcloud_fake`` / ``qpanda_runtime`` / ``qcloud_service``;
+        ``backend``: 执行后端, ``vqnet_native`` 默认 / ``qcloud_fake`` / ``qpanda_runtime`` / ``qcloud_service``;
         ``pauli_str_dict``: 期望值测量,与 ``query_kwargs["measure_qubits"]`` 互斥;
         ``if_print_qcloud_log``: 是否打印提交日志,默认 False;
         ``chip_id``: 芯片 ID,默认 "WK_C180";
@@ -635,10 +635,10 @@ VQCLayer
                 self.ry_x(params=x[:, [0]], q_machine=self.qm)
                 return x
 
-        # 后端 1:vqc_autograd(默认),期望值测量。
+        # 后端 1:vqnet_native(默认),期望值测量。
         layer = VQCLayer(
             QModel(),
-            submit_kwargs={"backend": "vqc_autograd", "pauli_str_dict": {"Z0 Z1": 1}},
+            submit_kwargs={"backend": "vqnet_native", "pauli_str_dict": {"Z0 Z1": 1}},
         )
         x = QTensor([[0.3], [0.7]], requires_grad=True)
         y = layer(x)
@@ -649,7 +649,7 @@ VQCLayer
         # 后端 1 的概率测量(与 pauli_str_dict 互斥)。
         layer = VQCLayer(
             QModel(),
-            submit_kwargs={"backend": "vqc_autograd"},
+            submit_kwargs={"backend": "vqnet_native"},
             query_kwargs={"measure_qubits": [1]},
         )
         x = QTensor([[0.6]], requires_grad=True)

@@ -2568,7 +2568,7 @@ TorchVQCLayer
 
     TorchVQCLayer 是一个统一的量子层接口,与原生 ``VQCLayer`` 功能一致,将包含 ``QMachine`` 的 torch 后端 VQC Module 包装为可训练的量子层,通过 ``submit_kwargs["backend"]`` 选择执行后端:
 
-    * ``vqc_autograd`` (默认):在 torch 后端本地通过 VQC autograd 计算梯度,不进行线路提交。
+    * ``vqnet_native`` (默认):在 torch 后端本地通过 VQC autograd 计算梯度,不进行线路提交。
     * ``qcloud_fake``:提交到本地 pyqpanda3 QVM(FakeBackend)模拟器,使用参数移位法计算梯度。
     * ``qcloud_service``:提交到 QCloud 真实芯片。设置 ``submit_kwargs["test_qcloud_fake"]=True`` 可在本地模拟器干跑同一 OriginIR 路径,无需消耗芯片额度。
     * ``qpanda_runtime``:提交到 qpanda3_runtime 真实芯片。
@@ -2598,11 +2598,11 @@ TorchVQCLayer
         其余参数保持为零。参考:https://arxiv.org/abs/2311.00088
 
     :param vqc_module: 包含 ``save_ir=True`` 的 ``QMachine`` 的 torch 后端 VQC Module(``TorchModule``)。
-    :param qcloud_token: ``str|None`` - 提交后端(``qcloud_fake`` / ``qcloud_service``)的 QCloud token。``vqc_autograd`` 后端忽略此参数。默认 None。
+    :param qcloud_token: ``str|None`` - 提交后端(``qcloud_fake`` / ``qcloud_service``)的 QCloud token。``vqnet_native`` 后端忽略此参数。默认 None。
     :param shots: ``int`` - 测量次数。默认 1000。
     :param diff_method: ``str`` - 梯度计算方法,默认 ``"parameter_shift"``。可选 ``"random_coordinate_descent"``。
     :param submit_kwargs: ``dict|None`` - 执行与测量设置,默认 None(``{}``)。可识别键:
-        ``backend``: 执行后端,``vqc_autograd`` 默认 / ``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``;
+        ``backend``: 执行后端,``vqnet_native`` 默认 / ``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``;
         ``pauli_str_dict``: 期望值测量,与 ``query_kwargs["measure_qubits"]`` 互斥;
         ``if_print_qcloud_log``: 是否打印提交日志,默认 False;
         ``chip_id``: 芯片 ID,默认 "WK_C180";
@@ -2651,10 +2651,10 @@ TorchVQCLayer
                 self.ry_x(params=x[:, [0]], q_machine=self.qm)
                 return x
 
-        # 后端 1:vqc_autograd(默认),期望值测量。
+        # 后端 1:vqnet_native(默认),期望值测量。
         layer = TorchVQCLayer(
             QModel(),
-            submit_kwargs={"backend": "vqc_autograd", "pauli_str_dict": {"Z0 Z1": 1}},
+            submit_kwargs={"backend": "vqnet_native", "pauli_str_dict": {"Z0 Z1": 1}},
         )
         x = QTensor([[0.3], [0.7]], requires_grad=True)
         y = layer(x)
@@ -2665,7 +2665,7 @@ TorchVQCLayer
         # 后端 1 的概率测量(与 pauli_str_dict 互斥)。
         layer = TorchVQCLayer(
             QModel(),
-            submit_kwargs={"backend": "vqc_autograd"},
+            submit_kwargs={"backend": "vqnet_native"},
             query_kwargs={"measure_qubits": [1]},
         )
         x = QTensor([[0.6]], requires_grad=True)
@@ -8707,7 +8707,7 @@ CommController
     .. note::
 
         请参考 `torch 分布式接口 <https://pytorch.org/docs/stable/distributed.html>`_  中启动分布式的方法启动。
-        当使用 CPU 上进行分布式,请使用 ``gloo`` 而不是 ``mpi`` 配置backend。
+        当使用 CPU 上进行分布式,请使用 ``gloo`` 配置backend。
         当使用 GPU 上进行分布式,请使用 ``nccl`` 启动  配置backend。
 
     :ref:`vqnet_dist` 下VQNet自己实现的分布式接口不适用 ``torch`` 计算后端。
