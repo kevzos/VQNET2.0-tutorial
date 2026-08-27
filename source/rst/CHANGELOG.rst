@@ -11,6 +11,7 @@ Added
 - 新增统一量子层 ``VQCLayer``(``pyvqnet.qnn.pq3.vqclayer.VQCLayer``)接口，通过 ``submit_kwargs["backend"]`` 选择执行后端(``vqc_autograd`` / ``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``)，支持期望值与概率两种互斥测量方式。
 - 新增 torch 后端统一量子层 ``TorchVQCLayer``(``pyvqnet.qnn.pq3.torch.torchvqclayer.TorchVQCLayer``)，与原生 ``VQCLayer`` 功能一致。
 - 新增混合量子+经典的多级分布式训练接口 `ParallelTrainingWrapper` 。
+
 Changed
 ===================
 - 分布式计算模块移除 MPI 后端，CPU 通信统一使用 ``gloo``；``CommController`` 默认 backend 从 ``mpi`` 改为 ``gloo``，``init_groups`` 移除 MPI-only 限制。
@@ -18,16 +19,13 @@ Changed
 - 同步量子逻辑门类 API 签名与源码一致：移除 ``has_params`` 参数，``trainable`` 调整为第一位置参数(148 处)。
 - 同步 ``QTensor`` 接口：移除 ``name``、``nodes`` 参数。
 - 同步 ``QuantumLayerAdjoint`` 接口：移除 ``use_qpanda`` 参数，``general_module`` 重命名为 ``vqc_module``。
-- 同步 ``TNQModule`` 接口：新增 ``mesh``、``cotengra_options``、``tree_path`` 参数，修正 ``use_jit`` 默认值。
+- 移除源码中已删除接口的文档章节： ``QuantumLayer`` 、 ``NoiseQuantumLayer`` (含 MNIST 示例章节) 等pyqpanda2兼容接口，仅保留pyqpanda3兼容接口。
 - 修正既有文档偏差：``nn`` 模块各层(``name``/``dtype``/``GRU`` nonlinearity/``ModuleList``/``ParameterList``/``Sequential``)、``LayerNorm`` ``normalized_shape``、优化器 ``lr``、测量类 ``obs``/``wires`` 必填、``pq3`` 模板 ``qubits`` 改名为 ``qlist`` 等。
-- 移除源码中已删除接口的文档章节：``QuantumLayer``、``NoiseQuantumLayer``(含 MNIST 示例章节)，并更新 ``QpandaQCircuitVQCLayerLite`` 路径至 ``pq3`` 命名空间。
-- ``torch_api.rst`` 中"使用pyqpanda3进行计算的量子变分线路训练函数"章节标题提升一级，与经典神经模块同级。
-- 源码 ``VQCLayer``、``TorchVQCLayer`` docstring 补充可运行示例及完整的 ``submit_kwargs`` / ``query_kwargs`` 键列表。
-- 修正 ``VQCLayer``、``TorchVQCLayer`` 后端状态描述：``qcloud_service`` / ``qpanda_runtime`` 为已实现(非暂未实现)。
+- 同步 ``TNQModule`` 接口：新增 ``mesh``、``cotengra_options``、``tree_path`` 参数，修正 ``use_jit`` 默认值。
 
 Fixed
 ===================
-- 修复 ``QuantumLayerV3`` 中 CRX/CRY/CRZ 参数移位规则系数错误(原系数为正确值的 16 倍)。
+- 修复 ``QuantumLayerV3`` 中 CRX/CRY/CRZ 参数移位规则系数错误。
 - 修复 ``CRot`` 默认模式梯度错误，启用 ``Rot``、``CR``、``CRot`` 的 adjoint 梯度，并为 ``CRX``、``CRY``、``CRZ`` 实现 ``generator()`` 方法。
 - 修复 ``he_uniform_for_linear`` 初始化器 fan 计算错误。
 - 修复 ``SPSA._step()`` 中 delta 未刷新及梯度公式错误导致的参数发散问题。

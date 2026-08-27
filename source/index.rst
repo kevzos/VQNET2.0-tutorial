@@ -61,10 +61,10 @@ VQNet 不仅是一个强大的开发工具，还在公司内部多个项目中�
     rst/utils.rst
 
 .. toctree::
-    :caption: 使用pyqpanda的量子神经网络接口
+    :caption: 使用pyqpanda3的量子神经网络接口
     :maxdepth: 2
 
-    rst/qnn.rst
+
     rst/qnn_pq3.rst
 
 .. toctree::
