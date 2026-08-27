@@ -1213,7 +1213,7 @@ ZeroModelInitial
         model = ZeroModelInitial(args=args_, model=model, optimizer=optimizer) 
 
         def compute_acc(outputs, labels, correct, total):
-            predicted = pyvqnet.tensor.argmax(outputs, dim=1, keepdims=True)
+            predicted = pyvqnet.tensor.argmax(outputs, dim=1, keepdim=True)
             total += labels.size
             correct += pyvqnet.tensor.sums(predicted == labels).item()
             return correct, total
@@ -1386,7 +1386,7 @@ ColumnParallelLinear
         optimizer = optim.Adam(model.parameters(), lr=0.001)
 
         def compute_acc(outputs, labels, correct, total):
-            predicted = pyvqnet.tensor.argmax(outputs, dim=1, keepdims=True)
+            predicted = pyvqnet.tensor.argmax(outputs, dim=1, keepdim=True)
             total += labels.size
             correct += pyvqnet.tensor.sums(predicted == labels).item()
             return correct, total
@@ -1559,7 +1559,7 @@ RowParallelLinear
         optimizer = optim.Adam(model.parameters(), lr=0.001)
 
         def compute_acc(outputs, labels, correct, total):
-            predicted = pyvqnet.tensor.argmax(outputs, dim=1, keepdims=True)
+            predicted = pyvqnet.tensor.argmax(outputs, dim=1, keepdim=True)
             total += labels.size
             correct += pyvqnet.tensor.sums(predicted == labels).item()
             return correct, total

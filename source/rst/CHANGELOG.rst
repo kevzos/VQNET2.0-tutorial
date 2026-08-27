@@ -46,13 +46,14 @@ Added
 - 文档新增 ``pyvqnet.torch.trl`` 大模型微调损失函数(``sft_loss``、``dpo_loss``、``ppo_loss``、``grpo_loss``、``reward_loss``)。
 - 文档新增 ``RMSNorm``、``RoPE``、``SwiGLU``、``fused_moe``、``scaled_*softmax`` 等 ``nn`` 模块文档。
 - 文档新增 ``pq3 torch`` 量子层(``TorchQpandaQuantumLayer``、``TorchQcloud3QuantumLayer``、``TorchQpanda3QuantumLayer``)。
-- 新增对 ``Python 3.13``、``Python 3.14`` 的支持。
+- 新增对 ``Python 3.13``、 ``Python 3.14`` 的支持。
 - torch后端下使用torch extension 实现了高性能的CUDA的RX,RY,RZ,CNOT,测量等算子实现。
 
 Changed
 ===================
 - ``DistributeQMachine`` 重命名为 ``DistributedQMachine``，文档同步更新。
 - 统一 RST 文档中 ``Examples::`` 标记为 ``Example::``。
+- 改 QTensor reduce api 接口的 `axis` 为 `dim`, `keepdims`为 `keepdim` 。
 - 修正 ``vqc.rst`` 与 ``vqc_demo.rst`` 示例导入路径为公共模块。
 - 合并 ``torch-native``、``torch`` 两个后端。
 
