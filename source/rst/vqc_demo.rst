@@ -421,7 +421,7 @@ Circuit-centric quantum classifiers算法示例
     import sys
     sys.path.insert(0, "../")
     import pyvqnet
-    from pyvqnet import _core
+
     from pyvqnet.dtype import *
 
     from pyvqnet.tensor.tensor import QTensor

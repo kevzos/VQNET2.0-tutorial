@@ -3539,8 +3539,6 @@ MSE
         import numpy as np
         from pyvqnet.tensor import tensor
         from pyvqnet.utils import metrics as vqnet_metrics
-        from pyvqnet import _core
-        _vqnet = _core.vqnet
 
         y_true_Qtensor = tensor.arange(1, 12)
         y_pred_Qtensor = tensor.arange(4, 15)
@@ -3572,8 +3570,6 @@ RMSE
         import numpy as np
         from pyvqnet.tensor import tensor
         from pyvqnet.utils import metrics as vqnet_metrics
-        from pyvqnet import _core
-        _vqnet = _core.vqnet
 
         y_true_Qtensor = tensor.arange(1, 12)
         y_pred_Qtensor = tensor.arange(4, 15)
@@ -3606,8 +3602,6 @@ MAE
         import numpy as np
         from pyvqnet.tensor import tensor
         from pyvqnet.utils import metrics as vqnet_metrics
-        from pyvqnet import _core
-        _vqnet = _core.vqnet
 
         y_true_Qtensor = tensor.arange(1, 12)
         y_pred_Qtensor = tensor.arange(4, 15)
@@ -3641,8 +3635,6 @@ R_Square
         import numpy as np
         from pyvqnet.tensor import tensor
         from pyvqnet.utils import metrics as vqnet_metrics
-        from pyvqnet import _core
-        _vqnet = _core.vqnet
 
         y_true_Qtensor = tensor.arange(1, 12)
         y_pred_Qtensor = tensor.arange(4, 15)
@@ -3676,8 +3668,6 @@ precision_recall_f1_2_score
         import numpy as np
         from pyvqnet.tensor import tensor
         from pyvqnet.utils import metrics as vqnet_metrics
-        from pyvqnet import _core
-        _vqnet = _core.vqnet
 
         y_true_Qtensor = tensor.QTensor([0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
         y_pred_Qtensor = tensor.QTensor([0, 0, 1, 1, 1, 0, 0, 1, 1, 1])
@@ -3716,8 +3706,6 @@ precision_recall_f1_N_score
         import numpy as np
         from pyvqnet.tensor import tensor
         from pyvqnet.utils import metrics as vqnet_metrics
-        from pyvqnet import _core
-        _vqnet = _core.vqnet
 
         reference_list = [1, 1, 2, 2, 2, 3, 3, 3, 3, 3]
         prediciton_list = [1, 2, 2, 2, 3, 1, 2, 3, 3, 3]
@@ -3768,8 +3756,6 @@ precision_recall_f1_Multi_score
         import numpy as np
         from pyvqnet.tensor import tensor
         from pyvqnet.utils import metrics as vqnet_metrics
-        from pyvqnet import _core
-        _vqnet = _core.vqnet
 
         reference_list = [[1, 0], [0, 1], [0, 0], [1, 1], [1, 0]]
         prediciton_list = [[1, 0], [0, 0], [1, 0], [0, 0], [0, 0]]
@@ -3830,8 +3816,6 @@ auc_calculate
         import numpy as np
         from pyvqnet.tensor import tensor
         from pyvqnet.utils import metrics as vqnet_metrics
-        from pyvqnet import _core
-        _vqnet = _core.vqnet
 
         y = np.array([1, 1, 1, 1, 0, 1, 0, 0, 0, 0])
         pred = np.array([0.9, 0.8, 0.7, 0.6, 0.6, 0.4, 0.4, 0.3, 0.2, 0.1])
@@ -3878,7 +3862,6 @@ Triton 依赖于 PyTorch 的部分接口，VQNet 实现了类似 PyTorch 的接�
     import pyvqnet as torch
     import triton
     import triton.language as tl
-
 
 
     DEVICE = torch.DEV_GPU_0

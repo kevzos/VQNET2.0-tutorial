@@ -684,7 +684,7 @@ QiskitLayer
 
 .. py:class:: pyvqnet.qnn.QiskitLayer(qiskit_circuits,para_num)
 
-    一个用于在 vqnet 中实现前向和反向传播的 qiskit 电路封装层。QISKIT_VQC 是一个定义 qiskit 量子电路及其 `run` 函数的类。
+    一个用于在 VQNet 中实现前向和反向传播的 qiskit 电路封装层。QISKIT_VQC 是一个定义 qiskit 量子电路及其 `run` 函数的类。
     以下示例展示了它的工作原理。此层仅支持电路的输入和权重作为参数。
     
     :param cirq_vqc: 定义 qiskit 电路的定义、后端和运行函数的类。
@@ -972,7 +972,7 @@ CirqLayer
 
 .. py:class:: pyvqnet.qnn.CirqLayer(cirq_vqc,para_num)
 
-    一个用于在 vqnet 中实现前向和反向传播的 cirq 电路封装层。CIRQ_VQC是需要用户定义 cirq 量子电路及其 `run` 函数的类。以下示例展示了它的工作原理。
+    一个用于在 VQNet 中实现前向和反向传播的 cirq 电路封装层。CIRQ_VQC是需要用户定义 cirq 量子电路及其 `run` 函数的类。以下示例展示了它的工作原理。
     此层仅支持电路的输入和权重作为参数。
     
     :param cirq_vqc: 定义 cirq 电路的定义、后端和运行函数的类。

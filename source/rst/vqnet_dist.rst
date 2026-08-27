@@ -46,8 +46,8 @@ nproc_per_node
 backend
 ^^^^^^^^^^^^^^^^^^^^^^
 
-``vqnetrun`` 接口中可以通过 ``--backend`` 参数选择分布式后端,支持 ``gloo`` 和 ``nccl`` 两种模式。
-GLOO 模式支持单机多 CPU 场景, NCCL 模式用于单机多 GPU 场景,采用去中心化启动模型(每个节点独立运行 vqnetrun)。
+``vqnetrun`` 接口中可以通过 ``--backend`` 参数选择分布式后端,支持 ``gloo`` 和 ``nccl`` ``None`` 3种模式。
+GLOO 模式支持单机多 CPU 场景, NCCL 模式用于单机多 GPU 场景, 默认是 ``None`` ，则会自动根据要通信的数据的设备决定通信方式。
 
     Example::
 
@@ -306,11 +306,11 @@ cb, check-build
 CommController
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.distributed.ControlComm.CommController(backend="gloo", rank=None, world_size=None)
+.. py:class:: pyvqnet.distributed.ControlComm.CommController(backend=None, rank=None, world_size=None)
 
     CommController用于控制在cpu、gpu下数据通信的控制器, 通过设置参数 `backend` 来生成cpu(gloo)、gpu(nccl)的控制器。(目前分布式计算的功能仅支持linux操作系系统下使用)
 
-    :param backend: 用于生成cpu或者gpu的数据通信控制器。
+    :param backend: 用于生成cpu或者gpu的数据通信控制器,如果是None，则支持gloo/nccl两种通信，默认None.
     :param rank: 该参数仅在非pyvqnet后端下有用, 默认值为: None。
     :param world_size: 该参数仅在非pyvqnet后端下有用, 默认值为: None。
 
@@ -353,7 +353,6 @@ CommController
             # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
 
- 
     .. py:method:: getLocalRank()
         
         用于获得当前机器上的当前进程号。
@@ -369,10 +368,7 @@ CommController
             Comm_OP.getLocalRank()
             # vqnetrun --backend nccl --nproc_per_node 2 python test.py
 
- 
 
-
- 
     .. py:method:: barrier()
         
         同步。

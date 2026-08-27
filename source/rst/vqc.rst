@@ -4,7 +4,7 @@
 变分量子线路自动微分模拟
 ***********************************
 
-以下接口使用pyVQNet的QTensor接口构建常用量子逻辑门、量子线路以及测量方法,可使用自动微分模拟代替量子线路parameter-shift方法计算量子变分线路中参数的梯度。
+以下接口使用VQNet的QTensor接口构建常用量子逻辑门、量子线路以及测量方法,可使用自动微分模拟代替量子线路parameter-shift方法计算量子变分线路中参数的梯度。
 
 我们可以像其他 `Module` 一样,使用 ``pyvqnet.qnn.vqc`` 模块下的接口构成量子与经典混合神经网络模型。在 `Module` 中需要定义虚拟机 `QMachine`,并且需要对machine的量子态矢数据 `states` 根据输入的batchsize进行reset_states。请具体看下例:
 

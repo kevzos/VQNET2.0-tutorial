@@ -3487,7 +3487,7 @@ QUnet主要是用于解决图像分割的技术。
     from pyvqnet.qnn.pq3.quantumlayer import QuantumLayer
     from pyvqnet.tensor import tensor
     from pyvqnet.qnn.pq3.measure import expval
-    from pyvqnet._core import Tensor as CoreTensor
+
     import matplotlib
     from matplotlib import pyplot as plt
     try:
@@ -4970,8 +4970,7 @@ VQNet实现了该算法的一个示例: 使用VQE 求解目标Hamiltonian的基�
     from pyvqnet.qnn.measure import Hermitian_expval
     from pyvqnet.qnn import QuantumLayer
     from pyvqnet.optim import SGD
-    import pyvqnet._core as _core
-    from pyvqnet.tensor import QTensor
+    from pyvqnet.tensor import QTensor,to_tensor
     from matplotlib import pyplot as plt
 
     num_layers = 2
@@ -5065,11 +5064,11 @@ vqe_func_analytic()函数是使用参数移位计算理论梯度,vqe_func_shots(
     qlayer_shots = QuantumLayer(vqe_func_shots, 2*2*3 )
     cost_sgd = []
     cost_dsgd = []
-    temp = _core.Tensor(init_params)
-    _core.vqnet.copyTensor(temp, qlayer_ana.m_para.data)
+
+    qlayer_ana.m_para.init_from_tensor(to_tensor(init_params))
     opti_ana = SGD(qlayer_ana.parameters())
 
-    _core.vqnet.copyTensor(temp, qlayer_shots.m_para.data)
+    qlayer_shots.m_para.init_from_tensor(to_tensor(init_params))
     opti_shots = SGD(qlayer_shots.parameters())
 
     for i in range(steps):
