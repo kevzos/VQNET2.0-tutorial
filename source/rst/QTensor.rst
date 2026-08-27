@@ -255,7 +255,7 @@ QTensor 的函数与属性
         返回输入 QTensor 中所有元素的最大值的索引, 或返回 QTensor 按某一维度的最大值的索引。
 
         :param dim: 计算argmax的轴, 只接受单个维度。 如果 dim == None, 则返回输入张量中所有元素的最大值的索引。有效的 dim 范围是 [-R, R), 其中 R 是输入的 ndim。 当 dim < 0 时, 它的工作方式与 dim + R 相同。
-        :param keepdims: 输出 QTensor 是否保留了最大值索引操作的轴, 默认是False。
+        :param keepdim: 输出 QTensor 是否保留了最大值索引操作的轴, 默认是False。
 
         :return: 输入 QTensor 中最大值的索引。
 
@@ -296,7 +296,7 @@ QTensor 的函数与属性
         返回输入 QTensor 中所有元素的最小值的索引, 或返回 QTensor 按某一维度的最小值的索引。
 
         :param dim: 计算argmin的轴, 只接受单个维度。 如果 dim == None, 则返回输入张量中所有元素的最小值的索引。有效的 dim 范围是 [-R, R), 其中 R 是输入的 ndim。 当 dim < 0 时, 它的工作方式与 dim + R 相同。
-        :param keepdims: 输出 QTensor 是否保留了最小值索引操作的轴, 默认是False。
+        :param keepdim: 输出 QTensor 是否保留了最小值索引操作的轴, 默认是False。
 
         :return: 输入 QTensor 中最小值的索引。
 
@@ -1572,7 +1572,7 @@ argsort
 topK
 ==============================
 
-.. py:function:: pyvqnet.tensor.topK(t, k, axis=-1, if_descent=True)
+.. py:function:: pyvqnet.tensor.topK(t, k, dim=-1, if_descent=True)
 
     返回给定输入张量沿给定维度的 k 个最大元素。
 
@@ -1580,7 +1580,7 @@ topK
 
     :param t: 输入 QTensor 。
     :param k: 取排序后的 k 的个数。
-    :param axis: 要排序的维度。默认 = -1,最后一个轴。
+    :param dim: 要排序的维度。默认 = -1,最后一个轴。
     :param if_descent: 排序使用升序还是降序,默认降序。
 
     :return: 新的 QTensor 。
@@ -1608,7 +1608,7 @@ topK
 argtopK
 ==============================
 
-.. py:function:: pyvqnet.tensor.argtopK(t, k, axis=-1, if_descent=True)
+.. py:function:: pyvqnet.tensor.argtopK(t, k, dim=-1, if_descent=True)
 
     返回给定输入张量沿给定维度的 k 个最大元素的索引。
 
@@ -1616,7 +1616,7 @@ argtopK
 
     :param t: 输入 QTensor 。
     :param k: 取排序后的 k 的个数。
-    :param axis: 要排序的维度。默认 = -1,最后一个轴。
+    :param dim: 要排序的维度。默认 = -1,最后一个轴。
     :param if_descent: 排序使用升序还是降序,默认降序。
 
     :return: 新的 QTensor 。
@@ -1734,13 +1734,13 @@ divide
 sums
 ==============================
 
-.. py:function:: pyvqnet.tensor.sums(t: pyvqnet.tensor.QTensor, dim: Optional[int] = None, keepdims=False)
+.. py:function:: pyvqnet.tensor.sums(t: pyvqnet.tensor.QTensor, dim: Optional[int] = None, keepdim=False)
 
     对输入的 QTensor 按 dim 设定的轴计算元素和,如果 dim 是None,则返回所有元素和。
 
     :param t: 输入 QTensor 。
     :param dim: 用于求和的轴,默认为None。
-    :param keepdims: 输出张量是否保留了减小的维度。默认为False。
+    :param keepdim: 输出张量是否保留了减小的维度。默认为False。
     :return: 输出 QTensor 。
 
     Example::
@@ -1779,13 +1779,13 @@ cumsum
 mean
 ==============================
 
-.. py:function:: pyvqnet.tensor.mean(t: pyvqnet.tensor.QTensor, dim=None, keepdims=False)
+.. py:function:: pyvqnet.tensor.mean(t: pyvqnet.tensor.QTensor, dim=None, keepdim=False)
 
     对输入的 QTensor 按 dim 设定的轴计算元素的平均,如果 dim 是None,则返回所有元素平均。
 
     :param t: 输入 QTensor ,需要是浮点数或者复数。
     :param dim: 用于求平均的轴,默认为None。
-    :param keepdims: 输出张量是否保留了减小的维度。默认为False。
+    :param keepdim: 输出张量是否保留了减小的维度。默认为False。
     :return: 输出 QTensor 或 均值。
 
     Example::
@@ -1801,13 +1801,13 @@ mean
 median
 ==============================
 
-.. py:function:: pyvqnet.tensor.median(t: pyvqnet.tensor.QTensor, dim=None, keepdims=False)
+.. py:function:: pyvqnet.tensor.median(t: pyvqnet.tensor.QTensor, dim=None, keepdim=False)
 
     对输入的 QTensor 按 dim 设定的轴计算元素的平均,如果 dim 是None,则返回所有元素平均。
 
     :param t: 输入 QTensor 。
     :param dim: 用于求平均的轴,默认为None。
-    :param keepdims: 输出张量是否保留了减小的维度。默认为False。
+    :param keepdim: 输出张量是否保留了减小的维度。默认为False。
     :return: 输出 QTensor 或 中值。
 
     Example::
@@ -1833,13 +1833,13 @@ median
 std
 ==============================
 
-.. py:function:: pyvqnet.tensor.std(t: pyvqnet.tensor.QTensor, dim=None, keepdims=False, unbiased=True)
+.. py:function:: pyvqnet.tensor.std(t: pyvqnet.tensor.QTensor, dim=None, keepdim=False, unbiased=True)
 
     对输入的 QTensor 按 dim 设定的轴计算元素的标准差,如果 dim 是None,则返回所有元素标准差。
 
     :param t: 输入 QTensor 。
     :param dim: 用于求标准差的轴,默认为None。
-    :param keepdims: 输出张量是否保留了减小的维度。默认为False。
+    :param keepdim: 输出张量是否保留了减小的维度。默认为False。
     :param unbiased: 是否使用贝塞尔修正,默认使用。
     :return: 输出 QTensor 或 标准差。
 
@@ -1866,13 +1866,13 @@ std
 var
 ==============================
 
-.. py:function:: pyvqnet.tensor.var(t: pyvqnet.tensor.QTensor, dim=None, keepdims=False, unbiased=True)
+.. py:function:: pyvqnet.tensor.var(t: pyvqnet.tensor.QTensor, dim=None, keepdim=False, unbiased=True)
 
     对输入的 QTensor 按 dim 设定的轴计算元素的方差,如果 dim 是None,则返回所有元素方差。
 
     :param t: 输入 QTensor 。
     :param dim: 用于求方差的轴,默认为None。
-    :param keepdims: 输出张量是否保留了减小的维度。默认为False。
+    :param keepdim: 输出张量是否保留了减小的维度。默认为False。
     :param unbiased: 是否使用贝塞尔修正,默认使用。
     :return: 输出 QTensor 或方差。
 
@@ -2567,13 +2567,13 @@ eigh
 frobenius_norm
 ==============================
 
-.. py:function:: pyvqnet.tensor.frobenius_norm(t: QTensor, dim: int = None, keepdims=False)
+.. py:function:: pyvqnet.tensor.frobenius_norm(t: QTensor, dim: int = None, keepdim=False)
 
     对输入的 QTensor 按 dim 设定的轴计算张量的F范数,如果 dim 是None,则返回所有元素F范数。
 
     :param t: 输入 QTensor 。
     :param dim: 用于求F范数的轴,默认为None。
-    :param keepdims: 输出张量是否保留了减小的维度。默认为False。
+    :param keepdim: 输出张量是否保留了减小的维度。默认为False。
     :return: 输出 QTensor 或 F范数值。
 
 
@@ -2644,13 +2644,13 @@ minimum
 min
 ==============================
 
-.. py:function:: pyvqnet.tensor.min(t: pyvqnet.tensor.QTensor, dim=None, keepdims=False)
+.. py:function:: pyvqnet.tensor.min(t: pyvqnet.tensor.QTensor, dim=None, keepdim=False)
 
     对输入的 QTensor 按 dim 设定的轴计算元素的最小值,如果 dim 是None,则返回所有元素的最小值。
 
     :param t: 输入 QTensor 。
     :param dim: 用于求最小值的轴,默认为None。
-    :param keepdims: 输出张量是否保留了减小的维度。默认为False。
+    :param keepdim: 输出张量是否保留了减小的维度。默认为False。
 
     :return: 输出 QTensor 或浮点数。
 
@@ -2659,7 +2659,7 @@ min
         from pyvqnet.tensor import tensor
         from pyvqnet.tensor import QTensor
         t = QTensor([[1, 2, 3], [4, 5, 6]])
-        x = tensor.min(t, dim=1, keepdims=True)
+        x = tensor.min(t, dim=1, keepdim=True)
         print(x)
 
         # [
@@ -2670,13 +2670,13 @@ min
 max
 ==============================
 
-.. py:function:: pyvqnet.tensor.max(t: pyvqnet.tensor.QTensor, dim=None, keepdims=False)
+.. py:function:: pyvqnet.tensor.max(t: pyvqnet.tensor.QTensor, dim=None, keepdim=False)
 
     对输入的 QTensor 按 dim 设定的轴计算元素的最大值,如果 dim 是None,则返回所有元素的最大值。
 
     :param t: 输入 QTensor 。
     :param dim: 用于求最大值的轴,默认为None。
-    :param keepdims: 输出张量是否保留了减小的维度。默认为False。
+    :param keepdim: 输出张量是否保留了减小的维度。默认为False。
     
     :return: 输出 QTensor 或浮点数。
 
@@ -2686,7 +2686,7 @@ max
         from pyvqnet.tensor import tensor
         from pyvqnet.tensor import QTensor
         t = QTensor([[1, 2, 3], [4, 5, 6]])
-        x = tensor.max(t, dim=1, keepdims=True)
+        x = tensor.max(t, dim=1, keepdim=True)
         print(x)
 
         # [
