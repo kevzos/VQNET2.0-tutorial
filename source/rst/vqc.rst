@@ -4015,34 +4015,6 @@ VQC_BasisRotation
         #   [[-0.1715559-0.1614315j  0.1624039-0.0598041j]
         #    [ 0.0608986-0.1078906j -0.305845 +0.1773662j]]]]
 
-VQC_QuantumPoolingCircuit
----------------------------------------------------------------
-
-.. py:function:: pyvqnet.qnn.vqc.VQC_QuantumPoolingCircuit(ignored_wires, sinks_wires, params, q_machine)
-
-    在 ``q_machine`` 上对数据进行降采样的量子电路。为了减少电路中的量子位数量,首先在系统中创建成对的量子位。在最初配对所有量子位之后,将广义2量子位酉元应用于每一对量子位上。并在应用这两个量子位酉元之后,在神经网络的其余部分忽略每对量子位中的一个量子位。
-
-    :param sources_wires: 将被忽略的源量子位索引。
-    :param sinks_wires: 将保留的目标量子位索引。
-    :param params: 输入参数,形状应该为[ len(ignored_wires) + len(sinks_wires) // 2 * 3]。
-    :param q_machine: 量子虚拟机设备。
-
-
-    Example:: 
-
-        from pyvqnet.qnn.vqc import VQC_QuantumPoolingCircuit, QMachine, MeasureAll
-        from pyvqnet import tensor
-        p = tensor.full([6], 0.35)
-        qm = QMachine(4)
-        VQC_QuantumPoolingCircuit(q_machine=qm,
-                                ignored_wires=[0, 1],
-                                sinks_wires=[2, 3],
-                                params=p)
-        m = MeasureAll(obs={"Z1": 1})
-        exp = m(q_machine=qm)
-        print(exp)
-
-
 vqc_qft_add_to_register
 -------------------------------------
 

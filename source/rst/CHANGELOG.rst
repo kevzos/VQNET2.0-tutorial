@@ -22,12 +22,12 @@ Changed
 - 改 QTensor reduce api 接口的 `axis` 为 `dim`, `keepdims`为 `keepdim` 。
 - 修正 ``vqc.rst`` 与 ``vqc_demo.rst`` 示例导入路径为公共模块。
 - 合并 ``torch-native``、``torch`` 两个后端。
+- 移除 ``pyvqnet.qnn.vqc.VQC_QuantumPoolingCircuit`` 、 ``pyvqnet.qnn.vqc.sv.torch.vqc_quantumpooling_circuit`` 、 ``pyvqnet.qnn.pq3.template.QuantumPoolingCircuit`` 接口及其文档。
 
 Fixed
 ===================
 - 修复张量网络后端文档示例，新增 ``CCZ`` 门文档，移除不支持的 ``vqc_amplitude_embedding``。
 - 修复多处 Sphinx 构建警告(标题下划线长度、标题层级不一致、重复对象描述)。
-
 
 [v2.18.0] - 2026-04-22
 ***************************
