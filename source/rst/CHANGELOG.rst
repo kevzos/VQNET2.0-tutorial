@@ -9,7 +9,7 @@ VQNet Changelog
 Added
 ===================
 - 新增统一量子层 ``VQCLayer``(``pyvqnet.qnn.pq3.vqclayer.VQCLayer``)接口，通过 ``submit_kwargs["backend"]`` 选择执行后端(``vqc_autograd`` / ``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``)，支持期望值与概率两种互斥测量方式。
-- 新增 torch 后端统一量子层 ``TorchVQCLayer``(``pyvqnet.qnn.pq3.torch.torchvqclayer.TorchVQCLayer``)，与原生 ``VQCLayer`` 功能一致。
+- 新增 torch 后端统一量子层 ``TorchVQCLayer`` ，与原生 ``VQCLayer`` 功能一致。
 - 新增混合量子+经典的多级分布式训练接口 `ParallelTrainingWrapper` 。
 
 Changed
