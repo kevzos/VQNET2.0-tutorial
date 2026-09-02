@@ -8,8 +8,13 @@ VQNet
 
 
  
-VQNet 是由本源量子自主研发的量子机器学习计算框架，专注于为用户提供一个灵活、高效的开发工具，支持构建和运行混合量子-经典机器学习算法，可支持调用本源量子计算机进行变分量子线路训练。
-本使用文档是VQNet的 API 以及示例文档。英文版本可见:  `VQNet API DOC. <https://vqnet20-tutorial-en.readthedocs.io/en/latest/>`_ 
+VQNet 是本源量子自主研发的量子机器学习计算框架，以参数化量子线路（Parameterized Quantum Circuit, PQC）为核心计算原语，将其作为可微算子嵌入经典神经网络，依托自动微分机制实现混合量子-经典模型的端到端构建与梯度反传，并支持调用本源量子计算机与量子云服务完成线路模拟与真实芯片实验。VQNet 提供自研的高性能张量库 ``pyvqnet.tensor``（100+ 计算接口，支持自动微分）与经典神经网络模块 ``pyvqnet.nn``（卷积、池化、循环神经网络、Transformer 注意力、多种归一化与优化器等），可与量子计算接口组合搭建任意混合架构模型。
+
+量子计算层面，VQNet 提供双模拟后端：基于状态向量演化的 ``QMachine`` 接口（``pyvqnet.qnn.vqc``，含 50+ 量子逻辑门、``MeasureAll``/``Probability``/``Samples`` 等测量族、``QuantumLayerAdjoint`` 伴随梯度接口，以及 UCCSD、QSVT、硬件高效拟设等线路模板），和面向较大比特规模线路的张量网络/矩阵乘积态后端（``pyvqnet.qnn.vqc.tn``，提供 ``native`` 与 ``torch`` 两套实现）。框架内置线路编译优化 pass（旋转门合并、受控门交换等）与 OriginIR 线路导入导出；同时提供 ``pyvqnet.qnn`` 下的 QLSTM、QRNN、QMLP、Quanvolution 等量子-经典融合层，以及基于 pyqpanda3 与量子云的 pq3 系列量子层（含异步批量云端提交），打通从模拟到真实硬件的迁移路径。
+
+工程层面，VQNet 内置基于 gloo/NCCL 集合通信的多进程分布式运行时（``vqnetrun`` 启动器），支持数据并行、张量并行（``ColumnParallelLinear``/``RowParallelLinear``）、流水线并行及三者混合的并行策略（``ParallelTrainingWrapper``），并提供 ``DistributedQMachine``/``DistQuantumLayerAdjoint`` 支撑多进程量子线路梯度计算；针对大模型场景，提供 RoPE、SwiGLU、融合 MoE、缩放 Softmax、top-k/top-p/min-p 采样等算子与 ``pyvqnet.torch.trl`` 微调损失族（SFT/DPO/PPO/GRPO/Reward），配合 peft/LlamaFactory 实现基于量子线路的大模型微调。
+
+本使用文档是VQNet的 API 以及示例文档。英文版本可见:  `VQNet API DOC. <https://vqnet20-tutorial-en.readthedocs.io/en/latest/>`_
 
 
 VQNet 的核心特点
