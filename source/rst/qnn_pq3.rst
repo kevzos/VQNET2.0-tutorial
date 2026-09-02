@@ -1764,39 +1764,6 @@ UCCSD
  
 
 
-QuantumPoolingCircuit
-============================
-
-.. py:function:: pyvqnet.qnn.pq3.template.QuantumPoolingCircuit(sources_wires, sinks_wires, params,qubits)
-
-    对数据进行降采样的量子电路。
-
-    为了减少电路中的量子位数量,首先在系统中创建成对的量子位。在最初配对所有量子位之后,将广义2量子位酉元应用于每一对量子位上。并在应用这两个量子位酉元之后,在神经网络的其余部分忽略每对量子位中的一个量子位。
-
-    :param sources_wires: 将被忽略的源量子位索引。
-    :param sinks_wires: 将保留的目标量子位索引。
-    :param params: 输入参数。
-    :param qubits: 量子比特索引。
-
-    :return:
-        pyqpanda3 QCircuit
-
-    Example:: 
-
-        from pyvqnet.qnn.pq3.template import QuantumPoolingCircuit
-        import pyqpanda3.core as pq
-        from pyvqnet import tensor
-
-        qlists = range(4)
-        p = tensor.full([6], 0.35)
-        cir = QuantumPoolingCircuit([0, 1], [2, 3], p, qlists)
-        print(cir)
-
-常用量子线路组合
-***********************************
-VQNet提供了量子机器学习研究中常用的一些量子线路
-
-
 HardwareEfficientAnsatz
 ============================
 

@@ -42,12 +42,18 @@ Fixed
 
 Added
 ===================
-- 文档新增张量网络 ``torch`` 后端(``pyvqnet.qnn.vqc.tn.torch``)与 ``pyvqnet`` 后端(``pyvqnet.qnn.vqc.tn.native``)变分量子线路模块文档，包含 ``TNQModule``、``TNQMachine``、量子逻辑门、测量及模板等接口。
-- 文档新增 ``pyvqnet.torch.trl`` 大模型微调损失函数(``sft_loss``、``dpo_loss``、``ppo_loss``、``grpo_loss``、``reward_loss``)。
-- 文档新增 ``RMSNorm``、``RoPE``、``SwiGLU``、``fused_moe``、``scaled_*softmax`` 等 ``nn`` 模块文档。
-- 文档新增 ``pq3 torch`` 量子层(``TorchQpandaQuantumLayer``、``TorchQcloud3QuantumLayer``、``TorchQpanda3QuantumLayer``)。
+- 新增张量网络变分量子线路模块 ``pyvqnet.qnn.vqc.tn`` 文档，提供 ``torch`` 后端(``pyvqnet.qnn.vqc.tn.torch``)与 ``pyvqnet`` 后端(``pyvqnet.qnn.vqc.tn.native``)两套实现，包含 ``TNQModule``、``TNQMachine``、量子逻辑门、``MeasureAll`` 测量及模板等接口。该模块以张量网络方式模拟量子线路，支持矩阵乘积态(MPS)表示，以较低的内存开销模拟较大比特规模的线路；``torch`` 后端可与经典 ``torch`` 模型混合组网并参与自动微分，适用于大规模量子机器学习任务。
+- 新增大模型微调损失函数库 ``pyvqnet.torch.trl`` 文档：``sft_loss`` 指令微调交叉熵损失，支持 ``ignore_index`` 掩码跳过 prompt/padding 部分；``dpo_loss`` 直接偏好优化损失，基于策略模型与参考模型在同一偏好对上的概率比构造损失，``beta`` 控制对参考模型的约束强度；``ppo_loss`` 近端策略优化损失，通过 GAE 优势估计与裁剪代理目标稳定训练；``grpo_loss`` 组相对策略优化损失，对同一 prompt 的多个生成结果按组内奖励归一化计算优势，无需额外价值网络；``reward_loss`` 基于 Bradley-Terry 模型的偏好奖励损失。
+- 新增面向大模型推理与训练的 ``nn`` 模块文档：
+
+  - ``RoPE`` 旋转位置编码类及 ``functional.rope`` 函数，支持 ``standard``、``ntk``、``dynamic_ntk``、``yarn`` 四种频率缩放模式，适配长文本外推场景。
+  - ``RMSNorm`` 均方根归一化与 ``SwiGLU`` 门控激活，为当前 Transformer 结构的常用组件。
+  - ``fused_moe`` 融合 MoE 计算接口(CUDA 加速)，按路由索引分组计算各专家 MLP，并按路由概率加权合并输出。
+  - ``scaled_softmax``、``scaled_masked_softmax``、``scaled_upper_triang_masked_softmax`` 缩放 Softmax 系列接口，将缩放因子与注意力掩码融合进单次归一化计算。
+  - ``_sampling`` 解码采样系列接口(``top_k_sampling_from_probs``、``top_p_sampling_from_probs``、``min_p_sampling_from_probs``、``top_k_top_p_sampling_from_probs``、``top_k_top_p_sampling_from_logits``)，支持从概率分布或 logits 按 top-k/top-p/min-p 策略采样，适用于 LLM 推理解码(CUDA 加速，仅推理)。
+- 文档新增 ``pq3 torch`` 量子层(``TorchQpandaQuantumLayer``、``TorchQcloud3QuantumLayer``、``TorchQpanda3QuantumLayer``)，分别对接 qpanda 模拟器、量子云真实芯片与 qpanda3 模拟器，以 ``torch`` 层形式嵌入混合量子-经典模型进行训练。
 - 新增对 ``Python 3.13``、 ``Python 3.14`` 的支持。
-- torch后端下使用torch extension 实现了高性能的CUDA的RX,RY,RZ,CNOT,测量等算子实现。
+- ``torch`` 后端下新增基于 torch extension 的高性能 CUDA 量子门算子实现(RX、RY、RZ、CNOT、测量等)，针对批量状态向量提供融合 kernel 加速，显著降低大规模参数化线路的训练与模拟耗时。
 
 Changed
 ===================
@@ -56,12 +62,12 @@ Changed
 - 改 QTensor reduce api 接口的 `axis` 为 `dim`, `keepdims`为 `keepdim` 。
 - 修正 ``vqc.rst`` 与 ``vqc_demo.rst`` 示例导入路径为公共模块。
 - 合并 ``torch-native``、``torch`` 两个后端。
+- 移除 ``pyvqnet.qnn.vqc.VQC_QuantumPoolingCircuit`` 、 ``pyvqnet.qnn.vqc.sv.torch.vqc_quantumpooling_circuit`` 、 ``pyvqnet.qnn.pq3.template.QuantumPoolingCircuit`` 接口及其文档。
 
 Fixed
 ===================
 - 修复张量网络后端文档示例，新增 ``CCZ`` 门文档，移除不支持的 ``vqc_amplitude_embedding``。
 - 修复多处 Sphinx 构建警告(标题下划线长度、标题层级不一致、重复对象描述)。
-
 
 [v2.18.0] - 2026-04-22
 ***************************
