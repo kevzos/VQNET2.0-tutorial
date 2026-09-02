@@ -162,10 +162,16 @@ latex_elements = {
 % Fix fancyhdr headheight warning
 \setlength{\headheight}{14pt}
 \addtolength{\topmargin}{-2pt}
-% Use fonts available on Windows
+% CJK fonts: prefer Windows fonts (SimSun/SimHei/YaHei), fall back to Noto CJK on Linux
+\IfFontExistsTF{SimSun}{%
 \setCJKmainfont[BoldFont=SimHei, ItalicFont=KaiTi]{SimSun}
 \setCJKsansfont{SimHei}
 \setCJKmonofont{Microsoft YaHei}
+}{%
+\setCJKmainfont[BoldFont=Noto Sans CJK SC, ItalicFont=Noto Serif CJK SC]{Noto Serif CJK SC}
+\setCJKsansfont{Noto Sans CJK SC}
+\setCJKmonofont{Noto Sans CJK SC}
+}
 \XeTeXlinebreaklocale "zh"
 \XeTeXlinebreakskip = 0pt plus 1pt
 \parindent 2em
@@ -175,9 +181,9 @@ latex_elements = {
 \renewcommand\CJKfamilydefault{\CJKrmdefault}
 % Completely fix repeating section titles - force static content everywhere
 \fancyhf{}
-\renewcommand{\leftmark}{VQNET v2.17.3}
+\renewcommand{\leftmark}{VQNET @@RELEASE@@}
 \renewcommand{\rightmark}{}
 \fancyfoot[C]{\thepage}
 \pagestyle{fancy}
-'''
+'''.replace('@@RELEASE@@', release),
 }
