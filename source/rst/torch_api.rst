@@ -2578,6 +2578,18 @@ TorchVQCLayer
     * ``submit_kwargs["pauli_str_dict"]``:期望值测量。
     * ``query_kwargs["measure_qubits"]``:概率测量。
 
+    经典影子测量（Classical Shadow）：
+
+    当 ``submit_kwargs["pauli_str_dict"]`` 启用时,可通过 ``submit_kwargs["shadow_config"]`` 选择更快的期望值测量方案:
+
+    * ``shadow_config=0`` （默认）:完整测量（MeasureAll）,精确期望值。
+    * ``shadow_config=1`` :随机经典影子。shots 表示总快照数 T,每个快照电路运行 1 shot。
+    * ``shadow_config=2`` :去随机化经典影子。shots 表示调度长度 N,贪心调度生成 N 个电路,每个 1 shot。
+
+    经典影子在 ``vqnet_native`` 和提交后端（ ``qcloud_fake`` / ``qcloud_service``）上均可用,但不支持 ``qpanda_runtime``（抛出 ``ValueError``）。
+    梯度路径:``vqnet_native`` 使用 VQC 模块的原生自动微分;
+    提交后端使用 mode-0 电路的参数移位法。
+
     .. note::
 
         使用前必须先设置 torch 后端:``pyvqnet.backends.set_backend("torch")``。
@@ -2604,6 +2616,12 @@ TorchVQCLayer
     :param submit_kwargs: ``dict|None`` - 执行与测量设置,默认 None(``{}``)。可识别键:
         ``backend``: 执行后端,``vqnet_native`` 默认 / ``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``;
         ``pauli_str_dict``: 期望值测量,与 ``query_kwargs["measure_qubits"]`` 互斥;
+        ``shadow_config``: 期望值测量方案（需配合 ``pauli_str_dict``）:0 = 完整测量（默认）,1 = 随机经典影子,2 = 去随机化经典影子。支持 ``vqnet_native`` 和提交后端,不支持 ``qpanda_runtime``;
+        ``shadow_seed``: 经典影子配方种子,默认随机（层生命周期内固定,训练可复现）;
+        ``noise_model``: ``QCloudNoiseModel`` 噪声模型实例,用于 ``qcloud_fake`` 后端生成带噪声的本地模拟结果;``qcloud_service`` 后端仅支持云模拟器芯片（``full_amplitude`` / ``partial_amplitude`` / ``single_amplitude``）;
+        ``log_file``: 日志输出文件路径（通过 ``LogOutput.FILE``）,与 ``if_print_qcloud_log`` 互斥,FILE 优先;默认空字符串（不输出到文件）;
+        ``point_label``: 透传到云后端提交 JSON,默认 1;
+        ``enable_binary_encoding``: 启用二进制编码提交,默认 False;
         ``if_print_qcloud_log``: 是否打印提交日志,默认 False;
         ``chip_id``: 芯片 ID,默认 "WK_C180";
         ``set_specified_block``: 指定芯片块,默认 [];
@@ -2691,6 +2709,35 @@ TorchVQCLayer
         y.backward(torch.ones_like(y))
         print(y.detach().cpu().numpy())          # 采样得到的期望值,形状 (1, 1)
         print(layer.vqc_module.ry_w.params.grad.detach().cpu().numpy())
+
+        # 后端 1:经典影子测量(shadow_config=1,随机经典影子)。
+        # shots=500 表示 500 个快照,每个快照运行 1 shot。
+        layer = TorchVQCLayer(
+            QModel(), shots=500,
+            submit_kwargs={
+                "backend": "vqnet_native",
+                "pauli_str_dict": {"Z0 Z1": 1},
+                "shadow_config": 1,
+                "shadow_seed": 42,
+            },
+        )
+        x = QTensor([[0.3], [0.7]])
+        y = layer(x)
+        y.backward(torch.ones_like(y))
+        print(x.grad.detach().cpu().numpy())
+
+        # 后端 1:去随机化经典影子(shadow_config=2)。
+        layer = TorchVQCLayer(
+            QModel(), shots=500,
+            submit_kwargs={
+                "backend": "vqnet_native",
+                "pauli_str_dict": {"Z0 Z1": 1},
+                "shadow_config": 2,
+                "shadow_seed": 42,
+            },
+        )
+        y = layer(QTensor([[0.3], [0.7]]))
+        print(y.detach().numpy())
 
 
 TorchQcloud3QuantumLayer
