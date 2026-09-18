@@ -14,22 +14,21 @@ Added
 
 Changed
 ===================
-- 分布式计算模块移除 MPI 后端，CPU 通信统一使用 ``gloo``；``CommController`` 默认 backend 从 ``mpi`` 改为 ``gloo``，``init_groups`` 移除 MPI-only 限制。
+- 分布式计算模块移除 MPI 后端，CPU 通信统一使用 ``gloo``； ``CommController`` 默认 backend 从 ``mpi`` 改为 ``gloo``， ``init_groups`` 移除 MPI-only 限制。
 - ``VQCLayer`` / ``TorchVQCLayer`` 的 ``submit_kwargs["backend"]`` 参数值 ``vqc_autograd`` 重命名为 ``vqnet_native``，更准确地反映其"vqnet 原生执行引擎"的语义。
-- 同步量子逻辑门类 API 签名与源码一致：移除 ``has_params`` 参数，``trainable`` 调整为第一位置参数(148 处)。
-- 同步 ``QTensor`` 接口：移除 ``name``、``nodes`` 参数。
-- 同步 ``QuantumLayerAdjoint`` 接口：移除 ``use_qpanda`` 参数，``general_module`` 重命名为 ``vqc_module``。
+- 同步量子逻辑门类 API 签名与源码一致：移除 ``has_params`` 参数， ``trainable`` 调整为第一位置参数。
+- 同步 ``QTensor`` 接口：移除 ``name``、 ``nodes`` 参数。
+- 同步 ``QuantumLayerAdjoint`` 接口：移除 ``use_qpanda`` 参数， ``general_module`` 重命名为 ``vqc_module``。
 - 移除源码中已删除接口的文档章节： ``QuantumLayer`` 、 ``NoiseQuantumLayer`` (含 MNIST 示例章节) 等pyqpanda2兼容接口，仅保留pyqpanda3兼容接口。
-- 修正既有文档偏差：``nn`` 模块各层(``name``/``dtype``/``GRU`` nonlinearity/``ModuleList``/``ParameterList``/``Sequential``)、``LayerNorm`` ``normalized_shape``、优化器 ``lr``、测量类 ``obs``/``wires`` 必填、``pq3`` 模板 ``qubits`` 改名为 ``qlist`` 等。
-- 同步 ``TNQModule`` 接口：新增 ``mesh``、``cotengra_options``、``tree_path`` 参数，修正 ``use_jit`` 默认值。
-
+- 修正既有文档偏差：``nn`` 模块各层、 ``LayerNorm`` ``normalized_shape``、优化器 ``lr``、测量类 ``obs``/ ``wires`` 必填、 ``pq3`` 模板 ``qubits`` 改名为 ``qlist`` 等。
+- 同步 ``TNQModule`` 接口：新增 ``mesh``、 ``cotengra_options`` 、 ``tree_path`` 参数，修正 ``use_jit`` 默认值。
 Fixed
 ===================
 - 修复 ``QuantumLayerV3`` 中 CRX/CRY/CRZ 参数移位规则系数错误。
-- 修复 ``CRot`` 默认模式梯度错误，启用 ``Rot``、``CR``、``CRot`` 的 adjoint 梯度，并为 ``CRX``、``CRY``、``CRZ`` 实现 ``generator()`` 方法。
+- 修复 ``CRot`` 默认模式梯度错误，启用 ``Rot``、 ``CR``、 ``CRot`` 的 adjoint 梯度，并为 ``CRX``、 ``CRY``、 ``CRZ`` 实现 ``generator()`` 方法。
 - 修复 ``he_uniform_for_linear`` 初始化器 fan 计算错误。
 - 修复 ``SPSA._step()`` 中 delta 未刷新及梯度公式错误导致的参数发散问题。
-- 修复张量别名场景下 ``setitem``/``copy`` 重叠检测误判导致的拷贝被静默跳过的问题。
+- 修复张量别名场景下 ``setitem``/ ``copy`` 重叠检测误判导致的拷贝被静默跳过的问题。
 - 修复 ``cpu_basic_indexing`` 的 ``set-select`` 梯度回归问题。
 - 修复 CUDA ``expval`` 在 ``float64`` 元素数小于 4 时越界、以及 fused-crz 在 ``M>32`` 时零梯度的问题。
 - 修复 ``VQCQCloudLayer`` 真实芯片路径的结果展平、 ``batch=1`` 反向及线路提交问题。
