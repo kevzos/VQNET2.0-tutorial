@@ -2477,7 +2477,7 @@ QGAN使用经典的GAN模型结构,分为Generator生成器与Discriminator鉴�
         class Model_spsa(Module):
             def __init__(self):
                 super(Model_spsa, self).__init__()
-                    self.qvc = QuantumLayerV2(layer_fn_spsa_pq, 4)
+                self.qvc = QuantumLayerV2(layer_fn_spsa_pq, 4)
 
             def forward(self, x):
                 y = self.qvc(x)
