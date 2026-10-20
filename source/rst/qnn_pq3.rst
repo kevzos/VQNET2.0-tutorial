@@ -2470,13 +2470,14 @@ QGAN使用经典的GAN模型结构,分为Generator生成器与Discriminator鉴�
     Example::
 
         import pyqpanda3.core as pq
+        from pyvqnet.nn import Module
         from pyvqnet.qnn import QuantumLayerV2, SPSA
         from pyvqnet.qnn.pq3.measure import expval
 
         class Model_spsa(Module):
             def __init__(self):
                 super(Model_spsa, self).__init__()
-                self.qvc = QuantumLayerV2(layer_fn_spsa_pq, 3)
+                    self.qvc = QuantumLayerV2(layer_fn_spsa_pq, 4)
 
             def forward(self, x):
                 y = self.qvc(x)
@@ -2523,14 +2524,17 @@ QGAN使用经典的GAN模型结构,分为Generator生成器与Discriminator鉴�
 
     Example::
 
+            import numpy as np
             import pyqpanda3.core as pq
+            from pyvqnet.nn import Module
             from pyvqnet.qnn import QuantumLayerV2, SPSA
             from pyvqnet.qnn.pq3.measure import expval
+            from pyvqnet.tensor import QTensor
 
             class Model_spsa(Module):
                 def __init__(self):
                     super(Model_spsa, self).__init__()
-                    self.qvc = QuantumLayerV2(layer_fn_spsa_pq, 3)
+                    self.qvc = QuantumLayerV2(layer_fn_spsa_pq, 4)
 
                 def forward(self, x):
                     y = self.qvc(x)
@@ -2560,7 +2564,7 @@ QGAN使用经典的GAN模型结构,分为Generator生成器与Discriminator鉴�
                 init_para=model.parameters(),
                 model=model,
             )
-            data = QTensor(np.array([[0.27507603]]))
+            data = QTensor(np.array([[0.27507603]], dtype=np.float32))
             optimizer._step(input_data=data)
             y = model(data)
             print(y)

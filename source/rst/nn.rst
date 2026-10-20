@@ -198,7 +198,7 @@ toGPU
     Example::
 
         from pyvqnet.nn.conv import ConvT2D 
-        test_conv = ConvT2D(3, 2, [4,4], [2, 2], "same")
+        test_conv = ConvT2D(3, 2, [4,4], [2, 2], (1, 1))
         test_conv = test_conv.toGPU()
         print(test_conv.backend)
         #1000
@@ -216,7 +216,7 @@ toCPU
     Example::
 
         from pyvqnet.nn.conv import ConvT2D 
-        test_conv = ConvT2D(3, 2, [4,4], [2, 2], "same")
+        test_conv = ConvT2D(3, 2, [4,4], [2, 2], (1, 1))
         test_conv = test_conv.toCPU()
         print(test_conv.backend)
         #0
@@ -547,7 +547,7 @@ ConvT2D
     :param output_channels: `int` - 输出数据的通道数。
     :param kernel_size: `tuple|list` - 卷积核的尺寸,卷积核形状 = [input_channels,output_channels/group,kernel_size,kernel_size]。 
     :param stride: `tuple|list` - 步长, 默认为 (1, 1)|[1,1]。
-    :param padding: `str|tuple` - 填充选项, 它可以是一个字符串 {'valid', 'same'} 或一个整数元组,给出在两边应用的隐式填充量。 默认 "valid"。
+    :param padding: `str|tuple` - 填充选项, 它可以是一个字符串 {'valid'} 或一个整数元组,给出在两边应用的隐式填充量。 默认 "valid"。
     :param use_bias: `bool` - 是否使用偏置项, 默认使用。
     :param kernel_initializer: `callable` - 卷积核初始化方法。默认为空,使用kaiming_uniform。
     :param bias_initializer: `callable` - 偏置项初始化方法。默认为空,使用kaiming_uniform。
@@ -562,7 +562,7 @@ ConvT2D
     .. note::
         ``padding='valid'`` 不进行填充。
 
-        ``padding='same'`` 补零填充输入,输出的height 为 = ceil(height / stride)。
+        ``padding='same'`` 不支持；请使用整数元组显式指定 padding。
 
     Example::
 

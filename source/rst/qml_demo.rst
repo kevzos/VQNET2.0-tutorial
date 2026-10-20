@@ -2677,7 +2677,7 @@ QUnet主要是用于解决图像分割的技术。
             result3 = probs_measure(machine, cir, [qlist[3]])
 
             result = [result0[-1]+result1[-1]+result2[-1]+result3[-1]]
-        return result
+            return result
 
     def quanconv_(image):
         """Convolves the input image with many applications of the same quantum circuit."""
@@ -4600,7 +4600,7 @@ QUnet主要是用于解决图像分割的技术。
     from scipy.stats import entropy
 
     import pyqpanda3.core as pq
-    from pyvqnet.qnn.ansatz import HardwareEfficientAnsatz
+    from pyvqnet.qnn.pq3.ansatz import HardwareEfficientAnsatz
     from pyvqnet.tensor import tensor
     from pyvqnet.qnn.quantum_expressibility.quantum_express import fidelity_of_cir, fidelity_harr_sample
     num_qubit = 1  # the number of qubit
@@ -4632,8 +4632,7 @@ QUnet主要是用于解决图像分割的技术。
 
         machine = pq.CPUQVM()
         qlist = range(num_qubits)
-        az = HardwareEfficientAnsatz(num_qubits, ["rx", "RY", "rz"],
-                                    qlist,
+        az = HardwareEfficientAnsatz(qlist, ["rx", "RY", "rz"],
                                     entangle_gate="cnot",
                                     entangle_rules="linear",
                                     depth=depth)
