@@ -19,9 +19,14 @@ Changed
 - 同步量子逻辑门类 API 签名与源码一致：移除 ``has_params`` 参数， ``trainable`` 调整为第一位置参数。
 - 同步 ``QTensor`` 接口：移除 ``name``、 ``nodes`` 参数。
 - 同步 ``QuantumLayerAdjoint`` 接口：移除 ``use_qpanda`` 参数， ``general_module`` 重命名为 ``vqc_module``。
-- 移除源码中已删除接口的文档章节： ``QuantumLayer`` 、 ``NoiseQuantumLayer`` (含 MNIST 示例章节) 等pyqpanda2兼容接口，仅保留pyqpanda3兼容接口。
+- 移除源码中已删除接口的文档章节： ``QuantumLayer`` 、 ``NoiseQuantumLayer`` (含 MNIST 示例章节) 等pyqpanda2兼容接口，并删除整页 pqanda2 接口文档 ``qnn.rst``，仅保留pyqpanda3兼容接口。
 - 修正既有文档偏差：``nn`` 模块各层、 ``LayerNorm`` ``normalized_shape``、优化器 ``lr``、测量类 ``obs``/ ``wires`` 必填、 ``pq3`` 模板 ``qubits`` 改名为 ``qlist`` 等。
 - 同步 ``TNQModule`` 接口：新增 ``mesh``、 ``cotengra_options`` 、 ``tree_path`` 参数，修正 ``use_jit`` 默认值。
+- 同步 ``Module`` / ``state_dict`` 接口签名： ``Module(name="", *args, **kwargs)`` ， ``state_dict`` 新增 ``keep_vars`` 参数。
+- ``ConvT2D`` 接口的 ``padding`` 不再支持 ``"same"`` ，仅支持 ``"valid"`` 或整数元组，相关示例改为显式传入 ``(1, 1)`` 。
+- 文档中 ``pyQPanda`` 相关表述统一更新为 ``pyQPanda3`` ，并删除依赖旧版 pyqpanda 的示例。
+- 重写首页概览：按已实现的 2.18.2 接口分别说明 ``pyvqnet`` (原生) 与 ``torch`` 两种计算后端，分布式改为 gloo/NCCL 表述，补充张量网络后端 ``pyvqnet.qnn.vqc.tn`` 与大模型算子说明。
+- 分布式文档：删除 ``vqnetrun --backend`` 参数说明与命令示例（该参数已移除，后端由各 worker 进程在运行时确定），修正 ``split_groups`` / ``init_groups`` 的返回值与组通信 ``group`` 参数说明。
 
 Fixed
 ===================
@@ -35,6 +40,7 @@ Fixed
 - 修复 ``VQCQCloudLayer`` 真实芯片路径的结果展平、 ``batch=1`` 反向及线路提交问题。
 - 修复 ``qpanda3_runtime`` 路径缺失可配置提交参数的问题。
 - 修复 ``logger.info()`` 误用 print 风格逗号参数的问题。
+- 修复 ``allgather_group`` 示例中错误的(通信器, rank 列表)结构，示例改用 ``split_groups`` 的返回值。
 
 
 [v2.18.1] - 2026-07-08
