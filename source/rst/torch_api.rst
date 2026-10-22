@@ -9215,12 +9215,12 @@ CommController
                     p.join()
             #python test.py
  
-    .. py:method:: split_groups(rankL)
+    .. py:method:: split_groups(rank_lists)
         :noindex:
 
         根据入参设置的进程号列表用于划分多个通信组。
 
-        :param rankL: 进程组列表。
+        :param rank_lists: 每个子列表是一个通信组的进程号，例如 ``[[0, 1], [2, 3]]``。
         :return: 包含 ``torch.distributed.ProcessGroup`` 的列表
 
         Example::

@@ -22,6 +22,7 @@ Changed
 - 移除源码中已删除接口的文档章节： ``QuantumLayer`` 、 ``NoiseQuantumLayer`` (含 MNIST 示例章节) 等pyqpanda2兼容接口，仅保留pyqpanda3兼容接口。
 - 修正既有文档偏差：``nn`` 模块各层、 ``LayerNorm`` ``normalized_shape``、优化器 ``lr``、测量类 ``obs``/ ``wires`` 必填、 ``pq3`` 模板 ``qubits`` 改名为 ``qlist`` 等。
 - 同步 ``TNQModule`` 接口：新增 ``mesh``、 ``cotengra_options`` 、 ``tree_path`` 参数，修正 ``use_jit`` 默认值。
+
 Fixed
 ===================
 - 修复 ``QuantumLayerV3`` 中 CRX/CRY/CRZ 参数移位规则系数错误。

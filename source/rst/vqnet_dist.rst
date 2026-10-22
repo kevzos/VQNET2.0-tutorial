@@ -40,14 +40,13 @@ nproc_per_node
         size = Comm_OP.getSize()
         print(f"rank: {rank}, size {size}")
 
-        # vqnetrun --backend nccl --nproc_per_node 2 python test.py
         # vqnetrun --nproc_per_node 2 python test.py
 
 backend
 ^^^^^^^^^^^^^^^^^^^^^^
 
-``vqnetrun`` 接口中可以通过 ``--backend`` 参数选择分布式后端,支持 ``gloo`` 和 ``nccl`` ``None`` 3种模式。
-GLOO 模式支持单机多 CPU 场景, NCCL 模式用于单机多 GPU 场景, 默认是 ``None`` ，则会自动根据要通信的数据的设备决定通信方式。
+分布式后端的选取在代码中完成, 由 ``CommController`` 的构造参数决定: ``CommController("gloo")`` 用于 CPU, ``CommController("nccl")`` 用于 GPU, 默认的 ``CommController()`` 会根据要通信的数据所在设备自动决定通信方式。
+``vqnetrun`` 命令不提供 ``--backend`` 参数, 多进程启动时由各 worker 进程确定后端: 存在 CUDA 上下文时直接构造 NCCL 通信域, 纯 CPU 运行时使用 gloo。
 
     Example::
 
@@ -59,11 +58,11 @@ GLOO 模式支持单机多 CPU 场景, NCCL 模式用于单机多 GPU 场景, �
         print(f"rank: {rank}, size {size}")
 
         # 单机多GPU:
-        # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+        # vqnetrun --nproc_per_node 2 python test.py
 
         # 多节点情况下,每个节点独立执行:
-        # 节点0: vqnetrun --backend nccl --nproc_per_node 2 --nnodes 2 --node_rank 0 --master_addr 10.0.0.1 python test.py
-        # 节点1: vqnetrun --backend nccl --nproc_per_node 2 --nnodes 2 --node_rank 1 --master_addr 10.0.0.1 python test.py
+        # 节点0: vqnetrun --nproc_per_node 2 --nnodes 2 --node_rank 0 --master_addr 10.0.0.1 python test.py
+        # 节点1: vqnetrun --nproc_per_node 2 --nnodes 2 --node_rank 1 --master_addr 10.0.0.1 python test.py
 
 nproc_per_node
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -79,7 +78,7 @@ nproc_per_node
         size = Comm_OP.getSize()
         print(f"rank: {rank}, size {size}")
 
-        # vqnetrun --backend nccl --nproc_per_node 4 python test.py
+        # vqnetrun --nproc_per_node 4 python test.py
 
 nnodes
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -95,7 +94,7 @@ nnodes
         size = Comm_OP.getSize()
         print(f"rank: {rank}, size {size}")
 
-        # vqnetrun --backend nccl --nproc_per_node 2 --nnodes 2 --node_rank 0 --master_addr 10.0.0.1 python test.py
+        # vqnetrun --nproc_per_node 2 --nnodes 2 --node_rank 0 --master_addr 10.0.0.1 python test.py
 
 node_rank
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -111,9 +110,9 @@ node_rank
         size = Comm_OP.getSize()
         print(f"rank: {rank}, size {size}")
 
-        # 节点0: vqnetrun --backend nccl --nproc_per_node 2 --nnodes 3 --node_rank 0 --master_addr 10.0.0.1 python test.py
-        # 节点1: vqnetrun --backend nccl --nproc_per_node 2 --nnodes 3 --node_rank 1 --master_addr 10.0.0.1 python test.py
-        # 节点2: vqnetrun --backend nccl --nproc_per_node 2 --nnodes 3 --node_rank 2 --master_addr 10.0.0.1 python test.py
+        # 节点0: vqnetrun --nproc_per_node 2 --nnodes 3 --node_rank 0 --master_addr 10.0.0.1 python test.py
+        # 节点1: vqnetrun --nproc_per_node 2 --nnodes 3 --node_rank 1 --master_addr 10.0.0.1 python test.py
+        # 节点2: vqnetrun --nproc_per_node 2 --nnodes 3 --node_rank 2 --master_addr 10.0.0.1 python test.py
 
 master_addr
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -129,7 +128,7 @@ master_addr
         size = Comm_OP.getSize()
         print(f"rank: {rank}, size {size}")
 
-        # vqnetrun --backend nccl --nproc_per_node 2 --nnodes 2 --node_rank 0 --master_addr 10.0.0.1 python test.py
+        # vqnetrun --nproc_per_node 2 --nnodes 2 --node_rank 0 --master_addr 10.0.0.1 python test.py
 
 master_port
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -145,7 +144,7 @@ master_port
         size = Comm_OP.getSize()
         print(f"rank: {rank}, size {size}")
 
-        # vqnetrun --backend nccl --nproc_per_node 2 --master_port 29600 python test.py
+        # vqnetrun --nproc_per_node 2 --master_port 29600 python test.py
 
 nccl_socket_ifname
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -162,7 +161,7 @@ nccl_socket_ifname
         size = Comm_OP.getSize()
         print(f"rank: {rank}, size {size}")
 
-        # vqnetrun --backend nccl --nproc_per_node 2 --nccl_socket_ifname eth0 python test.py
+        # vqnetrun --nproc_per_node 2 --nccl_socket_ifname eth0 python test.py
 
 H, hosts
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -350,7 +349,7 @@ CommController
             Comm_OP = CommController("nccl") # init nccl controller
             
             Comm_OP.getSize()
-            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+            # vqnetrun --nproc_per_node 2 python test.py
 
 
     .. py:method:: getLocalRank()
@@ -366,7 +365,7 @@ CommController
             Comm_OP = CommController("nccl") # init nccl controller
             
             Comm_OP.getLocalRank()
-            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+            # vqnetrun --nproc_per_node 2 python test.py
 
 
     .. py:method:: barrier()
@@ -418,7 +417,7 @@ CommController
 
             Comm_OP.allreduce(num, "sum")
             print(f"rank {Comm_OP.getRank()}  {num}")
-            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+            # vqnetrun --nproc_per_node 2 python test.py
 
 
     .. py:method:: reduce(tensor, root = 0, c_op = "avg")
@@ -441,7 +440,7 @@ CommController
             
             Comm_OP.reduce(num, 1)
             print(f"rank {Comm_OP.getRank()}  {num}")
-            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+            # vqnetrun --nproc_per_node 2 python test.py
 
 
     
@@ -465,7 +464,7 @@ CommController
             
             Comm_OP.broadcast(num, 1)
             print(f"rank {Comm_OP.getRank()}  {num}")
-            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+            # vqnetrun --nproc_per_node 2 python test.py
 
  
     .. py:method:: allgather(tensor)
@@ -486,7 +485,7 @@ CommController
 
             num = Comm_OP.allgather(num)
             print(f"rank {Comm_OP.getRank()}  {num}")
-            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+            # vqnetrun --nproc_per_node 2 python test.py
 
 
     .. py:method:: send(tensor, dest)
@@ -513,7 +512,7 @@ CommController
             print(f"rank {Comm_OP.getRank()}  {num}")
             print(f"rank {Comm_OP.getRank()}  {recv}")
             
-            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+            # vqnetrun --nproc_per_node 2 python test.py
 
  
     .. py:method:: recv(tensor, source)
@@ -540,15 +539,15 @@ CommController
             print(f"rank {Comm_OP.getRank()}  {num}")
             print(f"rank {Comm_OP.getRank()}  {recv}")
             
-            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+            # vqnetrun --nproc_per_node 2 python test.py
 
-    .. py:method:: split_groups(rankL)
+    .. py:method:: split_groups(rank_lists)
         
         根据入参设置的进程号列表用于划分多个通信组。
 
-        :param rankL: 进程组序号列表。
+        :param rank_lists: 每个子列表是一个通信组的进程号，例如 ``[[0, 1], [2, 3]]``。
 
-        :return: 当后端为 `nccl` 返回的是进程组序号元组，当后端为 `gloo` 返回的是进程组序号元组列表，其长度等于分组个数；每个元素是元组 (rank)，其中 rank 为该分组的进程号。
+        :return: 默认（pyvqnet-ad）后端返回元组列表，每个元素是一个通信组的进程号元组，其长度等于分组个数；使用 torch 后端时返回 torch 的 ProcessGroup 列表。默认后端下本接口只登记组划分，真正创建通信组发生在首次用该组做组通信时。
 
         Example::
             
@@ -567,7 +566,7 @@ CommController
 
         :param tensor: 输入数据.
         :param c_op: 计算方法.
-        :param group: 当使用gloo后端时候，输入由 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
+        :param group: 一个通信组的进程号，取 ``split_groups`` 返回值中的元素，例如 ``(0, 1)``；也接受等价的列表 ``[0, 1]``。
 
 
         Example::
@@ -586,7 +585,7 @@ CommController
 
             Comm_OP.allreduce_group(complex_data, c_op="sum",group = groups[0])
             print(f"allreduce_group after rank {get_rank()}: {complex_data}")
-            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+            # vqnetrun --nproc_per_node 2 python test.py
 
     .. py:method:: reduce_group(tensor, root = 0, c_op = "avg", group = None)
         
@@ -595,7 +594,7 @@ CommController
         :param tensor: 输入数据.
         :param root: 指定进程号.
         :param c_op: 计算方法.
-        :param group: 当使用gloo后端时候，输入由 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
+        :param group: 一个通信组的进程号，取 ``split_groups`` 返回值中的元素，例如 ``(0, 1)``；也接受等价的列表 ``[0, 1]``。
 
 
         Example::
@@ -614,7 +613,7 @@ CommController
 
             Comm_OP.reduce_group(complex_data, c_op="sum",group = groups[0])
             print(f"reduce_group after rank {get_rank()}: {complex_data}")
-            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+            # vqnetrun --nproc_per_node 2 python test.py
 
  
     .. py:method:: broadcast_group(tensor, root = 0, group = None)
@@ -623,7 +622,7 @@ CommController
 
         :param tensor: 输入数据.
         :param root: 指定从哪个进程号广播， 默认为0.
-        :param group: 当使用gloo后端时候，输入由 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
+        :param group: 一个通信组的进程号，取 ``split_groups`` 返回值中的元素，例如 ``(0, 1)``；也接受等价的列表 ``[0, 1]``。
 
 
         Example::
@@ -643,7 +642,7 @@ CommController
             Comm_OP.broadcast_group(complex_data,group = groups[0])
             Comm_OP.barrier()
             print(f"broadcast_group after rank {get_rank()}: {complex_data}")
-            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+            # vqnetrun --nproc_per_node 2 python test.py
 
  
     .. py:method:: allgather_group(tensor, group = None)
@@ -651,35 +650,36 @@ CommController
         组内allgather通信接口。
 
         :param tensor: 输入数据.
-        :param group: 当使用gloo后端时候，输入由 `split_groups` 生成的组对应通信组，当使用nccl后端时候输入`split_groups` 生成的组序号。
+        :param group: 一个通信组的进程号，取 ``split_groups`` 返回值中的元素，例如 ``(0, 1)``；也接受等价的列表 ``[0, 1]``。
 
 
         Example::
-            
+
+            # 写法一: gloo 后端, CPU 张量
             from pyvqnet.distributed import CommController,get_rank
             from pyvqnet.tensor import tensor
             from pyvqnet import kcomplex64
             Comm_OP = CommController("gloo")
-            group = init_groups([[0,1]])
+            groups = Comm_OP.split_groups([[0, 1]])
 
-            # A list of lists, where each sublist contains a communicator and the corresponding rank list.
             complex_data = tensor.QTensor([3+1j, 2, 1 + get_rank()],dtype=kcomplex64).reshape((3,1))
             print(f" before rank {get_rank()}: {complex_data}")
-            for comm_ in group:
-                if Comm_OP.getRank() in comm_[1]:
-                    complex_data = Comm_OP.allgather_group(complex_data, comm_[0])
-                    print(f"after rank {get_rank()}: {complex_data}")
+            complex_data = Comm_OP.allgather_group(complex_data, group = groups[0])
+            print(f"after rank {get_rank()}: {complex_data}")
             # vqnetrun --nproc_per_node 2 python test.py
 
+            # 写法二: nccl 后端, GPU 张量。两种写法二选一, 不要在同一个进程里同时创建两个控制器。
             from pyvqnet.distributed import CommController,get_rank,get_local_rank
             from pyvqnet.tensor import tensor
+            from pyvqnet import kcomplex64
             Comm_OP = CommController("nccl")
             groups = Comm_OP.split_groups([[0, 1]])
+
             complex_data = tensor.QTensor([3+1j, 2, 1 + get_rank()],dtype=kcomplex64).reshape((3,1)).toGPU(1000+ get_local_rank())
             print(f" before rank {get_rank()}: {complex_data}")
             complex_data = Comm_OP.allgather_group(complex_data, group = groups[0])
             print(f"after rank {get_rank()}: {complex_data}")
-            # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+            # vqnetrun --nproc_per_node 2 python test.py
 
 
     .. py:method:: nccl_async_all_gather( output, input, group=None, async_op=False):
@@ -688,7 +688,7 @@ CommController
 
         :param output: QTensor all_gather的目标数据。
         :param input: QTensor 待gather的数据。
-        :param group: 通信进程组，group 是一个包含组索引的元组。默认值：None，不使用任何组。
+        :param group: 一个通信组的进程号序列，含义与 ``split_groups`` 返回值中的元素一致，默认 None 表示不分组。
         :param async_op: 此操作是否为异步操作，默认值：False。
         :return: Work，一个异步通信句柄。使用 wait() 等待此操作完成。
         
@@ -712,7 +712,7 @@ CommController
 
         :param tensor: 需要归约的 QTensor。
         :param c_op: 计算方法，可以是 "sum" 或 "avg"，默认值为 "avg"。
-        :param group: 通信进程组，group 是一个包含组索引的元组。默认值：None，不使用任何组。
+        :param group: 一个通信组的进程号序列，含义与 ``split_groups`` 返回值中的元素一致，默认 None 表示不分组。
         :param async_op: 此操作是否为异步操作，默认值：False。
         :return: Work，一个异步通信句柄。使用 wait() 等待此操作完成。
 
@@ -734,7 +734,7 @@ CommController
         :param tensor_: 需要归约的 QTensor。
         :param dest: 要归约的 QTensor 的目标进程号/rank。
         :param c_op: 计算方法，可以是 "sum" 或 "avg"，默认值为 "avg"。
-        :param group: 通信进程组，group 是一个包含组索引的元组。默认值：None，不使用任何组。
+        :param group: 一个通信组的进程号序列，含义与 ``split_groups`` 返回值中的元素一致，默认 None 表示不分组。
         :param async_op: 此操作是否为异步操作，默认值：False。
         :return: Work，一个异步通信句柄。使用 wait() 等待此操作完成。
         
@@ -755,7 +755,7 @@ CommController
 
         :param tensor: 需要广播的 QTensor。
         :param src: 要广播的 QTensor 的源排名。
-        :param group: 通信进程组，group 是一个包含组索引的元组。默认值：None，不使用任何组。
+        :param group: 一个通信组的进程号序列，含义与 ``split_groups`` 返回值中的元素一致，默认 None 表示不分组。
         :param async_op: 此操作是否为异步操作，默认值：False。
         :return: Work，一个异步通信句柄。使用 wait() 等待此操作完成。
 
@@ -887,7 +887,7 @@ get_local_rank
         from pyvqnet.distributed.ControlComm import get_local_rank
 
         print(get_local_rank())
-        # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+        # vqnetrun --nproc_per_node 2 python test.py
 
 get_rank
 ^^^^^^^^^^^^^^^^^
@@ -903,7 +903,7 @@ get_rank
         from pyvqnet.distributed.ControlComm import get_rank
 
         print(get_rank())
-        # vqnetrun --backend nccl --nproc_per_node 2 python test.py
+        # vqnetrun --nproc_per_node 2 python test.py
 
 init_groups
 ^^^^^^^^^^^^^^^^^^^
@@ -911,10 +911,10 @@ init_groups
 
 .. py:function:: pyvqnet.distributed.ControlComm.init_groups(rank_lists)
 
-    根据给出的进程数列表来对基于 `gloo` 后端的进程组进行初始化。
+    根据给出的进程号列表划分通信组。
 
-    :param rank_lists: 通信进程组列表.
-    :return: 返回一个列表，其长度等于分组个数；每个元素是进程号列表，其中 comm 为该分组的进程号列表，rank 为组内序号。
+    :param rank_lists: 每个子列表是一个通信组的进程号，例如 ``[[0, 2], [1]]``。
+    :return: 默认（pyvqnet-ad）后端原样返回入参，即 ``[[0, 2], [1]]`` 这样的进程号列表；使用 torch 后端时返回 torch 的 ProcessGroup 列表。默认后端下本接口不创建通信组，组在首次用于组通信时创建。
 
     Example::
 
@@ -1280,7 +1280,7 @@ ColumnParallelLinear
 
     使用时与经典的Linear层的使用相似
 
-    多进程使用时基于 `# vqnetrun --backend nccl --nproc_per_node 2 python test.py` 的方式进行
+    多进程使用时基于 `# vqnetrun --nproc_per_node 2 python test.py` 的方式进行
 
     Example::
 
@@ -1454,7 +1454,7 @@ RowParallelLinear
     以下使用 MNIST 数据库, 在2块GPU上训练一个MLP模型上的分类任务。
     使用时与经典的Linear层的使用相似
 
-    多进程使用时基于 `# vqnetrun --backend nccl --nproc_per_node 2 python test.py` 的方式进行
+    多进程使用时基于 `# vqnetrun --nproc_per_node 2 python test.py` 的方式进行
 
     Example::
 
