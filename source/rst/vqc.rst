@@ -8046,58 +8046,6 @@ VQC_Purity
         y_tn.backward(pyvqnet.tensor.ones_like(y_tn))
         print(y_tn)
 
-VQC_VarMeasure
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-.. py:function:: pyvqnet.qnn.vqc.VQC_VarMeasure(q_machine, obs)
-    :no-index:
-
-    提供的可观察量 ``obs`` 的方差。
-
-    :param q_machine: 从pyqpanda get_qstate()获取的量子态
-    :param obs: 测量观测量,当前支持Hadamard,I,PauliX,PauliY,PauliZ 几种Observable.
-
-    :return: 计算可观测量方差。
-
-    .. note::
-
-        测量结果一般为[b,1],其中b为 q_machine.reset_states(b)的批处理数量b。
-
-    Example::
-
-        import pyvqnet
-        from pyvqnet.qnn.vqc.tn.native import TNQMachine, qcircuit, TNQModule, PauliY
-        from pyvqnet.qnn.vqc import VQC_VarMeasure
-        from pyvqnet.tensor import QTensor
-        from pyvqnet import kfloat64
-        pyvqnet.backends.set_backend("pyvqnet")
-        x = QTensor([[0.7, 0.4], [0.6, 0.4]], requires_grad=True).toGPU()
-        x.requires_grad = True
-        class QM(TNQModule):
-            def __init__(self, name=""):
-                super().__init__(name)
-                self.device = TNQMachine(3)
-                
-            def forward(self, x):
-                self.device.reset_states(2)
-                qcircuit.rx(q_machine=self.device, wires=0, params=x[0])
-                qcircuit.ry(q_machine=self.device, wires=1, params=x[1])
-                qcircuit.ry(q_machine=self.device, wires=2, params=x[1])
-                qcircuit.cnot(q_machine=self.device, wires=[0, 1])
-                qcircuit.cnot(q_machine=self.device, wires=[2, 1])
-                return VQC_VarMeasure(q_machine= self.device, obs=PauliY(wires=0))
-            
-        model = QM().toGPU()
-        y = model(x)
-
-        y.backward(pyvqnet.tensor.ones_like(y))
-        print(y)
-
-        # [[0.9370641],
-        # [0.9516521]]
-
-
 VQC_DensityMatrixFromQstate
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
