@@ -305,7 +305,7 @@ TorchParameterList
 
         该类继承于 ``pyvqnet.nn.torch.TorchModule`` 以及 ``pyvqnet.nn.ParameterList``,可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
-    :param value: nn.Parameter 列表
+    :param values: nn.Parameter 列表
 
     :return: 一个TorchParameterList 类
 
@@ -2775,7 +2775,7 @@ TorchQcloud3QuantumLayer
     :param qcloud_token: `str` - 量子机的类型或用于执行的云令牌。
     :param para_num: `int` - 参数数量,参数是大小为[para_num]的QTensor。
     :param pauli_str_dict: `dict|list` - 表示量子电路中泡利运算符的字典或字典列表。 默认为“无”,则进行测量操作,如果输入泡利算符的字典,则会计算单个期望或者多个期望。
-    :param shot: `int` - 测量次数。 默认值为 1000。
+    :param shots: `int` - 测量次数。 默认值为 1000。
     :param initializer: 参数值的初始化器。 默认为“无”,使用0~2*pi正态分布。
     :param dtype: 参数的数据类型。 默认值为 None,即使用默认数据类型pyvqnet.kfloat32。
     :param name: 模块的名称。 默认为空字符串。
@@ -5524,9 +5524,12 @@ TNQModule
     在 `torch` 后端下,定义张量网络下量子变分线路模型 `Module` 应该继承的基类。
     该类用于使用张量网络来模块来用语执行量子线路。
 
-    :param use_jit: 开启即时编译功能, 默认为False。
+    :param use_jit: 开启即时编译功能, 默认为True。
     :param vectorized_argnums: 要被向量化的参数,这些参数应该在同一维共享相同的批次形状,默认值为0
     :param name: 模块名。
+    :param mesh: 用于分布式收缩的 ``jax.sharding.Mesh``。为 ``None`` 时使用单设备 JIT; 指定 mesh 时通过 SPMD 实现模型并行。
+    :param cotengra_options: 可选的字典,在指定 ``mesh`` 时传递给 ``cotengra.ReusableHyperOptimizer``。
+    :param tree_path: 可选的预计算收缩路径文件(``.pkl``),指定后将跳过运行时的 cotengra 搜索。
 
     .. note::
 

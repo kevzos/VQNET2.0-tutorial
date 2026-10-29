@@ -4626,7 +4626,7 @@ QuantumLayerAdjoint
 DataParallelVQCAdjointLayer
 ---------------------------------------------------------------
 
-.. py:class:: pyvqnet.distributed.DataParallelVQCAdjointLayer(Comm_OP, vqc_module, name="", use_bucket_cpp_allreduce=False, bucket_bytes_cap=25*1024*1024, first_bucket_bytes_cap=1024*1024, find_unused_parameters=False, gradient_as_bucket_view=False)
+.. py:class:: pyvqnet.distributed.DataParallelVQCAdjointLayer(Comm_OP, vqc_module, name="", use_bucket_cpp_allreduce=True, bucket_bytes_cap=25*1024*1024, first_bucket_bytes_cap=1024*1024, find_unused_parameters=False, gradient_as_bucket_view=False)
 
 
     使用分布式数据并行对数据批次大小创建变分量子线路使用伴随梯度计算。其中 ``vqc_module`` 必须为 ``QuantumLayerAdjoint`` 类型的VQC模块.
@@ -4636,6 +4636,11 @@ DataParallelVQCAdjointLayer
     :param Comm_OP: 设置分布式环境的通信控制器。
     :param vqc_module: 带有 forward() 的 QuantumLayerAdjoint类型的VQC模块,确保qmachine 已正确设置。
     :param name: 模块的名称。默认值为空字符串。
+    :param use_bucket_cpp_allreduce: 是否使用 C++ 分桶 all-reduce 实现。当前必须为 True; 传 False 会抛出 NotImplementedError,因为旧的逐参数 all-reduce 已移除。默认值: True。
+    :param bucket_bytes_cap: 梯度桶的最大字节数。默认值: 25*1024*1024。
+    :param first_bucket_bytes_cap: 第一个梯度桶的最大字节数。默认值: 1024*1024。
+    :param find_unused_parameters: 是否查找 autograd 图中未使用的参数。默认值: False。
+    :param gradient_as_bucket_view: 是否将梯度暴露为通信桶的视图。默认值: False。
     :return: 可以计算量子电路的模块。
 
 
@@ -4751,7 +4756,7 @@ DataParallelVQCAdjointLayer
 DataParallelVQCLayer
 ---------------------------------------------------------------
 
-.. py:class:: pyvqnet.distributed.DataParallelVQCLayer(Comm_OP, vqc_module, name="", use_bucket_cpp_allreduce=False, bucket_bytes_cap=25*1024*1024, first_bucket_bytes_cap=1024*1024, find_unused_parameters=False, gradient_as_bucket_view=False)
+.. py:class:: pyvqnet.distributed.DataParallelVQCLayer(Comm_OP, vqc_module, use_bucket_cpp_allreduce=True, bucket_bytes_cap=25*1024*1024, first_bucket_bytes_cap=1024*1024, find_unused_parameters=False, gradient_as_bucket_view=False)
 
 
     使用分布式数据并行对数据批次大小创建变分量子线路使用自动微分计算。 
@@ -4760,7 +4765,11 @@ DataParallelVQCLayer
 
     :param Comm_OP: 设置分布式环境的通信控制器。
     :param vqc_module: 带有 forward() 的 VQC模块,确保qmachine 已正确设置。
-    :param name: 模块的名称。默认值为空字符串。
+    :param use_bucket_cpp_allreduce: 是否使用 C++ 分桶 all-reduce 实现。当前必须为 True; 传 False 会抛出 NotImplementedError,因为旧的逐参数 all-reduce 已移除。默认值: True。
+    :param bucket_bytes_cap: 梯度桶的最大字节数。默认值: 25*1024*1024。
+    :param first_bucket_bytes_cap: 第一个梯度桶的最大字节数。默认值: 1024*1024。
+    :param find_unused_parameters: 是否查找 autograd 图中未使用的参数。默认值: False。
+    :param gradient_as_bucket_view: 是否将梯度暴露为通信桶的视图。默认值: False。
     :return: 可以计算量子电路的模块。
 
 
@@ -6650,6 +6659,9 @@ TNQModule
     :param use_jit: 开启即时编译功能, 默认为True。
     :param vectorized_argnums: 要被向量化的参数,这些参数应该在同一维共享相同的批次形状,默认值为0
     :param name: 模块名。
+    :param mesh: 用于分布式收缩的 ``jax.sharding.Mesh``。为 ``None`` 时使用单设备 JIT; 指定 mesh 时通过 SPMD 实现模型并行。
+    :param cotengra_options: 可选的字典,在指定 ``mesh`` 时传递给 ``cotengra.ReusableHyperOptimizer``。
+    :param tree_path: 可选的预计算收缩路径文件(``.pkl``),指定后将跳过运行时的 cotengra 搜索。
 
     .. note::
 
