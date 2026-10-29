@@ -1017,7 +1017,7 @@ QiskitLayer
 CirqLayer
 =================================
 
-.. py:class:: pyvqnet.qnn.CirqLayer(cirq_vqc,para_num)
+.. py:class:: pyvqnet.qnn.utils.CirqLayer(cirq_vqc,para_num)
 
     一个用于在 VQNet 中实现前向和反向传播的 cirq 电路封装层。CIRQ_VQC是需要用户定义 cirq 量子电路及其 `run` 函数的类。以下示例展示了它的工作原理。
     此层仅支持电路的输入和权重作为参数。

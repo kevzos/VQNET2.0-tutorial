@@ -3445,7 +3445,7 @@ VQC_AngleEmbedding
 VQC_AmplitudeEmbedding
 ---------------------------------------------------------------
 
-.. py:function:: pyvqnet.qnn.vqc.VQC_AmplitudeEmbeddingCircuit(input_feature, q_machine)
+.. py:function:: pyvqnet.qnn.vqc.VQC_AmplitudeEmbedding(input_feature, q_machine)
 
     将 :math:`2^n` 特征编码为 ``q_machine``  :math:`n` 量子比特的振幅向量。
 
@@ -4015,7 +4015,7 @@ vqc_qft_add_to_register
 vqc_qft_add_two_register
 -------------------------------------
 
-.. py:function:: vqc_qft_add_two_register(q_machine, m, k, wires_m, wires_k, wires_solution)
+.. py:function:: pyvqnet.qnn.vqc.vqc_qft_add_two_register(q_machine, m, k, wires_m, wires_k, wires_solution)
 
     在 ``q_machine`` 进行如下操作: 将两个量子比特wires_m, wires_k中编码的无符号整数m, k进行加法,结果存在wires_solution比特上。
 
@@ -4059,7 +4059,7 @@ vqc_qft_add_two_register
 vqc_qft_mul
 -------------------------------------
 
-.. py:function:: vqc_qft_mul(q_machine, m, k, wires_m, wires_k, wires_solution)
+.. py:function:: pyvqnet.qnn.vqc.vqc_qft_mul(q_machine, m, k, wires_m, wires_k, wires_solution)
 
     在 ``q_machine`` 进行如下操作: 将两个量子比特wires_m, wires_k中编码的数值m, k, 进行乘法,结果存在wires_solution比特上。
 
@@ -5638,7 +5638,7 @@ wrapper_compile
 QNSPSAOptimizer
 ---------------------------------------------------------------
 
-.. py:class:: pyvqnet.qnn.vqc.qng.QNSPSAOptimizer(stepsize=1e-3,regularization=1e-3,finite_diff_step=1e-2,resamplings=1,blocking=True,history_length=5,seed=None)
+.. py:class:: pyvqnet.qnn.vqc.QNSPSAOptimizer(stepsize=1e-3,regularization=1e-3,finite_diff_step=1e-2,resamplings=1,blocking=True,history_length=5,seed=None)
 
 
     ​​量子自然 SPSA (QNSPSA) 优化器
@@ -8050,7 +8050,8 @@ VQC_VarMeasure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:function:: pyvqnet.qnn.vqc.tn.native.VQC_VarMeasure(q_machine, obs)
+.. py:function:: pyvqnet.qnn.vqc.VQC_VarMeasure(q_machine, obs)
+    :no-index:
 
     提供的可观察量 ``obs`` 的方差。
 
