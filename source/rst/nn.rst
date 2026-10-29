@@ -112,6 +112,8 @@ Module
 
     以这种方式分配的子模块将被注册。
 
+    :param name: 模块名,默认为""。
+
 forward
 =================================
 
@@ -160,13 +162,14 @@ forward
 state_dict 
 =================================
 
-.. py:function:: pyvqnet.nn.module.Module.state_dict(destination=None, prefix="", keep_vars=False)
+.. py:method:: pyvqnet.nn.module.Module.state_dict(destination=None, prefix="", keep_vars=False)
 
     返回包含模块整个状态的字典:包括参数和缓存值。
     键是对应的参数和缓存值名称。
 
     :param destination: 返回保存模型内部模块,参数的字典。
     :param prefix: 使用的参数和缓存值的命名前缀。
+    :param keep_vars: 如果为 ``False``,返回的张量将从自动微分中分离;如果为 ``True``,则不分离。默认值: ``False``。
 
     :return: 包含模块整个状态的字典。
 
@@ -2794,6 +2797,8 @@ Activation
 
     激活的基类。 特定的激活函数继承了这个类。
 
+    :param name: 激活模块名,默认为""。
+
 Sigmoid
 =================================
 .. py:class:: pyvqnet.nn.Sigmoid(name:str="")
@@ -3104,6 +3109,7 @@ Optimizer
 
     :param params: 需要优化的模型参数。
     :param lr: 学习率,默认值:0.1。
+    :param defaults: 优化器的默认超参数,默认值: None。
 
 Adadelta
 =================================
