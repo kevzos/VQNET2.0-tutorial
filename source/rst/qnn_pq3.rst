@@ -2045,7 +2045,7 @@ expval
 QuantumMeasure
 ============================
 
-.. py:function:: pyvqnet.qnn.pq3.measure.QuantumMeasure(machine,prog,measure_qubits:list,shots:int = 1000, qcloud_option=””,noise_model=None)
+.. py:function:: pyvqnet.qnn.pq3.measure.QuantumMeasure(machine,prog,measure_qubits:list,shots:int = 1000, qcloud_option="",noise_model=None)
 
     计算量子线路测量。返回通过蒙特卡罗方法获得的测量结果。
 
