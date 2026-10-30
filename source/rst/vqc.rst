@@ -3538,9 +3538,9 @@ VQC_CRotCircuit
 ---------------------------------------------------------------
 
 
-.. py:function:: pyvqnet.qnn.vqc.VQC_CRotCircuit(para,control_qubits,rot_wire,q_machine)
+.. py:function:: pyvqnet.qnn.vqc.VQC_CRotCircuit(para,control_wire,rot_wire,q_machine)
 
-    在 ``q_machine`` 的比特 ``rot_wire`` 以及受控比特 ``control_qubits`` 上使用 ``params`` 进行受控Rot操作符。
+    在 ``q_machine`` 的比特 ``rot_wire`` 以及受控比特 ``control_wire`` 上使用 ``params`` 进行受控Rot操作符。
 
     .. math:: CR(\phi, \theta, \omega) = \begin{bmatrix}
             1 & 0 & 0 & 0 \\
@@ -3550,7 +3550,7 @@ VQC_CRotCircuit
         \end{bmatrix}.
     
     :param para: 表示参数的数组。
-    :param control_qubits: 控制量子比特索引。
+    :param control_wire: 控制量子比特索引。
     :param rot_wire: Rot量子比特索引。
     :param q_machine: 量子虚拟机设备。
     
@@ -8729,7 +8729,7 @@ vqc_crot_circuit
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_crot_circuit(para,control_qubits,rot_wire,q_machine)
+.. py:function:: pyvqnet.qnn.vqc.tn.native.vqc_crot_circuit(para,control_wire,rot_wire,q_machine)
    :noindex:
 
 	受控Rot单量子比特旋转的量子逻辑门组合。该函数别名:  ``VQC_CRotCircuit`` 。
@@ -8742,7 +8742,7 @@ vqc_crot_circuit
         \end{bmatrix}.
     
     :param para: 表示参数的数组。
-    :param control_qubits: 控制量子比特索引。
+    :param control_wire: 控制量子比特索引。
     :param rot_wire: Rot量子比特索引。
     :param q_machine: 量子虚拟机设备。
     
