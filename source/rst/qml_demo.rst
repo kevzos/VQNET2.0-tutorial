@@ -3390,13 +3390,13 @@ QUnet主要是用于解决图像分割的技术。
             print("epoch: ", epoch)
             print("{:.0f} loss is : {:.10f}".format(epoch, loss_list[-1]))
 
-            # -------------------- （epoch）-------------------- #
+            # -------------------- (epoch) -------------------- #
             model.eval()  # 
             test_loss = 0.0
             test_correct = 0
             test_total = 0
             with pyvqnet.no_grad():  # 
-                #  batch_size （，）
+                #  batch_size (批大小)
                 for x_batch, y_batch in data_generator(x_test,
                                                     y_test,
                                                     batch_size=batch_size,
