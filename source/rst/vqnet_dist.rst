@@ -29,13 +29,13 @@ NCCL为GPU间通信的常用库, **VQNet中GPU的分布式计算功能则基于N
 nproc_per_node
 ^^^^^^^^^^^^^^^^^^^^^^
 
-``vqnetrun`` 接口中可以通过 ``--nproc_per_node`` 参数控制启动的进程数,执行样例如下:
+``vqnetrun`` 接口必须通过 ``--nproc_per_node`` 参数指定当前节点启动的 worker 进程数。该参数同时适用于 gloo CPU worker 和 NCCL GPU worker。
 
     Example::
 
         from pyvqnet.distributed import CommController
         Comm_OP = CommController("gloo") # init gloo controller
-        
+
         rank = Comm_OP.getRank()
         size = Comm_OP.getSize()
         print(f"rank: {rank}, size {size}")
@@ -46,7 +46,7 @@ backend
 ^^^^^^^^^^^^^^^^^^^^^^
 
 分布式后端的选取在代码中完成, 由 ``CommController`` 的构造参数决定: ``CommController("gloo")`` 用于 CPU, ``CommController("nccl")`` 用于 GPU, 默认的 ``CommController()`` 会根据要通信的数据所在设备自动决定通信方式。
-``vqnetrun`` 命令不提供 ``--backend`` 参数, 多进程启动时由各 worker 进程确定后端: 存在 CUDA 上下文时直接构造 NCCL 通信域, 纯 CPU 运行时使用 gloo。
+``vqnetrun`` 命令不提供 ``--backend`` 参数。多进程启动时, 每个 worker 进程自行确定后端: 存在 CUDA 上下文时直接构造 NCCL 通信域, 纯 CPU 运行时使用 gloo。
 
     Example::
 
@@ -60,30 +60,14 @@ backend
         # 单机多GPU:
         # vqnetrun --nproc_per_node 2 python test.py
 
-        # 多节点情况下,每个节点独立执行:
+        # 多节点情况下, 每个节点独立执行:
         # 节点0: vqnetrun --nproc_per_node 2 --nnodes 2 --node_rank 0 --master_addr 10.0.0.1 python test.py
         # 节点1: vqnetrun --nproc_per_node 2 --nnodes 2 --node_rank 1 --master_addr 10.0.0.1 python test.py
-
-nproc_per_node
-^^^^^^^^^^^^^^^^^^^^^^
-
-``vqnetrun`` 接口中可以通过 ``--nproc_per_node`` 参数控制每个节点启动的进程数,仅在 NCCL 模式下使用。
-
-    Example::
-
-        from pyvqnet.distributed import CommController
-        Comm_OP = CommController("nccl")
-
-        rank = Comm_OP.getRank()
-        size = Comm_OP.getSize()
-        print(f"rank: {rank}, size {size}")
-
-        # vqnetrun --nproc_per_node 4 python test.py
 
 nnodes
 ^^^^^^^^^^^^^^^^^^^^^^
 
-``vqnetrun`` 接口中可以通过 ``--nnodes`` 参数控制总节点数,仅在 NCCL 模式下使用,默认值为 1。
+``vqnetrun`` 接口中可以通过 ``--nnodes`` 参数控制总节点数, 默认值为 1。启动器使用 ``nnodes * nproc_per_node`` 计算 ``WORLD_SIZE``。
 
     Example::
 
@@ -99,7 +83,7 @@ nnodes
 node_rank
 ^^^^^^^^^^^^^^^^^^^^^^
 
-``vqnetrun`` 接口中可以通过 ``--node_rank`` 参数控制当前节点的 rank,仅在 NCCL 模式下使用,默认值为 0。
+``vqnetrun`` 接口中可以通过 ``--node_rank`` 参数控制当前节点的 rank, 默认值为 0。启动器将其与 ``nproc_per_node`` 一起用于计算每个 worker 的全局 ``RANK``。
 
     Example::
 
@@ -117,7 +101,7 @@ node_rank
 master_addr
 ^^^^^^^^^^^^^^^^^^^^^^
 
-``vqnetrun`` 接口中可以通过 ``--master_addr`` 参数指定主节点地址,仅在 NCCL 模式下使用,默认值为 ``127.0.0.1``。
+``vqnetrun`` 接口中可以通过 ``--master_addr`` 参数指定主节点地址, 默认值为 ``127.0.0.1``。该值会以 ``MASTER_ADDR`` 环境变量的形式传递给 worker 进程。
 
     Example::
 
@@ -133,7 +117,7 @@ master_addr
 master_port
 ^^^^^^^^^^^^^^^^^^^^^^
 
-``vqnetrun`` 接口中可以通过 ``--master_port`` 参数指定主节点端口,仅在 NCCL 模式下使用,默认值为 ``29500``。
+``vqnetrun`` 接口中可以通过 ``--master_port`` 参数指定主节点端口, 默认值为 ``29500``。该值会以 ``MASTER_PORT`` 环境变量的形式传递给 worker 进程。
 
     Example::
 
@@ -149,8 +133,8 @@ master_port
 nccl_socket_ifname
 ^^^^^^^^^^^^^^^^^^^^^^
 
-``vqnetrun`` 接口中可以通过 ``--nccl_socket_ifname`` 参数指定 NCCL 使用的网络接口名,仅在 NCCL 模式下使用。
-该参数对应环境变量 ``NCCL_SOCKET_IFNAME``,用于在多网卡环境下指定 NCCL 通信使用的网卡。
+``vqnetrun`` 接口中可以通过 ``--nccl_socket_ifname`` 参数指定 NCCL 使用的网络接口名。该参数仅作用于 NCCL 通信。
+该参数对应环境变量 ``NCCL_SOCKET_IFNAME`` , 用于在多网卡环境下指定 NCCL 通信使用的网卡。
 
     Example::
 
@@ -163,144 +147,32 @@ nccl_socket_ifname
 
         # vqnetrun --nproc_per_node 2 --nccl_socket_ifname eth0 python test.py
 
-H, hosts
-^^^^^^^^^^^^^^^^^^^^^^
-
-``vqnetrun`` 接口中可以通过 ``-H``, ``--hosts`` 指定节点以及进程分配来跨节点执行(在跨节点运行时必须将节点的环境配置成功, 在相同的环境,相同的路径下执行),执行样例如下:
-
-    Example::
-
-        from pyvqnet.distributed import CommController, get_host_name
-        Comm_OP = CommController("gloo")
-        
-        rank = Comm_OP.getRank()
-        size = Comm_OP.getSize()
-        print(f"rank: {rank}, size {size}")
-        print(f"LocalRank {Comm_OP.getLocalRank()} hosts name {get_host_name()}")
-
-        # vqnetrun --nproc_per_node 4 -H node0:1,node2:1 python test.py
-        # vqnetrun --nproc_per_node 4 --hosts node0:1,node2:1 python test.py
-
-
-.. _hostfile:
-
-hostfile, f, hostfile
-^^^^^^^^^^^^^^^^^^^^^^
-
-``vqnetrun`` 接口中可以通过指定hosts文件来指定节点以及进程分配来跨节点(在跨节点运行时必须将节点的环境配置成功, 在相同的环境,相同的路径下执行), 命令行参数为 ``-hostfile``, ``-f``, ``--hostfile``.
-
-文件内每行的格式必须为:<hostname> slots=<slots> 如；
-
-node0 slots=1
-
-node2 slots=1
-
-执行样例如下
-
-    Example::
-
-        from pyvqnet.distributed import CommController, get_host_name
-        Comm_OP = CommController("gloo")
-        
-        rank = Comm_OP.getRank()
-        size = Comm_OP.getSize()
-        print(f"rank: {rank}, size {size}")
-        print(f"LocalRank {Comm_OP.getLocalRank()} hosts name {get_host_name()}")
-
-        # vqnetrun --nproc_per_node 4 -f hosts python test.py
-        # vqnetrun --nproc_per_node 4 -hostfile hosts python test.py
-        # vqnetrun --nproc_per_node 4 --hostfile hosts python test.py
-
-
-output-filename
-^^^^^^^^^^^^^^^^^^^^^^
-
-``vqnetrun`` 接口中可以通过命令行参数 ``--output-filename`` 来将输出结果保存到指定文件.
-
-执行样例如下
-
-    Example::
-
-        from pyvqnet.distributed import CommController, get_host_name
-        Comm_OP = CommController("gloo")
-        
-        rank = Comm_OP.getRank()
-        size = Comm_OP.getSize()
-        print(f"rank: {rank}, size {size}")
-        print(f"LocalRank {Comm_OP.getLocalRank()} hosts name {get_host_name()}")
-
-        # vqnetrun --nproc_per_node 4 --hostfile hosts --output-filename output  python test.py
-
-
 verbose
 ^^^^^^^^^^^^^^^^^^^^^^
-``vqnetrun`` 接口中可以通过命令行参数 ``--verbose`` 来对节点间的通信进行检测,并额外输出检测结果。
 
-执行样例如下
-
-    Example::
-
-        from pyvqnet.distributed import CommController, get_host_name
-        Comm_OP = CommController("gloo") 
-        
-        rank = Comm_OP.getRank()
-        size = Comm_OP.getSize()
-        print(f"rank: {rank}, size {size}")
-        print(f"LocalRank {Comm_OP.getLocalRank()} hosts name {get_host_name()}")
-
-        # vqnetrun --nproc_per_node 4 --hostfile hosts --verbose python test.py
-
-
-start-timeout
-^^^^^^^^^^^^^^^^^^^^^^
-``vqnetrun`` 接口中可以通过命令行参数 ``--start-timeout`` 来指定超时前执行所有检查并启动进程。默认值为 30 秒。
-
-执行样例如下
+``vqnetrun`` 接口中可以通过 ``--verbose`` 标志输出额外的启动诊断信息, 例如节点/进程 rank 设置、master 会合地址与端口、本地 worker 启动信息等。该标志不执行节点连通性检测。
 
     Example::
 
-        from pyvqnet.distributed import CommController, get_host_name
+        from pyvqnet.distributed import CommController
         Comm_OP = CommController("gloo")
-        
-        rank = Comm_OP.getRank()
-        size = Comm_OP.getSize()
-        print(f"rank: {rank}, size {size}")
-        print(f"LocalRank {Comm_OP.getLocalRank()} hosts name {get_host_name()}")
-
-        # vqnetrun --nproc_per_node 4 --start-timeout 10 python test.py
-
-
-disable-cache
-^^^^^^^^^^^^^^^^^^^^^^
-``vqnetrun`` 接口中可以通过 ``--disable-cache`` 标志禁用初始化检查缓存。默认情况下, vqnetrun 会将初始化检查的结果缓存 60 分钟, 如果禁用了缓存, 则每次运行都会重新执行初始化检查。
-
-执行代码如下
-
-    Example::
-
-        from pyvqnet.distributed import CommController, get_host_name
-        Comm_OP = CommController("gloo") 
 
         rank = Comm_OP.getRank()
         size = Comm_OP.getSize()
         print(f"rank: {rank}, size {size}")
-        print(f"LocalRank {Comm_OP.getLocalRank()} hosts name {get_host_name()}")
 
-        # vqnetrun --nproc_per_node 4 --disable-cache python test.py
-
+        # vqnetrun --nproc_per_node 4 --verbose python test.py
 
 cb, check-build
 ^^^^^^^^^^^^^^^^^^^^^^
 
-``vqnetrun`` 接口中可以通过 ``-cb``, ``--check-build`` 标志查看当前构建支持的分布式后端和通信库。
-
-执行代码如下
+``vqnetrun`` 接口中可以通过 ``-cb`` 或 ``--check-build`` 标志查看当前构建支持的分布式控制器与通信库。
+由于启动器的参数解析要求必须提供 ``--nproc_per_node`` , 因此查看构建信息时也需要传入该参数。
 
     Example::
 
-        # vqnetrun -cb
-        # vqnetrun --check-build
-
+        # vqnetrun --nproc_per_node 1 -cb
+        # vqnetrun --nproc_per_node 1 --check-build
 
 CommController
 ^^^^^^^^^^^^^^^^^^^^^^^

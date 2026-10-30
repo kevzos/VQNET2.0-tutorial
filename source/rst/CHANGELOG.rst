@@ -27,6 +27,7 @@ Changed
 - 文档中 ``pyQPanda`` 相关表述统一更新为 ``pyQPanda3`` ，并删除依赖旧版 pyqpanda 的示例。
 - 重写首页概览：按已实现的 2.18.2 接口分别说明 ``pyvqnet`` (原生) 与 ``torch`` 两种计算后端，分布式改为 gloo/NCCL 表述，补充张量网络后端 ``pyvqnet.qnn.vqc.tn`` 与大模型算子说明。
 - 分布式文档：删除 ``vqnetrun --backend`` 参数说明与命令示例（该参数已移除，后端由各 worker 进程在运行时确定），修正 ``split_groups`` / ``init_groups`` 的返回值与组通信 ``group`` 参数说明。
+- 按当前 launcher 实现清理 ``vqnetrun`` CLI 文档：删除不支持的 ``-H`` / ``--hosts``、host file、``--output-filename``、``--start-timeout``、``--disable-cache`` 参数；说明 ``--nproc_per_node`` 为 gloo 与 NCCL 都必须提供的参数；将 ``--verbose`` 修正为输出额外启动诊断信息而非连通性检测；并更新 ``-cb`` / ``--check-build`` 示例，补充必需的 ``--nproc_per_node`` 参数。
 
 Fixed
 ===================
