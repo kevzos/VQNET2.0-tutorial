@@ -4580,7 +4580,7 @@ VQC_HardwareEfficientAnsatz
 VQC_BasicEntanglerTemplate
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.VQC_BasicEntanglerTemplate(num_layer=1, num_qubits=1, rotation="RX", initial=None, dtype=None)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.VQC_BasicEntanglerTemplate(num_layers=1, num_qubits=1, rotation="RX", initial=None, dtype=None)
 
     由每个量子位上的单参数单量子位旋转组成的层,后跟一个闭合链或环组合的多个CNOT门。
 
@@ -4592,7 +4592,7 @@ VQC_BasicEntanglerTemplate
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
 
-    :param num_layer: 量子比特线路层数。
+    :param num_layers: 量子比特线路层数。
     :param num_qubits: 量子比特数,默认为1。
     :param rotation: 使用单参数单量子比特门,``RX`` 被用作默认值。
     :param initial: 使用initial 初始化所有其中参数逻辑门的参数,默认值: None,此模块将随机初始化参数。
@@ -4637,7 +4637,7 @@ VQC_BasicEntanglerTemplate
 VQC_StronglyEntanglingTemplate
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.sv.torch.VQC_StronglyEntanglingTemplate(num_layers=1, num_qubits=1, rotation = "RX", initial = None, dtype: = None)
+.. py:class:: pyvqnet.qnn.vqc.sv.torch.VQC_StronglyEntanglingTemplate(num_layers=1, num_qubits=1, ranges=None, initial=None, dtype=None)
 
     由单个量子比特旋转和纠缠器组成的层,参考 `circuit-centric classifier design <https://arxiv.org/abs/1804.00633>`__ .
 
@@ -4649,10 +4649,10 @@ VQC_StronglyEntanglingTemplate
 
     :param num_layers: 重复层数,默认值: 1。
     :param num_qubits: 量子比特数,默认值: 1。
-    :param rotation: 要使用的单参数单量子比特门,默认值: `RX`
+    :param ranges: 决定每个后续层的范围超参数的序列。默认值: None,对第 :math:`l` 层和 :math:`M` 个量子比特使用 :math:`r=l \mod M`。
     :param initial: 使用initial 初始化所有其中参数逻辑门的参数,默认值: None,此模块将随机初始化参数。
     :param dtype: 参数的数据类型,默认值: None,使用 float32。
-    :return: VQC_BasicEntanglerTemplate 实例
+    :return: VQC_StronglyEntanglingTemplate 实例
 
 
     Example::
@@ -4707,7 +4707,7 @@ VQC_QuantumEmbedding
 
 
     :param num_repetitions_input: 子模块中输入编码的重复次数。
-    :paramdepth_input: 输入维数。
+    :param depth_input: 输入维数。
     :param num_unitary_layers: 变分量子门的重复次数。
     :param num_repetitions: 子模块的重复次数。
     :param initial: 参数初始化值,默认为None
@@ -7275,7 +7275,7 @@ VQC_HardwareEfficientAnsatz
 VQC_BasicEntanglerTemplate
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.VQC_BasicEntanglerTemplate(num_layer=1, num_qubits=1, rotation="RX", initial=None, dtype=None)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.VQC_BasicEntanglerTemplate(num_layers=1, num_qubits=1, rotation="RX", initial=None, dtype=None)
 
     由每个量子位上的单参数单量子位旋转组成的层,后跟一个闭合链或环组合的多个CNOT门。
 
@@ -7287,7 +7287,7 @@ VQC_BasicEntanglerTemplate
         该类可以作为 ``torch.nn.Module`` 的一个子模块加入torch的模型中。
 
 
-    :param num_layer: 量子比特线路层数。
+    :param num_layers: 量子比特线路层数。
     :param num_qubits: 量子比特数,默认为1。
     :param rotation: 使用单参数单量子比特门,``RX`` 被用作默认值。
     :param initial: 使用initial 初始化所有其中参数逻辑门的参数,默认值: None,此模块将随机初始化参数。
@@ -7331,7 +7331,7 @@ VQC_BasicEntanglerTemplate
 VQC_StronglyEntanglingTemplate
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py:class:: pyvqnet.qnn.vqc.tn.torch.VQC_StronglyEntanglingTemplate(num_layers=1, num_qubits=1, rotation = "RX", initial = None, dtype: = None)
+.. py:class:: pyvqnet.qnn.vqc.tn.torch.VQC_StronglyEntanglingTemplate(num_layers=1, num_qubits=1, ranges=None, initial=None, dtype=None)
 
     由单个量子比特旋转和纠缠器组成的层,参考 `circuit-centric classifier design <https://arxiv.org/abs/1804.00633>`__ .
 
@@ -7343,10 +7343,10 @@ VQC_StronglyEntanglingTemplate
 
     :param num_layers: 重复层数,默认值: 1。
     :param num_qubits: 量子比特数,默认值: 1。
-    :param rotation: 要使用的单参数单量子比特门,默认值: `RX`
+    :param ranges: 决定每个后续层的范围超参数的序列。默认值: None,对第 :math:`l` 层和 :math:`M` 个量子比特使用 :math:`r=l \mod M`。
     :param initial: 使用initial 初始化所有其中参数逻辑门的参数,默认值: None,此模块将随机初始化参数。
     :param dtype: 参数的数据类型,默认值: None,使用 float32。
-    :return: VQC_BasicEntanglerTemplate 实例
+    :return: VQC_StronglyEntanglingTemplate 实例
 
 
     Example::
@@ -7399,7 +7399,7 @@ VQC_QuantumEmbedding
 
 
     :param num_repetitions_input: 子模块中输入编码的重复次数。
-    :paramdepth_input: 输入维数。
+    :param depth_input: 输入维数。
     :param num_unitary_layers: 变分量子门的重复次数。
     :param num_repetitions: 子模块的重复次数。
     :param initial: 参数初始化值,默认为None
