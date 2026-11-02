@@ -267,7 +267,7 @@ CommController
             Comm_OP = CommController("nccl")
             
             Comm_OP.get_device_num()
-            # python test.py
+            # vqnetrun --master_port 12345 --nproc_per_node 2 python test.py
 
 
     .. py:method:: allreduce(tensor, c_op = "avg")

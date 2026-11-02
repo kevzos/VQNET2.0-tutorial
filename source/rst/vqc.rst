@@ -4734,7 +4734,7 @@ DataParallelVQCAdjointLayer
 
         pyvqnet.utils.set_random_seed(42)
 
-        Comm_OP = CommController("gloo")
+        Comm_OP = CommController("nccl")
 
         input_x = tensor.QTensor([[0.1, 0.2, 0.3]])
         input_x = tensor.broadcast_to(input_x, [bsize, 3])
@@ -4756,7 +4756,7 @@ DataParallelVQCAdjointLayer
 DataParallelVQCLayer
 ---------------------------------------------------------------
 
-.. py:class:: pyvqnet.distributed.DataParallelVQCLayer(Comm_OP, vqc_module, use_bucket_cpp_allreduce=True, bucket_bytes_cap=25*1024*1024, first_bucket_bytes_cap=1024*1024, find_unused_parameters=False, gradient_as_bucket_view=False)
+.. py:class:: pyvqnet.distributed.DataParallelVQCLayer(Comm_OP, vqc_module, name="", use_bucket_cpp_allreduce=True, bucket_bytes_cap=25*1024*1024, first_bucket_bytes_cap=1024*1024, find_unused_parameters=False, gradient_as_bucket_view=False)
 
 
     使用分布式数据并行对数据批次大小创建变分量子线路使用自动微分计算。 
@@ -4829,7 +4829,7 @@ DataParallelVQCLayer
 
         input = tensor.ones([b, 3 * n * l])
 
-        Comm = CommController("gloo")
+        Comm = CommController("nccl")
         
         input.requires_grad = True
         qunatum_model = QModel(num_wires=n, num_layer=l, dtype=pyvqnet.kcomplex64)
