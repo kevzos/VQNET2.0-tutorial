@@ -4738,9 +4738,11 @@ DataParallelVQCAdjointLayer
 
         input_x = tensor.QTensor([[0.1, 0.2, 0.3]])
         input_x = tensor.broadcast_to(input_x, [bsize, 3])
+        input_x = input_x.toGPU(Comm_OP.get_local_rank() + DEV_GPU_0)
         input_x.requires_grad = True
 
         qunatum_model = QModel(num_wires=6, dtype=pyvqnet.kcomplex64)
+        qunatum_model.toGPU(Comm_OP.get_local_rank() + DEV_GPU_0)
 
         l = DataParallelVQCAdjointLayer(
             Comm_OP,
@@ -4830,9 +4832,11 @@ DataParallelVQCLayer
         input = tensor.ones([b, 3 * n * l])
 
         Comm = CommController("nccl")
-        
+
+        input = input.toGPU(Comm.get_local_rank() + DEV_GPU_0)
         input.requires_grad = True
         qunatum_model = QModel(num_wires=n, num_layer=l, dtype=pyvqnet.kcomplex64)
+        qunatum_model.toGPU(Comm.get_local_rank() + DEV_GPU_0)
         
         layer = qunatum_model
 
