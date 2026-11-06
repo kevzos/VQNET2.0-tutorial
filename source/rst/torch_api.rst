@@ -5526,11 +5526,13 @@ TNQModule
 
     .. warning::
 
-        ``TNQModule`` 只接受量子子模块（``TNQMachine``、量子门、ansatz、测量与编码器）。
-        古典层（如 ``Linear``）不能作为 ``TNQModule`` 的直接子模块：JIT 编译的是纯量子线路，
-        古典计算会被静默丢弃或冻结。混合模型请把古典层放在外层
-        ``QModule``/``torch.nn.Module`` 中、包装 ``TNQModule`` 使用；或改用裸 ``TNQMachine``
-        进行 eager 混合执行（参见各 ansatz 接口示例中 ``QPart``/``QM`` 的拆分写法）。
+        ``TNQModule`` 仅支持量子类型的子模块（``TNQMachine``、量子门、ansatz 模板、
+        测量模块与编码模块）。经典神经网络层（例如 ``Linear``）不可作为 ``TNQModule``
+        的子模块：JIT 编译的对象是纯量子线路，其中的经典计算将被忽略，或在编译时
+        被固定为常量。构建经典-量子混合模型时，应将经典层定义在外层
+        ``QModule``/``torch.nn.Module`` 中，并将 ``TNQModule`` 作为其子模块；如需不经
+        JIT 编译执行，可直接使用 ``TNQMachine``。正确的组织方式参见各 ansatz 接口
+        示例中 ``QPart``/``QM`` 的双层结构。
 
     :param use_jit: 开启即时编译功能, 默认为True。
     :param vectorized_argnums: 要被向量化的参数,这些参数应该在同一维共享相同的批次形状,默认值为0
