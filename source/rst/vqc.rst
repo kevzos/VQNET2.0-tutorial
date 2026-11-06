@@ -6660,6 +6660,14 @@ TNQModule
     在 `pyvqnet` 后端（默认后端）下,定义张量网络下量子变分线路模型 `Module` 应该继承的基类。
     该类用于使用张量网络来模块来用语执行量子线路。
 
+    .. warning::
+
+        ``TNQModule`` 只接受量子子模块（``TNQMachine``、量子门、ansatz、测量与编码器）。
+        古典层（如 ``Linear``）不能作为 ``TNQModule`` 的直接子模块：JIT 编译的是纯量子线路，
+        古典计算会被静默丢弃或冻结。混合模型请把古典层放在外层普通
+        ``pyvqnet.nn.Module`` 中、包装 ``TNQModule`` 使用；或改用裸 ``TNQMachine``
+        进行 eager 混合执行（参见各 ansatz 接口示例中 ``QPart``/``QM`` 的拆分写法）。
+
     :param use_jit: 开启即时编译功能, 默认为True。
     :param vectorized_argnums: 要被向量化的参数,这些参数应该在同一维共享相同的批次形状,默认值为0
     :param name: 模块名。
@@ -8309,7 +8317,7 @@ VQC_HardwareEfficientAnsatz
 
     Example::
 
-        from pyvqnet.nn import Linear
+        from pyvqnet.nn import Linear, Module
         from pyvqnet.qnn.vqc.tn.native.qcircuit import VQC_HardwareEfficientAnsatz,RZZ,RZ
         from pyvqnet.qnn.vqc.tn.native import Probability,TNQMachine, TNQModule
         from pyvqnet import tensor
@@ -8317,10 +8325,10 @@ VQC_HardwareEfficientAnsatz
         pyvqnet.backends.set_backend("pyvqnet")
         pyvqnet.utils.set_random_seed(25)
 
-        class QM(TNQModule):
-            def __init__(self, name=""):
+        class QPart(TNQModule):
+            def __init__(self, batch_size, name=""):
                 super().__init__(name)
-                self.linearx = Linear(4,2)
+                self.batch_size = batch_size
                 self.ansatz = VQC_HardwareEfficientAnsatz(4, ["rx", "RY", "rz"],
                                             entangle_gate="cnot",
                                             entangle_rules="linear",
@@ -8329,20 +8337,28 @@ VQC_HardwareEfficientAnsatz
                 self.encode2 = RZ(wires=1)
                 self.measure = Probability(wires=[0, 2])
                 self.device = TNQMachine(4)
-            def forward(self, x, *args, **kwargs):
-                self.device.reset_states(bz)
-                y = self.linearx(x)
+            def forward(self, y, *args, **kwargs):
+                self.device.reset_states(self.batch_size)
                 self.encode1(params = y[0],q_machine = self.device,)
                 self.encode2(params = y[1],q_machine = self.device,)
                 self.ansatz(q_machine =self.device)
                 return self.measure(q_machine =self.device)
 
+        class QM(Module):
+            def __init__(self, batch_size, name=""):
+                super().__init__(name)
+                self.linearx = Linear(4,2)
+                self.qpart = QPart(batch_size)
+            def forward(self, x, *args, **kwargs):
+                return self.qpart(self.linearx(x))
+
         bz =3
         inputx = tensor.arange(1.0,bz*4+1).reshape([bz,4])
         inputx.requires_grad= True
-        qlayer = QM()
+        qlayer = QM(bz)
         y = qlayer(inputx)
         y.backward(pyvqnet.tensor.ones_like(y))
+        print(y)
         print(y)
 
 
