@@ -5524,6 +5524,14 @@ TNQModule
     在 `torch` 后端下,定义张量网络下量子变分线路模型 `Module` 应该继承的基类。
     该类用于使用张量网络来模块来用语执行量子线路。
 
+    .. warning::
+
+        ``TNQModule`` 只接受量子子模块（``TNQMachine``、量子门、ansatz、测量与编码器）。
+        古典层（如 ``Linear``）不能作为 ``TNQModule`` 的直接子模块：JIT 编译的是纯量子线路，
+        古典计算会被静默丢弃或冻结。混合模型请把古典层放在外层
+        ``QModule``/``torch.nn.Module`` 中、包装 ``TNQModule`` 使用；或改用裸 ``TNQMachine``
+        进行 eager 混合执行（参见各 ansatz 接口示例中 ``QPart``/``QM`` 的拆分写法）。
+
     :param use_jit: 开启即时编译功能, 默认为True。
     :param vectorized_argnums: 要被向量化的参数,这些参数应该在同一维共享相同的批次形状,默认值为0
     :param name: 模块名。
