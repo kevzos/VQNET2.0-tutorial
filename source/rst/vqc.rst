@@ -8359,7 +8359,6 @@ VQC_HardwareEfficientAnsatz
         y = qlayer(inputx)
         y.backward(pyvqnet.tensor.ones_like(y))
         print(y)
-        print(y)
 
 
 VQC_BasicEntanglerTemplate
