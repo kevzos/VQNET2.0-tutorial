@@ -576,7 +576,7 @@ VQCLayer
     * ``shadow_config=1`` :随机经典影子。shots 表示总快照数 T,每个快照电路运行 1 shot。
     * ``shadow_config=2`` :去随机化经典影子。shots 表示调度长度 N,贪心调度生成 N 个电路,每个 1 shot。
 
-    经典影子在 ``vqnet_native`` 和提交后端（ ``qcloud_fake`` / ``qcloud_service``）上均可用,但不支持 ``qpanda_runtime``（抛出 ``ValueError``）。
+    经典影子在 ``vqnet_native`` 和提交后端（ ``qcloud_fake`` / ``qcloud_service``）上均可用,但不支持 ``qpanda_runtime`` （抛出 ``ValueError`` ）。
     梯度路径: ``vqnet_native`` 使用 VQC 模块的原生自动微分;
     提交后端使用 mode-0 电路的参数移位法。
 
@@ -587,8 +587,8 @@ VQCLayer
 
     .. note::
 
-        必须且只能指定一种测量方式:``submit_kwargs["pauli_str_dict"]``(期望值)
-        与 ``query_kwargs["measure_qubits"]``(概率)二选一,同时指定或都不指定会抛出 ``ValueError``。
+        必须且只能指定一种测量方式: ``submit_kwargs["pauli_str_dict"]`` (期望值)
+        与 ``query_kwargs["measure_qubits"]`` (概率)二选一,同时指定或都不指定会抛出 ``ValueError`` 。
 
     .. note::
 

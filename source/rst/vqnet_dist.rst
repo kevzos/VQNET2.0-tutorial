@@ -1720,7 +1720,7 @@ ParallelTrainingWrapper
 
         该接口只支持在 Linux 下运行；
 
-        必须通过 ``vqnetrun --nproc_per_node <N>`` 启动，不支持 ``mpirun``。
+        必须通过 ``vqnetrun --nproc_per_node <N>`` 启动。
 
     .. py:method:: train_batch()
 
