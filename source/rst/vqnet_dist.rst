@@ -1660,31 +1660,7 @@ ParallelTrainingWrapper
 
     统一的并行训练封装器，支持三种并行模式：经典层流水线并行（PP）、数据并行（DP）和比特并行（Bit），可将经典层与变分量子线路（VQC）混合编排到多级流水线中执行。
 
-    :param args: 训练配置字典，键值见下表。
-    :param pipeline_def: 模型定义，支持以下四种形式：
-
-        1. 手写字典列表（旧版 pipeline_def）：
-
-           ``[{"type": "classical", "layers": [...]}, ...]``
-
-           每个条目是一个 stage 字典，支持 ``classical``、``vqc_split``、``vqc_whole`` 三种类型。
-
-        2. 纯经典模型：``nn.Module`` 层列表，自动分配到各 stage。
-
-        3. 纯 VQC 模型：一个 ``QModule`` 子类（必须是类，不能是实例）。
-
-        4. 混合模型：``("classical", [layers])`` / ``("vqc", VQCClass)`` 元组列表。
-
-        形式 2–4 通过 ``auto_plan`` 自动编译为旧版字典列表中间表示。
-
-    :param trainset: 数据集，需具有 ``.data``、``.labels`` 属性，且 ``__getitem__`` 返回 ``(data, label)`` 对。
-    :param strategy: 策略字典，仅用于声明式模型定义（形式 2–4），可选键：
-
-        - ``classical_split``（``"uniform"`` | ``"auto"``，默认 ``"auto"``）：经典层分配策略。
-        - ``vqc_split``（``None`` | ``False``，默认 ``None``）：``None`` 表示自动切分 VQC 块；``False`` 表示保持每个 VQC 块完整。
-        - ``compression_policy``（默认 ``"greedy"``）：stage 合并策略。
-
-    ``args`` 参数列表：
+    :param args: 训练配置字典，支持以下键：
 
         ``data_parallel_size`` (int, 默认 1)
             数据并行度。
@@ -1710,6 +1686,29 @@ ParallelTrainingWrapper
             打印间隔步数。
         ``seed`` (int, 默认 42)
             随机种子，用于 VQC 录制的确定性。
+
+    :param pipeline_def: 模型定义，支持以下四种形式：
+
+        1. 手写字典列表（旧版 pipeline_def）：
+
+           ``[{"type": "classical", "layers": [...]}, ...]``
+
+           每个条目是一个 stage 字典，支持 ``classical``、``vqc_split``、``vqc_whole`` 三种类型。
+
+        2. 纯经典模型：``nn.Module`` 层列表，自动分配到各 stage。
+
+        3. 纯 VQC 模型：一个 ``QModule`` 子类（必须是类，不能是实例）。
+
+        4. 混合模型：``("classical", [layers])`` / ``("vqc", VQCClass)`` 元组列表。
+
+        形式 2–4 通过 ``auto_plan`` 自动编译为旧版字典列表中间表示。
+
+    :param trainset: 数据集，需具有 ``.data``、``.labels`` 属性，且 ``__getitem__`` 返回 ``(data, label)`` 对。
+    :param strategy: 策略字典，仅用于声明式模型定义（形式 2–4），可选键：
+
+        - ``classical_split``（``"uniform"`` | ``"auto"``，默认 ``"auto"``）：经典层分配策略。
+        - ``vqc_split``（``None`` | ``False``，默认 ``None``）：``None`` 表示自动切分 VQC 块；``False`` 表示保持每个 VQC 块完整。
+        - ``compression_policy`` （默认 ``"greedy"`` ）：stage 合并策略。
 
     .. note::
 
