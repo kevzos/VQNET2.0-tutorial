@@ -8,7 +8,7 @@ VQNet Changelog
 
 Added
 ===================
-- 新增统一量子层 ``VQCLayer``(``pyvqnet.qnn.pq3.vqclayer.VQCLayer``)接口，通过 ``submit_kwargs["backend"]`` 选择执行后端(``vqc_autograd`` / ``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``)，支持期望值与概率两种互斥测量方式。
+- 新增统一量子层 ``VQCLayer`` ( ``pyvqnet.qnn.pq3.vqclayer.VQCLayer`` ) 接口，通过 ``submit_kwargs["backend"]`` 选择执行后端(``vqc_autograd`` / ``qcloud_fake`` / ``qcloud_service`` / ``qpanda_runtime``)，支持期望值与概率两种互斥测量方式。
 - 新增 torch 后端统一量子层 ``TorchVQCLayer`` ，与原生 ``VQCLayer`` 功能一致。
 - 新增混合量子+经典的多级分布式训练接口 `ParallelTrainingWrapper` 。
 
@@ -286,7 +286,7 @@ Changed
 - 移除了xtensor部分。
 - API 文档进行部分修改。区分了基于自动微分的量子机器学习示例以及基于qpanda的机器学习示例,区别基于自动微分的量子机器学习接口以及基于qpanda的机器学习示例接口。
 - `matmul` 支持1d@1d,2d@1d,1d@2d。
-- 增加了一些量子计算层别名: `QpandaQCircuitVQCLayer`` = `QuantumLayer` , `QpandaQCircuitVQCLayerLite` = `QuantumLayerV2`, `QpandaQProgVQCLayer` = `QuantumLayerV3`.
+- 增加了一些量子计算层别名: `QpandaQCircuitVQCLayer` = `QuantumLayer` , `QpandaQCircuitVQCLayerLite` = `QuantumLayerV2`, `QpandaQProgVQCLayer` = `QuantumLayerV3`.
 
 Fixed
 ===================
