@@ -45,6 +45,7 @@ Fixed
 - ``QLSTM`` / ``QGRU`` 忽略 ``batch_first=False`` ； ``Quanvolution`` 的输出尺寸错误，步长为 ``(1, 1)`` 时崩溃。
 - ``VQC_PartialTrace`` 对错误的量子比特轴求偏迹， Meyer-Wallach 测度与 ``VQC_VarMeasure`` 的值错误； ``Projector`` 的基态矩阵构建错误。
 - ``MultiRZ`` 在伴随梯度下请求导数时导致进程中止。
+- 逐门执行 ``multirz`` / ``MultiRZ`` 时，传入逐样本角度并作用于部分量子比特会得到错误的态矢 (各样本的角度被拼成了一个对角矩阵)；现在每个角度对应一个矩阵。
 - 张量网络: 多参数门 ( ``u3`` 、 ``rot`` 、 ``crot`` ) 使用追踪时的角度而不是运行时输入编译，带 dagger 的门被编译为固定角度；方差对非 Pauli 观测量的映射错误， MPS 上的方差调用抛出 ``AttributeError`` 。
 - CPU 上的整数切片 ``matmul`` 返回错误的值； ``bmm`` 与 4 维 ``matmul`` 维度不匹配时返回错误结果；对空张量做 ``max`` / ``min`` / ``argmax`` 返回 ``FLT_MAX`` 或 ``[0]`` 。
 - ``tensor.full([1], 0.1, dtype=kfloat64)`` 与 ``fill_(2.3)`` 存储的是 float32 精度的值。
