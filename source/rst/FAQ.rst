@@ -38,7 +38,7 @@ VQNet提供的 :ref:`QuantumLayer_pq3` 下的接口已经封装了量子变分�
 答: 构建VQNet的模型需要保证其中所使用的所有模块是可微分。当模型某个模块无法计算梯度,则会导致该模块以及之前的模块无法使用链式法则计算梯度。
 若用户自定义一个量子变分线路,请使用VQNet提供的 :ref:`QuantumLayer_pq3` 下的接口。对于经典机器学习模块,需要使用 :doc:`./QTensor` 以及 :doc:`./nn` 定义的接口,这些接口封装了梯度计算的函数,VQNet可以进行自动微分。
 
-若用户想在 `Module` 中使用包含多个模块的列表作为子模块,请不要使用python自带的List,需要使用 pyvqnet.nn.module.ModuleList 代替 List。这样,子模块的训练参数可以被注册到整个模型中,可以进行自动微分训练。
+若用户想在 `Module` 中使用包含多个模块的列表作为子模块,请不要使用python自带的List,需要使用 pyvqnet.nn.ModuleList 代替 List。这样,子模块的训练参数可以被注册到整个模型中,可以进行自动微分训练。
 
 
 **问: 为什么原先的代码在2.0.7及以后版本无法运行**
@@ -52,4 +52,4 @@ VQNet提供的 :ref:`QuantumLayer_pq3` 下的接口已经封装了量子变分�
 
 使用以下功能需要自行安装torch>=2.11.0。自v2.15.0版本,我们支持使用 `torch >=2.11.0 <https://docs.pytorch.org/docs/stable/index.html>`_ 作为计算后端，进行经典神经网络、量子变分线路、分布式等计算。
 使用 ``pyvqnet.backends.set_backend("torch")`` 后,接口保持不变,但VQNet的 ``QTensor`` 的 ``data`` 成员变量均使用 ``torch.Tensor`` 储存数据,
-并使用torch计算。 ``pyvqnet.nn.torch`` 以及 ``pyvqnet.qnn.vqc.torch`` 下的类继承于 ``torch.nn.Module`` ,可以构成 ``torch`` 模型。
+并使用torch计算。 ``pyvqnet.nn.torch`` 以及 ``pyvqnet.qnn.vqc.sv.torch`` 、 ``pyvqnet.qnn.vqc.tn.torch`` 下的模块类继承于 ``torch.nn.Module`` ,可以构成 ``torch`` 模型。

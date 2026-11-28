@@ -17,7 +17,8 @@ QTensor 的函数与属性
     :param data: 输入数据,可以是 _core.Tensor 或numpy 数组。
     :param requires_grad: 是否应该跟踪张量的梯度,默认为 False。
     :param device: 储存在哪个设备上,默认: pyvqnet.DEV_CPU,在CPU上。
-    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
+    :param dtype: 参数的数据类型,默认: None,使用输入数据的类型(由 Python 列表创建的浮点张量使用默认数据类型 kfloat32);
+        可取的值见 ``dtype`` 属性,半精度类型 ``kfloat16`` 与 ``kcomplex32`` 见「半精度数据类型」一节。
     :return: 输出 QTensor。
 
     Example::
@@ -26,18 +27,32 @@ QTensor 的函数与属性
         from pyvqnet.dtype import *
         import numpy as np
 
-        t1 = QTensor(np.ones([2,3]))
-        t2 =  QTensor([2,3,4j,5])
-        t3 =  QTensor([[[2,3,4,5],[2,3,4,5]]],dtype=kbool)
+        t1 = QTensor(np.ones([2, 3], dtype=np.float32))
+        t2 = QTensor([2, 3, 4j, 5])
+        t3 = QTensor([[[2, 3, 4, 5], [2, 3, 4, 5]]], dtype=kbool)
+        t4 = QTensor([1.5, 2.5, -0.125], dtype=kfloat16)
+        t5 = QTensor([1 + 2j, 3 - 1j], dtype=kcomplex32)
+        print(t1.dtype, t2.dtype, t3.dtype)
         print(t1)
         print(t2)
         print(t3)
-        # [[1. 1. 1.]
-        #  [1. 1. 1.]]
-        # [2.+0.j 3.+0.j 0.+4.j 5.+0.j]
-        # [[[ True  True  True  True]
-        #   [ True  True  True  True]]]
+        print(t4.dtype, t4.element_size())
+        print(t5.dtype, t5.element_size())
 
+        # float32 complex64 bool
+
+        # [[1.,1.,1.],
+        #  [1.,1.,1.]]
+        # <QTensor [2, 3] DEV_CPU float32>
+
+        # [2.+0.j,3.+0.j,0.+4.j,5.+0.j]
+        # <QTensor [4] DEV_CPU complex64>
+
+        # [[[ True, True, True, True],
+        #   [ True, True, True, True]]]
+        # <QTensor [1, 2, 4] DEV_CPU bool>
+        # float16 2
+        # complex32 4
 
     .. py:attribute:: ndim
 
@@ -121,24 +136,42 @@ QTensor 的函数与属性
             ``pyvqnet.kint16``                         16比特整数 (有符号)
             ``pyvqnet.kint32``                         32比特整数 (有符号)
             ``pyvqnet.kint64``                         64比特整数 (有符号)
+            ``pyvqnet.kfloat16``                       16比特半精度浮点数,每个元素占 2 字节
             ``pyvqnet.kfloat32``                       32比特浮点数, 见 https://en.wikipedia.org/wiki/IEEE_754
             ``pyvqnet.kfloat64``                       64比特浮点数, 见 https://en.wikipedia.org/wiki/IEEE_754
+            ``pyvqnet.kcomplex32``                     32比特复数，由两个 `float16` 构成,每个元素占 4 字节
             ``pyvqnet.kcomplex64``                     64比特复数，由两个 `float32` 构成
             ``pyvqnet.kcomplex128``                    128比特复数，由两个 `float64` 构成
             ``pyvqnet.kbfloat16``                      16比特浮点数, 有时被称为脑浮点格式（Brain floating point），其位分配为 1 位符号位、8 位指数位、7 位尾数位
             =========================================  ===============================
 
+        ``str(dtype)`` 给出类型的名字,例如 ``float16`` 和 ``complex32``。``element_size()`` 返回每个元素占用的字节数。
 
         :return: 张量的数据类型。
 
         Example::
 
             from pyvqnet.tensor import QTensor
+            from pyvqnet.dtype import *
+            import numpy as np
 
-            a = QTensor([2, 3, 4, 5])
+            a = QTensor([2.0, 3.0, 4.0, 5.0])
             print(a.dtype)
-            # 4
 
+            for d in (kbool, kint32, kfloat32, kfloat64, kbfloat16, kfloat16, kcomplex32, kcomplex64, kcomplex128):
+                t = QTensor([1], dtype=d)
+                print(str(d), t.element_size())
+
+            # float32
+            # bool 1
+            # int32 4
+            # float32 4
+            # float64 8
+            # bfloat16 2
+            # float16 2
+            # complex32 4
+            # complex64 8
+            # complex128 16
 
     .. py:attribute:: is_contiguous
 
@@ -195,25 +228,37 @@ QTensor 的函数与属性
  
     .. py:method:: to_numpy()
 
-        将张量的数据拷贝到一个numpy.ndarray里面。
+        将张量的数据拷贝到一个新的 numpy.ndarray 里面。
+
+        ``kfloat16`` 张量返回 ``numpy.float16`` 数组; ``kcomplex32`` 张量返回 ``numpy.complex64`` 数组(numpy 没有 complex32 类型)。
 
         :return: 一个新的 numpy.ndarray 包含 QTensor 数据
 
-        .. note:: 
-            
+        .. note::
+
             numpy不支持bfloat16类型，需要先转成其他numpy支持的数据类型例如float32，再调用该接口。
+            零拷贝的 ``numpy()`` 方法不支持 ``kcomplex32`` 张量,会抛出 ``RuntimeError``,请改用 ``to_numpy()``。
 
         Example::
 
-            from pyvqnet.tensor import tensor
+            from pyvqnet import kcomplex32
             from pyvqnet.tensor import QTensor
             t3 = QTensor([2.0, 3.0, 4.0, 5.0], requires_grad=True)
             t4 = t3.to_numpy()
             print(t4)
+            print(type(t4).__name__, t4.dtype)
+
+            a = QTensor([1 + 2j, 3 - 1j], dtype=kcomplex32)
+            print(a.to_numpy().dtype)
+            try:
+                a.numpy()      # zero-copy view of the storage: not possible for complex32
+            except RuntimeError as e:
+                print("RuntimeError:", e)
 
             # [2. 3. 4. 5.]
-
- 
+            # ndarray float32
+            # complex64
+            # RuntimeError: complex32 has no numpy zero-copy format; use to_numpy() (upcasts to complex64).
 
     .. py:method:: item()
 
@@ -257,37 +302,42 @@ QTensor 的函数与属性
 
         :return: 输入 QTensor 中最大值的索引。
 
+        当 ``dim`` 为 ``None`` 且张量不含元素时,抛出 ``ValueError``。
+
         Example::
 
             from pyvqnet.tensor import tensor
             from pyvqnet.tensor import QTensor
             a = QTensor([[1.3398, 0.2663, -0.2686, 0.2450],
-                        [-0.7401, -0.8805, -0.3402, -1.1936],
-                        [0.4907, -1.3948, -1.0691, -0.3132],
-                        [-1.6092, 0.5419, -0.2993, 0.3195]])
+                         [-0.7401, -0.8805, -0.3402, -1.1936],
+                         [0.4907, -1.3948, -1.0691, -0.3132],
+                         [-1.6092, 0.5419, -0.2993, 0.3195]])
             flag = a.argmax()
             print(flag)
-            
-            # [0.]
 
             flag_0 = a.argmax([0], True)
             print(flag_0)
 
-            # [
-            # [0., 3., 0., 3.]
-            # ]
-
             flag_1 = a.argmax([1], True)
             print(flag_1)
 
-            # [
-            # [0.],
-            # [2.],
-            # [0.],
-            # [1.]
-            # ]
+            try:
+                tensor.argmax(QTensor([]))
+            except ValueError as e:
+                print("ValueError:", e)
 
- 
+            # [0]
+            # <QTensor [1] DEV_CPU int64>
+
+            # [[0,3,0,3]]
+            # <QTensor [1, 4] DEV_CPU int32>
+
+            # [[0],
+            #  [2],
+            #  [0],
+            #  [1]]
+            # <QTensor [4, 1] DEV_CPU int32>
+            # ValueError: argmax(): cannot reduce a tensor with zero elements
 
     .. py:method:: argmin(*kargs)
 
@@ -298,31 +348,39 @@ QTensor 的函数与属性
 
         :return: 输入 QTensor 中最小值的索引。
 
+        当 ``dim`` 为 ``None`` 且张量不含元素时,抛出 ``ValueError``。
+
         Example::
 
             from pyvqnet.tensor import tensor
             from pyvqnet.tensor import QTensor
             a = QTensor([[1.3398, 0.2663, -0.2686, 0.2450],
-                        [-0.7401, -0.8805, -0.3402, -1.1936],
-                        [0.4907, -1.3948, -1.0691, -0.3132],
-                        [-1.6092, 0.5419, -0.2993, 0.3195]])
+                         [-0.7401, -0.8805, -0.3402, -1.1936],
+                         [0.4907, -1.3948, -1.0691, -0.3132],
+                         [-1.6092, 0.5419, -0.2993, 0.3195]])
             flag = a.argmin()
             print(flag)
-
-            # [12.]
 
             flag_0 = a.argmin([0], True)
             print(flag_0)
 
-            # [
-            # [3., 2., 2., 1.]
-            # ]
-
             flag_1 = a.argmin([1], False)
             print(flag_1)
 
-            # [2., 3., 1., 0.]
+            try:
+                tensor.argmin(QTensor([]))
+            except ValueError as e:
+                print("ValueError:", e)
 
+            # [12]
+            # <QTensor [1] DEV_CPU int64>
+
+            # [[3,2,2,1]]
+            # <QTensor [1, 4] DEV_CPU int32>
+
+            # [2,3,1,0]
+            # <QTensor [4] DEV_CPU int32>
+            # ValueError: argmin(): cannot reduce a tensor with zero elements
 
     .. py:method:: fill_(v)
 
@@ -332,8 +390,13 @@ QTensor 的函数与属性
 
         :return: 无。
 
+        .. note::
+
+            该操作为原地操作。如果张量的 ``requires_grad`` 为 ``True``,自动微分不会记录这次修改,并发出 ``UserWarning``,已有的计算图可能失效;此时请改用非原地的操作。
+
         Example::
 
+            import warnings
             from pyvqnet.tensor import tensor
             from pyvqnet.tensor import QTensor
             shape = [2, 3]
@@ -342,11 +405,24 @@ QTensor 的函数与属性
             t.fill_(value)
             print(t)
 
-            # [
-            # [42., 42., 42.],
-            # [42., 42., 42.]
-            # ]
+            x = tensor.ones([2, 3])
+            x.requires_grad = True
+            with warnings.catch_warnings(record=True) as caught:
+                warnings.simplefilter("always")
+                x.fill_(2.0)
+            print(caught[0].category.__name__)
+            print(caught[0].message)
+            print(x)
 
+            # [[42.,42.,42.],
+            #  [42.,42.,42.]]
+            # <QTensor [2, 3] DEV_CPU float32>
+            # UserWarning
+            # fill_ is an in-place operation on a tensor that requires grad; autograd does not record this mutation. Use the out-of-place operation instead.
+
+            # [[2.,2.,2.],
+            #  [2.,2.,2.]]
+            # <QTensor [2, 3] DEV_CPU float32>
 
     .. py:method:: all()
 
@@ -395,22 +471,25 @@ QTensor 的函数与属性
 
         :return: 无。
 
+        .. note::
+
+            该操作为原地操作。如果张量的 ``requires_grad`` 为 ``True``,自动微分不会记录这次修改,并发出 ``UserWarning``;此时请改用非原地的操作。
+
         Example::
 
             from pyvqnet.tensor import tensor
             from pyvqnet.tensor import QTensor
+            from pyvqnet.utils import set_random_seed
             import numpy as np
+            set_random_seed(42)
             a = np.arange(6).reshape(2, 3).astype(np.float32)
             t = QTensor(a)
-            t.fill_rand_binary_(2)
+            t.fill_rand_binary_(0.5)
             print(t)
 
-            # [
-            # [1., 1., 1.],
-            # [1., 1., 1.]
-            # ]
-
- 
+            # [[1.,1.,1.],
+            #  [1.,0.,0.]]
+            # <QTensor [2, 3] DEV_CPU float32>
 
     .. py:method:: fill_rand_signed_uniform_(v=1)
 
@@ -420,11 +499,17 @@ QTensor 的函数与属性
 
         :return: 无。
 
+        .. note::
+
+            该操作为原地操作。如果张量的 ``requires_grad`` 为 ``True``,自动微分不会记录这次修改,并发出 ``UserWarning``;此时请改用非原地的操作。
+
         Example::
 
             from pyvqnet.tensor import tensor
             from pyvqnet.tensor import QTensor
+            from pyvqnet.utils import set_random_seed
             import numpy as np
+            set_random_seed(42)
             a = np.arange(6).reshape(2, 3).astype(np.float32)
             t = QTensor(a)
             value = 42
@@ -432,11 +517,9 @@ QTensor 的函数与属性
             t.fill_rand_signed_uniform_(value)
             print(t)
 
-            # [
-            # [12.8852444, 4.4327269, 4.8489408],
-            # [-24.3309803, 26.8036957, 39.4903450]
-            # ]
-
+            # [[ 29.3718  , 27.51417 , 15.379172],
+            #  [ 41.62058 ,-25.133585,-28.762613]]
+            # <QTensor [2, 3] DEV_CPU float32>
 
     .. py:method:: fill_rand_uniform_(v=1)
 
@@ -446,22 +529,26 @@ QTensor 的函数与属性
 
         :return: 无。
 
+        .. note::
+
+            该操作为原地操作。如果张量的 ``requires_grad`` 为 ``True``,自动微分不会记录这次修改,并发出 ``UserWarning``;此时请改用非原地的操作。
+
         Example::
 
             from pyvqnet.tensor import tensor
             from pyvqnet.tensor import QTensor
+            from pyvqnet.utils import set_random_seed
             import numpy as np
+            set_random_seed(42)
             a = np.arange(6).reshape(2, 3).astype(np.float32)
             t = QTensor(a)
             value = 42
             t.fill_rand_uniform_(value)
             print(t)
 
-            # [
-            # [20.0404720, 14.4064417, 40.2955666],
-            # [5.5692234, 26.2520485, 35.3326073]
-            # ]
-
+            # [[35.685898 ,34.757084 ,28.689587 ],
+            #  [41.81029  , 8.4332075, 6.618693 ]]
+            # <QTensor [2, 3] DEV_CPU float32>
 
     .. py:method:: fill_rand_normal_(m=0, s=1, fast_math=True)
 
@@ -473,21 +560,25 @@ QTensor 的函数与属性
 
         :return: 无。
 
+        .. note::
+
+            该操作为原地操作。如果张量的 ``requires_grad`` 为 ``True``,自动微分不会记录这次修改,并发出 ``UserWarning``;此时请改用非原地的操作。
+
         Example::
 
             from pyvqnet.tensor import tensor
             from pyvqnet.tensor import QTensor
+            from pyvqnet.utils import set_random_seed
             import numpy as np
+            set_random_seed(42)
             a = np.arange(6).reshape(2, 3).astype(np.float32)
             t = QTensor(a)
             t.fill_rand_normal_(2, 10, True)
             print(t)
 
-            # [
-            # [-10.4446531    4.9158096   2.9204607],
-            # [ -7.2682705   8.1267328    6.2758742 ],
-            # ]
-
+            # [[ 4.8241215, 5.0147934,-2.63997  ],
+            #  [-2.054537 , 4.737082 ,-0.3090385]]
+            # <QTensor [2, 3] DEV_CPU float32>
 
     .. py:method:: transpose(new_dims=None)
 
@@ -904,18 +995,628 @@ QTensor 的函数与属性
 
         将当前QTensor转化为对应数据类型dtype, 如果dtype相同则返回自身。
 
+        在浮点类型与复数类型之间转换时(包括 ``kfloat16`` 与 ``kcomplex32``),结果保留自动微分的梯度边,反向传播可以穿过该转换。
+        复数类型转为浮点类型时保留实部。转为 ``kbool`` 或整数类型时,结果不再跟踪梯度。
+
         :param dtype: 目标数据类型dtype。
 
         :return:  QTensor。
 
         Example::
-        
+
+            from pyvqnet import kbool, kcomplex128, kcomplex32, kfloat16
             from pyvqnet.tensor import QTensor
-            from pyvqnet import kcomplex128
             a = QTensor([2])
             a = a.astype(kcomplex128)
             print(a)
-            #[2.+0.j]
+
+            b = QTensor([0.5, -1.5], requires_grad=True).astype(kfloat16)
+            print(b.dtype, b.requires_grad)
+
+            print(b.astype(kbool).dtype, b.astype(kbool).requires_grad)
+
+            # [2.+0.j]
+            # <QTensor [1] DEV_CPU complex128>
+            # float16 True
+            # bool False
+
+    .. py:method:: requires_grad_(mode=True)
+
+        原地设置该张量是否跟踪梯度,返回自身,可以链式调用。
+
+        只有叶子张量(leaf)可以改变该标志;对非叶子张量改变 ``requires_grad`` 会抛出 ``RuntimeError``。
+
+        :param mode: 是否跟踪梯度,默认为 ``True``。
+
+        :return: 当前 QTensor。
+
+        Example::
+
+            from pyvqnet.tensor import QTensor, tensor
+
+            x = QTensor([2.0, 3.0])
+            print(x.requires_grad_(True) is x, x.requires_grad)
+            y = tensor.sums(x * x)
+            y.backward()
+            print(x.grad)
+            x.requires_grad_(False)
+            print(x.requires_grad)
+
+            try:
+                y.requires_grad_(False)
+            except RuntimeError as e:
+                print("RuntimeError:", e)
+
+            # True True
+
+            # [4.,6.]
+            # <QTensor [2] DEV_CPU float32>
+            # False
+            # RuntimeError: you can only change requires_grad flags of leaf variables
+
+    .. py:method:: bernoulli_(p=0.5, generator=None)
+
+        用伯努利采样的 0/1 值原地填充张量:每个元素以概率 ``p`` 取 1,否则取 0。
+
+        :param p: 元素取 1 的概率,范围 [0, 1],默认为 0.5。
+        :param generator: 可选的 ``pyvqnet.random.Generator``;默认 ``None``,使用默认随机数引擎。
+
+        :return: 当前 QTensor,可以链式调用。
+
+        .. note::
+
+            ``p`` 超出 [0, 1] 时抛出 ``ValueError``。该操作只支持浮点类型的张量,对整数或复数张量抛出 ``NotImplementedError``。
+            该操作为原地操作:如果张量的 ``requires_grad`` 为 ``True``,自动微分不会记录这次修改,并发出 ``UserWarning``。
+
+        Example::
+
+            from pyvqnet import kint32, kfloat16
+            from pyvqnet.random import Generator
+            from pyvqnet.tensor import tensor
+            from pyvqnet.utils import set_random_seed
+
+            set_random_seed(42)
+            t = tensor.zeros([2, 3])
+            t.bernoulli_(0.7)
+            print(t)
+            print(t.bernoulli_(0.7) is t, t.dtype)
+
+            g = Generator(7)
+            print(tensor.zeros([2, 3]).bernoulli_(0.5, generator=g))
+
+            print(tensor.zeros([2], dtype=kfloat16).bernoulli_(0.5).dtype)
+            try:
+                tensor.zeros([2]).bernoulli_(1.5)
+            except ValueError as e:
+                print("ValueError:", e)
+            try:
+                tensor.zeros([2], dtype=kint32).bernoulli_(0.5)
+            except NotImplementedError as e:
+                print("NotImplementedError:", e)
+
+            # [[1.,1.,1.],
+            #  [1.,0.,0.]]
+            # <QTensor [2, 3] DEV_CPU float32>
+            # True float32
+
+            # [[0.,1.,1.],
+            #  [0.,1.,1.]]
+            # <QTensor [2, 3] DEV_CPU float32>
+            # float16
+            # ValueError: bernoulli_ expects a probability within [0, 1], got 1.5.
+            # NotImplementedError: bernoulli_ is not implemented for 'int32'
+
+    .. py:method:: bool()
+
+        将张量转换为 ``pyvqnet.kbool`` 类型,等价于 ``astype(kbool)``:非零元素为 ``True``,零元素为 ``False``。
+
+        :return: 数据类型为 ``pyvqnet.kbool`` 的 QTensor。
+
+        Example::
+
+            from pyvqnet import kfloat16
+            from pyvqnet.tensor import QTensor
+
+            print(QTensor([1.0, 0.0, 2.5]).bool())
+            print(QTensor([1.0, 0.0], dtype=kfloat16).bool().dtype)
+            print(QTensor([True, False]).bool().dtype)
+
+            # [ True,False, True]
+            # <QTensor [3] DEV_CPU bool>
+            # bool
+            # bool
+
+半精度数据类型:kfloat16 与 kcomplex32
+*********************************************
+
+``pyvqnet.kfloat16`` 与 ``pyvqnet.kcomplex32`` 是 QTensor 的两种半精度数据类型。
+``pyvqnet`` 包顶层同时提供简写 ``pyvqnet.float16`` 和 ``pyvqnet.complex32``,它们与 ``kfloat16`` 、 ``kcomplex32`` 是同一个对象。
+
+==========================================  ==========  ===================================================
+dtype                                       bytes       description
+==========================================  ==========  ===================================================
+``pyvqnet.kfloat16``                        2           16比特半精度浮点数
+``pyvqnet.kcomplex32``                      4           32比特复数,由两个 ``float16`` 构成
+==========================================  ==========  ===================================================
+
+- ``kfloat16`` 是普通的浮点数据类型:创建函数的 ``dtype`` 参数、``QTensor`` 的构造函数和 ``astype`` 都接受它。
+  传入 ``numpy.float16`` 数组且不指定 ``dtype`` 时,张量保持 ``kfloat16``; ``to_numpy()`` 与 ``numpy()`` 返回 ``numpy.float16`` 数组。
+  ``pyvqnet.dtype.set_default_dtype`` 也可以把它设为默认数据类型。
+- ``kcomplex32`` 采用存储与计算分离的方式:数据以两个 ``float16`` 存储(每个复数占 4 字节),
+  算子内部的运算在 ``complex64`` / ``float32`` 中完成,结果再舍入回 ``complex32``。
+  GPU 上有一部分算子直接在 complex32 存储上使用专用的 CUDA 内核;其余算子以及 CPU 上的算子在计算时把操作数升为 ``complex64``,算完再把结果舍入回 ``complex32``。
+- ``pyvqnet.qnn.vqc.QMachine(num_wires, dtype=kcomplex32)`` 的态矢 ``states`` 以 complex32 存储;
+  量子门的角度以 float16 存储,门矩阵为 complex32,门内部的运算保持 complex64 / float32。
+  测量结果(例如 ``MeasureAll`` 、 ``Probability`` )为 ``kfloat16``;输入和含参门参数的梯度仍为 ``kfloat32``。
+
+.. note::
+
+    ``float16`` 只有约 3 位十进制有效数字,绝对值超过 65504 的值会变成 ``inf``。
+    例如 ``1/3`` 存为 ``0.333252``, ``1e5`` 存为 ``inf``。对精度敏感的计算请使用 ``kfloat32`` / ``kcomplex64``。
+
+类型提升与转换规则
+=============================
+
+- ``complex32`` 与 ``complex32`` 、 ``float16`` 或 Python 的 int / float / complex 标量运算,结果仍为 ``complex32``;
+  与 ``complex64`` 或 ``float32`` 张量运算时,结果提升为 ``complex64``。``float16`` 张量与 Python 复数标量相加得到 ``complex32``。
+- 结果为实数的算子返回 ``kfloat16``: ``abs`` 、 ``real`` 、 ``imag`` 、 ``norm`` 、 ``frobenius_norm`` 、 ``std`` 、 ``var``。
+  结果为真值的算子返回 ``kbool``: ``equal`` 、 ``not_equal`` 、 ``isfinite`` 、 ``isinf`` 、 ``isnan`` 。
+- ``astype`` 在浮点与复数类型之间转换时保留自动微分的梯度边;复数转实数类型时保留实部;
+  转为 ``kbool`` 或整数类型时,结果不再跟踪梯度。
+- ``to_numpy()``: numpy 没有 complex32 类型,complex32 张量会被转换为 ``complex64`` 数组;
+  零拷贝的 ``numpy()`` 对 complex32 张量抛出 ``RuntimeError``。
+
+Example::
+
+        import numpy as np
+
+        import pyvqnet
+        from pyvqnet import (
+            kbool,
+            kcomplex32,
+            kcomplex64,
+            kfloat16,
+            kfloat32,
+        )
+        from pyvqnet.tensor import QTensor, tensor
+
+        a = QTensor([1 + 2j, 0.5 - 1j, -0.25 + 0.75j], dtype=kcomplex32)
+        print(a.dtype, a.element_size())
+        print(a)
+
+        f = QTensor([1.5, 2.5, -0.125], dtype=kfloat16)
+        print(f.dtype, f.element_size())
+        print(f)
+
+        print(tensor.zeros([2, 2], dtype=kcomplex32).dtype)
+        print(tensor.eye(2, dtype=kcomplex32))
+        print(tensor.ones([2], dtype=kfloat16).dtype)
+        print(tensor.randn([2], dtype=kfloat16).dtype)
+
+        print(QTensor(np.array([1.0, -2.5], dtype=np.float16)).dtype)
+
+        print(pyvqnet.complex32 is kcomplex32, pyvqnet.float16 is kfloat16)
+
+        c64 = QTensor([1 / 3 + 0j], dtype=kcomplex64)
+        c32 = c64.astype(kcomplex32)
+        print(c32.dtype, c32)
+        print(c32.astype(kcomplex64).dtype, c32.astype(kcomplex64))
+        print(f.astype(kcomplex32).dtype)
+        print(a.astype(kfloat16))
+        print(a.astype(kbool))
+
+        print(a.to_numpy().dtype)          # numpy has no complex32: to_numpy() upcasts
+        print(f.to_numpy().dtype)          # float16 is a numpy dtype
+        try:
+            a.numpy()                      # zero-copy view is impossible for complex32
+        except RuntimeError as e:
+            print("RuntimeError:", e)
+
+        w = QTensor([1 + 1j, 2 - 1j, 0.5 + 0j], dtype=kcomplex32)
+        h = QTensor([1.0, 2.0, 0.5], dtype=kfloat16)
+        print((a + w).dtype)               # complex32 + complex32
+        print((a + a.astype(kcomplex64)).dtype)   # complex32 + complex64
+        print((a * h).dtype)               # complex32 + float16
+        print((a + h.astype(kfloat32)).dtype)     # complex32 + float32
+        print((a + 1).dtype, (a * 1.5).dtype)     # python int / float scalar
+        print((a + (1 + 0j)).dtype)               # python complex scalar
+        print((h + (1 + 0j)).dtype)               # float16 + python complex scalar
+
+        print(tensor.abs(a))
+        print(tensor.real(a).dtype, tensor.imag(a).dtype)
+        print(tensor.sums(a))
+        print(tensor.std(a))
+
+        # complex32 4
+
+        # [ 1.  +2.j  , 0.5 -1.j  ,-0.25+0.75j]
+        # <QTensor [3] DEV_CPU complex32>
+        # float16 2
+
+        # [ 1.5  , 2.5  ,-0.125]
+        # <QTensor [3] DEV_CPU float16>
+        # complex32
+
+        # [[1.+0.j,0.+0.j],
+        #  [0.+0.j,1.+0.j]]
+        # <QTensor [2, 2] DEV_CPU complex32>
+        # float16
+        # float16
+        # float16
+        # True True
+        # complex32 
+        # [0.333252+0.j]
+        # <QTensor [1] DEV_CPU complex32>
+        # complex64 
+        # [0.333252+0.j]
+        # <QTensor [1] DEV_CPU complex64>
+        # complex32
+
+        # [ 1.  , 0.5 ,-0.25]
+        # <QTensor [3] DEV_CPU float16>
+
+        # [ True, True, True]
+        # <QTensor [3] DEV_CPU bool>
+        # complex64
+        # float16
+        # RuntimeError: complex32 has no numpy zero-copy format; use to_numpy() (upcasts to complex64).
+        # complex32
+        # complex64
+        # complex32
+        # complex64
+        # complex32 complex32
+        # complex32
+        # complex32
+
+        # [2.236 ,1.118 ,0.7905]
+        # <QTensor [3] DEV_CPU float16>
+        # float16 float16
+
+        # 1.25+1.75j
+        # <QTensor [] DEV_CPU complex32>
+
+        # 1.633
+        # <QTensor [] DEV_CPU float16>
+
+complex32 张量的算子支持
+===============================
+
+下面的列表针对 native 后端(``pyvqnet-ad``),在 CPU 与 GPU 上均经过验证。
+
+- **支持,结果为 complex32**:
+
+  - 创建: ``QTensor(data, dtype=kcomplex32)`` 、 ``ones`` 、 ``zeros`` 、 ``full`` 、 ``empty`` 、 ``ones_like`` 、 ``zeros_like`` 、 ``full_like`` 、 ``eye`` 、 ``randu`` 、 ``randn`` 。
+  - 逐元素: ``add`` 、 ``sub`` 、 ``mul`` 、 ``divide`` (含 ``+`` 、 ``-`` 、 ``*`` 、 ``/`` 运算符) 、 ``neg`` 、 ``exp`` 、 ``log`` 、 ``sqrt`` 、 ``square`` 、 ``power`` 、 ``sin`` 、 ``cos`` 、 ``tan`` 、 ``tanh`` 、 ``sinh`` 、 ``cosh`` 、 ``acos`` 、 ``asin`` 、 ``atan`` 、 ``sigmoid`` 、 ``conj`` 、 ``adjoint`` 。
+  - 归约与线性代数: ``sums`` 、 ``mean`` 、 ``trace`` 、 ``matmul`` 、 ``kron`` 、 ``einsum`` 。
+  - 选择与形状: ``where`` 、 ``broadcast`` 、 ``broadcast_to`` 、 ``select`` 、 ``concatenate`` 、 ``stack`` 、 ``permute`` 、 ``transpose`` 、 ``tile`` 、 ``squeeze`` 、 ``unsqueeze`` 、 ``moveaxis`` 、 ``swapaxis`` 、 ``masked_fill`` 、 ``flatten`` 、 ``reshape`` 、 ``flip`` 、 ``gather`` 、 ``scatter`` 、 ``diagonal`` 、 ``triu`` 、 ``tril`` 、 ``pad`` 。
+  - 索引与拷贝: 切片、整数、 ``QTensor`` 索引和布尔掩码的读取;切片与整数位置的赋值( ``__setitem__`` ); ``astype`` 、 ``to_numpy`` 、 ``toGPU`` 、 ``toCPU`` 。
+  - 自动微分: 上述算子的梯度也是 complex32。
+
+- **GPU 上直接使用 complex32 CUDA 内核的算子**: ``add`` 、 ``sub`` 、 ``mul`` 、 ``divide`` 、 ``sin`` 、 ``cos`` 、 ``tan`` 、 ``acos`` 、 ``asin`` 、 ``atan`` 、 ``sinh`` 、 ``cosh`` 、 ``tanh`` 、 ``exp`` 、 ``log`` 、 ``sqrt`` 、 ``square`` 、 ``neg`` 、 ``sums`` 、 ``abs`` 、 ``cat`` 、 ``concatenate`` 、 ``stack`` 、 ``contiguous`` 、 ``flip`` 、 ``roll`` 、 ``tile`` 、 ``diag`` 、 ``tril`` 、 ``triu`` 、 ``gather`` 、 ``scatter`` 、 ``trace`` 、 ``equal`` 、 ``not_equal`` 、 ``isfinite`` 、 ``isinf`` 、 ``isnan`` 、 ``nonzero`` 、 ``pow`` 、 ``power`` 、 ``rdivide`` 、 ``std`` 、 ``var`` 、 ``kron`` 、 ``outer`` 。其余受支持的算子在 GPU 上同样先升为 ``complex64`` 再计算。
+
+- **不支持复数输入,complex32 与 complex64 相同**: ``arange`` 、 ``linspace`` 、 ``logspace`` (``dtype`` 为复数时) 、 ``softmax`` 、 ``log_softmax`` 、 ``clip`` 、 ``maximum`` 、 ``minimum`` 、 ``mod`` 、 ``floor`` 、 ``ceil`` 、 ``round`` 、 ``relu`` 、 ``swiglu`` 、 ``sort`` 、 ``argsort`` 、 ``topK`` 、 ``argtopK`` 、 ``max`` 、 ``min`` 、 ``argmax`` 、 ``argmin`` 、 ``median`` 、 ``greater`` 、 ``less`` 、 ``greater_equal`` 、 ``less_equal`` (含 ``>`` 、 ``<`` 等运算符) 、 ``isneginf`` 、 ``isposinf`` 、 ``binomial`` 、 ``multinomial`` 、 ``bernoulli_`` 。
+
+- **complex32 不支持而 complex64 支持的算子**:
+
+  - CPU 与 GPU: ``cumsum`` 、 ``eigh`` 、 ``eigvalsh`` 、 ``logical_or`` 、 ``logical_xor`` 、 ``fill_rand_binary_`` 、 ``fill_`` 传入 Python 复数标量(实数标量可以)、零拷贝的 ``numpy()`` 。
+  - 仅 CPU: ``reciprocal`` 、 ``sign`` 。
+  - 仅 GPU: ``QTensor.all()`` 、 ``QTensor.any()`` 、 ``logical_not`` 、 ``__setitem__`` 的 ``QTensor`` 索引与布尔掩码赋值。
+
+  不支持的算子在调用时抛出异常。
+
+Example::
+
+        import numpy as np
+
+        from pyvqnet import kcomplex32, kcomplex64
+        from pyvqnet.tensor import QTensor, tensor
+
+        a = QTensor(np.array([1 + 2j, 0.5 - 1j, -0.25 + 0.75j, 2 + 0j]), dtype=kcomplex32)
+        m = QTensor(np.array([[1 + 1j, 2 - 1j], [0.5 + 0j, -1 + 2j]]), dtype=kcomplex32)
+
+        print((a + a).dtype, (a * a).dtype, (a / a).dtype, (-a).dtype)
+        print(a * a)
+        print(tensor.exp(a).dtype, tensor.sqrt(a).dtype, tensor.sin(a).dtype)
+        print(tensor.conj(a))
+
+        print(tensor.sums(a))
+        print(tensor.mean(a).dtype, tensor.trace(m).dtype)
+        print(tensor.matmul(m, m))
+        print(tensor.kron(m, m).shape, tensor.einsum("ij,jk->ik", m, m).dtype)
+
+        print((a == a).dtype, tensor.equal(a, a).dtype, tensor.isfinite(a).dtype)
+        mask = QTensor(np.array([True, False, True, False]))
+        print(tensor.where(mask, a, a).dtype)
+        print(a[mask].dtype)
+
+        print(tensor.transpose(m, [1, 0]).dtype, tensor.reshape(m, [4]).dtype)
+        print(tensor.concatenate([m, m], 0).dtype, tensor.stack([m, m]).dtype)
+        m[0, 0] = QTensor(np.array([9 + 9j]), dtype=kcomplex32)
+        print(m)
+        m += m
+        print(m.dtype)
+        m.mul_(m.astype(kcomplex64))   # in-place ops narrow a complex64 result back into the complex32 tensor
+        print(m.dtype)
+        print(m)
+
+        for name, call in [
+            ("tensor.cumsum(a, 0)", lambda: tensor.cumsum(a, 0)),
+            ("tensor.reciprocal(a)", lambda: tensor.reciprocal(a)),
+            ("tensor.sign(a)", lambda: tensor.sign(a)),
+            ("tensor.eigvalsh(m)", lambda: tensor.eigvalsh(m)),
+            ("tensor.logical_or(a, a)", lambda: tensor.logical_or(a, a)),
+            ("a.fill_(1 + 1j)", lambda: a.fill_(1 + 1j)),
+        ]:
+            try:
+                call()
+                print(name, "-> ok")
+            except RuntimeError as e:
+                print(name, "->", type(e).__name__, ":", e)
+
+        print(tensor.cumsum(a.astype(kcomplex64), 0).dtype)
+
+        # complex32 complex32 complex32 complex32
+
+        # [-3.  +4.j   ,-0.75-1.j   ,-0.5 -0.375j, 4.  +0.j   ]
+        # <QTensor [4] DEV_CPU complex32>
+        # complex32 complex32 complex32
+
+        # [ 1.  -2.j  , 0.5 +1.j  ,-0.25-0.75j, 2.  -0.j  ]
+        # <QTensor [4] DEV_CPU complex32>
+
+        # 3.25+1.75j
+        # <QTensor [] DEV_CPU complex32>
+        # complex32 complex32
+
+        # [[ 1.+1.5j, 3.+6.j ],
+        #  [ 0.+1.5j,-2.-4.5j]]
+        # <QTensor [2, 2] DEV_CPU complex32>
+        # [4, 4] complex32
+        # bool bool bool
+        # complex32
+        # complex32
+        # complex32 complex32
+        # complex32 complex32
+
+        # [[ 9. +9.j, 2. -1.j],
+        #  [ 0.5+0.j,-1. +2.j]]
+        # <QTensor [2, 2] DEV_CPU complex32>
+        # complex32
+        # complex32
+
+        # [[  0.+648.j, 12. -16.j],
+        #  [  1.  +0.j,-12. -16.j]]
+        # <QTensor [2, 2] DEV_CPU complex32>
+        # tensor.cumsum(a, 0) -> RuntimeError : cumsum is not implemented for complex32 storage on CPU.
+        # tensor.reciprocal(a) -> RuntimeError : Not impl [cpu_inv_impl_native] for dtype: VQNET_DTYPE_COMPLEX32_T.
+        # tensor.sign(a) -> RuntimeError : Not impl [cpu_sign_impl_native] for dtype: VQNET_DTYPE_COMPLEX32_T.
+        # tensor.eigvalsh(m) -> RuntimeError : Not supported data type for eigvalsh_impl(), got VQNET_DTYPE_COMPLEX32_T
+        # tensor.logical_or(a, a) -> RuntimeError : this function not supports this dtype
+        # a.fill_(1 + 1j) -> RuntimeError : Fill complex value with non-complex tensor.
+        # complex64
+
+在 GPU 上,上表中"仅 CPU"一行的算子( ``reciprocal`` 、 ``sign`` )可用,"仅 GPU"一行的算子
+( ``all()`` 、 ``any()`` 、 ``logical_not`` 以及用 ``QTensor`` 索引或布尔掩码赋值)不可用。下面的例子在单张 GPU 上运行:
+
+Example::
+
+        import numpy as np
+        import pyvqnet
+        from pyvqnet import DEV_GPU_0, kcomplex32, kfloat16
+        from pyvqnet.tensor import QTensor, tensor
+
+        a = QTensor(np.array([1 + 2j, 0.5 - 1j, -0.25 + 0.75j, 2 + 0j]), dtype=kcomplex32,
+                    device=DEV_GPU_0)
+        print(a.device, a.dtype)
+        print((a * a).dtype, tensor.exp(a).dtype, tensor.reciprocal(a).dtype)
+        print(tensor.sums(a))
+
+        x = QTensor(np.array([0.5 + 0.5j, 1 - 0.5j]), dtype=kcomplex32, device=DEV_GPU_0,
+                    requires_grad=True)
+        y = tensor.sums(tensor.mul(x, x))
+        y.backward(QTensor(np.array([1 + 0j]), dtype=kcomplex32, device=DEV_GPU_0))
+        print(x.grad.dtype, x.grad)
+
+        for name, call in (("a.all()", a.all), ("tensor.logical_not(a)", lambda: tensor.logical_not(a)),
+                           ("a[mask] = v", lambda: a.__setitem__(
+                               QTensor(np.array([True, False, True, False]), device=DEV_GPU_0),
+                               QTensor(np.array([9 + 9j, 9 + 9j]), dtype=kcomplex32, device=DEV_GPU_0)))):
+            try:
+                call()
+                print(name, "-> ok")
+            except (RuntimeError, ValueError) as e:
+                print(name, "->", type(e).__name__, ":", str(e).split("\n")[0])
+
+        # cuda:0 complex32
+        # complex32 complex32 complex32
+
+        # 3.25+1.75j
+        # <QTensor [] DEV_GPU_0 complex32>
+        # complex32 
+        # [1.-1.j,2.+1.j]
+        # <QTensor [2] DEV_GPU_0 complex32>
+        # a.all() -> RuntimeError : Not impl for dtype: VQNET_DTYPE_COMPLEX32_T
+        # tensor.logical_not(a) -> RuntimeError : Not impl [_cuda_logical_not_impl] for dtype: VQNET_DTYPE_COMPLEX32_T.
+        # a[mask] = v -> ValueError : only support slice and integar index, got: 
+
+complex32 与 float16 张量的梯度
+===============================
+
+自动微分可以穿过 complex32 与 float16 的算子以及它们与 ``complex64`` / ``float32`` 之间的 ``astype`` 转换。
+
+Example::
+
+        import numpy as np
+
+        from pyvqnet import kcomplex32, kcomplex64, kfloat16, kfloat32
+        from pyvqnet.tensor import QTensor, tensor
+
+        x = QTensor(np.array([0.5 + 0.5j, 1 - 0.5j]), dtype=kcomplex32, requires_grad=True)
+        w = QTensor(np.array([[1 + 1j, 2 - 1j], [0.5 + 0j, -1 + 2j]]), dtype=kcomplex32,
+                    requires_grad=True)
+
+        y = tensor.matmul(w, x.reshape([2, 1]))        # complex32, computed in complex64
+        loss = tensor.sums(y * y)
+        print(y.dtype, loss.dtype)
+        loss.backward(QTensor(np.array([1 + 0j]), dtype=kcomplex32))
+        print(x.grad.dtype, w.grad.dtype)
+        print(x.grad)
+        print(w.grad)
+
+        x64 = x.detach().astype(kcomplex64)
+        x64.requires_grad = True
+        w64 = w.detach().astype(kcomplex64)
+        w64.requires_grad = True
+        y64 = tensor.matmul(w64, x64.reshape([2, 1]))
+        loss64 = tensor.sums(y64 * y64)
+        loss64.backward(QTensor(np.array([1 + 0j]), dtype=kcomplex64))
+        print(loss64.dtype, x64.grad.dtype)
+        print(x64.grad)
+        print(w64.grad)
+
+        p = QTensor(np.array([0.3, -0.7]), dtype=kfloat32, requires_grad=True)
+        q = p.astype(kfloat16)                                  # float32 -> float16
+        loss = tensor.sums(q * q)
+        loss.backward()
+        print(loss.dtype, p.grad.dtype)
+        print(p.grad)                                           # 2 * p, rounded through float16
+
+        c = QTensor(np.array([0.5 + 0.5j]), dtype=kcomplex64, requires_grad=True)
+        d = c.astype(kcomplex32)                                # complex64 -> complex32
+        r = d * d
+        r.backward(QTensor(np.array([1 + 0j]), dtype=kcomplex32))
+        print(r.dtype, c.grad.dtype, c.grad)
+
+        h = QTensor(np.array([[1, 2], [3, 4]], dtype=np.float16), dtype=kfloat16)
+        print(tensor.matmul(h, h).dtype, tensor.softmax(h, 1).dtype)
+        print(tensor.topK(h, 1, 1))
+
+        # complex32 complex32
+        # complex32 complex32
+
+        # [ 5.25 -3.75j,-7.5 +11.5j ]
+        # <QTensor [2] DEV_CPU complex32>
+
+        # [[ 2.5 -0.5j , 2.  +3.5j ],
+        #  [-2.5 -3.j  , 3.25-5.25j]]
+        # <QTensor [2, 2] DEV_CPU complex32>
+        # complex64 complex64
+
+        # [ 5.25 -3.75j,-7.5 +11.5j ]
+        # <QTensor [2] DEV_CPU complex64>
+
+        # [[ 2.5 -0.5j , 2.  +3.5j ],
+        #  [-2.5 -3.j  , 3.25-5.25j]]
+        # <QTensor [2, 2] DEV_CPU complex64>
+        # float16 float32
+
+        # [ 0.6000977,-1.4003906]
+        # <QTensor [2] DEV_CPU float32>
+        # complex32 complex64 
+        # [1.-1.j]
+        # <QTensor [1] DEV_CPU complex64>
+        # float16 float16
+
+        # [[2.],
+        #  [4.]]
+        # <QTensor [2, 1] DEV_CPU float16>
+
+complex32 态矢上的量子门、期望与梯度
+=====================================
+
+下面的例子在 complex32 的模拟器上作用 ``rx`` 、 ``CNOT`` 和一个含参的 ``RY`` 门,计算 ``Z1`` 的期望、概率和一个厄密观测量的期望,并对输入和含参门的参数求梯度。作为对照,同样的线路也在 complex64 上运行一次。
+
+Example::
+
+        import numpy as np
+
+        from pyvqnet import kcomplex32, kcomplex64
+        from pyvqnet.nn import Module
+        from pyvqnet.qnn.vqc import MeasureAll, Probability, QInfoMeasurement, QMachine, RY, cnot, rx
+        from pyvqnet.tensor import QTensor, tensor
+
+        H = np.array([[1, 1], [1, -1]], dtype=np.complex64)
+
+        class QM(Module):
+            def __init__(self, dtype):
+                super().__init__()
+                self.device = QMachine(2, dtype=dtype)
+                self.ry = RY(trainable=True, wires=1, init_params=tensor.QTensor([0.6]))
+                self.measure = MeasureAll(obs={"Z1": 1.0})
+
+            def forward(self, x, *args, **kwargs):
+                self.device.reset_states(x.shape[0])
+                rx(q_machine=self.device, wires=0, params=x[:, [0]])
+                cnot(q_machine=self.device, wires=[0, 1])
+                self.ry(q_machine=self.device)
+                return self.measure(q_machine=self.device)
+
+        x32 = QTensor([[0.3], [0.7]], requires_grad=True)
+        qm32 = QM(kcomplex32)
+        y32 = qm32(x32)
+        print(qm32.device.states.dtype)
+        print(y32.dtype)
+        print(y32)
+
+        x64 = QTensor([[0.3], [0.7]], requires_grad=True)
+        qm64 = QM(kcomplex64)
+        y64 = qm64(x64)
+        print(qm64.device.states.dtype, y64.dtype)
+        print(y64)
+
+        y32.backward()
+        y64.backward()
+        print(x32.grad.dtype, qm32.ry.params.dtype, qm32.ry.params.grad.dtype)
+        print(x32.grad)
+        print(x64.grad)
+        print(qm32.ry.params.grad)
+        print(qm64.ry.params.grad)
+
+        probs = Probability(wires=[0, 1])
+        print(probs(q_machine=qm32.device).dtype)
+        print(probs(q_machine=qm32.device))
+
+        herm = QInfoMeasurement("expectation", obs={"wires": (1,), "observables": tensor.to_tensor(H)})
+        print(herm(q_machine=qm32.device).dtype)
+        print(herm(q_machine=qm32.device))
+
+        # complex32
+        # float16
+
+        # [[0.788 ],
+        #  [0.6313]]
+        # <QTensor [2, 1] DEV_CPU float16>
+        # complex64 float32
+
+        # [[0.7884732],
+        #  [0.6312516]]
+        # <QTensor [2, 1] DEV_CPU float32>
+        # float32 float32 float32
+
+        # [[-0.2437744],
+        #  [-0.5317383]]
+        # <QTensor [2, 1] DEV_CPU float32>
+
+        # [[-0.2439034],
+        #  [-0.5316957]]
+        # <QTensor [2, 1] DEV_CPU float32>
+
+        # [[-0.9716797]]
+        # <QTensor [1, 1] DEV_CPU float32>
+
+        # [[-0.971286]]
+        # <QTensor [1, 1] DEV_CPU float32>
+        # float16
+
+        # [[0.8916  ,0.0854  ,0.001953,0.02037 ],
+        #  [0.8057  ,0.0772  ,0.01029 ,0.10736 ]]
+        # <QTensor [2, 4] DEV_CPU float16>
+        # float16
+
+        # [[1.327],
+        #  [1.063]]
+        # <QTensor [2, 1] DEV_CPU float16>
+
 
 创建函数
 *************
@@ -1164,7 +1865,7 @@ logspace
 eye
 ==============================
 
-.. py:function:: pyvqnet.tensor.eye(size, offset: int = 0, device=pyvqnet.DEV_CPU,dtype=None)
+.. py:function:: pyvqnet.tensor.eye(size, offset: int = 0, device=pyvqnet.DEV_CPU,dtype=None,requires_grad=False)
 
     创建一个 size x size 的 QTensor,对角线上为 1,其他地方为 0。
 
@@ -1172,6 +1873,7 @@ eye
     :param offset: 对角线的索引:0(默认)表示主对角线,正值表示上对角线,负值表示下对角线。
     :param device: 要使用的设备,默认 =pyvqnet.DEV_CPU ,使用 CPU 设备。
     :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
+    :param requires_grad: 是否计算梯度,默认为False。
 
     :return: 输出 QTensor 。
 
@@ -1227,47 +1929,58 @@ diag
     选定对角线中的元素。
     输入一个 1-D QTensor,则返回一个2D新张量,其选定对角线元素为输入值,其余为0
 
+    ``diag`` 可以微分:对结果求梯度时,梯度会回传到输入张量中对应的对角线元素。
+
     :param t: 输入 QTensor。
     :param k: 偏移量(主对角线为 0, 正数为向上偏移, 负数为向下偏移), 默认为0。
-    
+
     :return: 输出 QTensor。
 
     Example::
 
         from pyvqnet.tensor import tensor
         from pyvqnet.tensor import QTensor
+        from pyvqnet import kfloat32
         import numpy as np
         a = np.arange(16).reshape(4, 4).astype(np.float32)
         t = QTensor(a)
         for k in range(-3, 4):
             u = tensor.diag(t,k=k)
             print(u)
+
+        d = QTensor([1.0, 2.0, 3.0], dtype=kfloat32, requires_grad=True)
+        m = tensor.diag(d)
+        tensor.sums(m).backward()
+        print(d.grad)
+
         # [12.]
-        # <QTensor [1] DEV_CPU kfloat32>
+        # <QTensor [1] DEV_CPU float32>
 
         # [ 8.,13.]
-        # <QTensor [2] DEV_CPU kfloat32>
+        # <QTensor [2] DEV_CPU float32>
 
         # [ 4., 9.,14.]
-        # <QTensor [3] DEV_CPU kfloat32>
+        # <QTensor [3] DEV_CPU float32>
 
         # [ 0., 5.,10.,15.]
-        # <QTensor [4] DEV_CPU kfloat32>
+        # <QTensor [4] DEV_CPU float32>
 
         # [ 1., 6.,11.]
-        # <QTensor [3] DEV_CPU kfloat32>
+        # <QTensor [3] DEV_CPU float32>
 
         # [2.,7.]
-        # <QTensor [2] DEV_CPU kfloat32>
+        # <QTensor [2] DEV_CPU float32>
 
         # [3.]
-        # <QTensor [1] DEV_CPU kfloat32>
+        # <QTensor [1] DEV_CPU float32>
 
+        # [1.,1.,1.]
+        # <QTensor [3] DEV_CPU float32>
 
 randu
 ==============================
 
-.. py:function:: pyvqnet.tensor.randu(shape, min=0.0,max=1.0, device=pyvqnet.DEV_CPU, dtype=None, requires_grad=False)
+.. py:function:: pyvqnet.tensor.randu(shape, min=0.0,max=1.0, device=pyvqnet.DEV_CPU, dtype=None, requires_grad=False,generator=None)
 
     创建一个具有均匀分布随机值的 QTensor 。
 
@@ -1277,6 +1990,7 @@ randu
     :param device: 要使用的设备,默认 =pyvqnet.DEV_CPU ,使用 CPU 设备。
     :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
     :param requires_grad: 是否计算梯度,默认为False。
+    :param generator: 可选的 ``pyvqnet.random.Generator``;默认 ``None``,使用默认随机数引擎。
 
     :return: 输出 QTensor 。
 
@@ -1297,7 +2011,7 @@ randu
 randn
 ==============================
 
-.. py:function:: pyvqnet.tensor.randn(shape, mean=0.0,std=1.0, device=pyvqnet.DEV_CPU, dtype=None, requires_grad=False)
+.. py:function:: pyvqnet.tensor.randn(shape, mean=0.0,std=1.0, device=pyvqnet.DEV_CPU, dtype=None, requires_grad=False,generator=None)
 
     创建一个具有正态分布随机值的 QTensor 。
 
@@ -1307,6 +2021,7 @@ randn
     :param device: 要使用的设备,默认 = pyvqnet.DEV_CPU ,使用 CPU 设备。
     :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
     :param requires_grad: 是否计算梯度,默认为False。
+    :param generator: 可选的 ``pyvqnet.random.Generator``;默认 ``None``,使用默认随机数引擎。
 
     :return: 输出 QTensor 。
 
@@ -1325,12 +2040,16 @@ randn
 
 binomial
 ==============================
-.. py:function:: pyvqnet.tensor.binomial(total_counts, probs)
+.. py:function:: pyvqnet.tensor.binomial(total_counts, probs, generator=None)
 
     创建一个由 :attr:`total_count` 和 :attr:`probs` 参数化的二项分布。
 
+    ``total_counts`` 可以是整数,也可以是与 ``probs`` 同形状的 QTensor。``probs`` 必须是浮点类型。
+    对每个元素:概率小于等于 0 时采样结果为 0,概率大于等于 1 时采样结果为试验次数,试验次数小于等于 0 时采样结果为 0,概率为 ``nan`` 时结果为 ``nan``。
+
     :param total_counts: 伯努利试验的次数。
     :param probs: 事件概率。
+    :param generator: 可选的 ``pyvqnet.random.Generator``;默认 ``None``,使用默认随机数引擎。
 
     :return:
         二项分布的 QTensor。
@@ -1338,45 +2057,85 @@ binomial
     Example::
 
         import pyvqnet.tensor as tensor
+        from pyvqnet.random import Generator
+        from pyvqnet.utils import set_random_seed
 
-        a = tensor.randu([3,4])
+        set_random_seed(42)
+        a = tensor.randu([3, 4])
         b = 1000
 
-        c = tensor.binomial(b,a)
+        c = tensor.binomial(b, a)
         print(c)
 
-        # [[221.,763., 30.,339.],
-        #  [803.,899.,105.,356.],
-        #  [550.,688.,828.,493.]]
+        g = Generator(7)
+        print(tensor.binomial(b, a, generator=g))
 
+        p = tensor.QTensor([0.0, 1.0, 0.5, 0.5])
+        n = tensor.QTensor([1000.0, 1000.0, 1000.0, -5.0])
+        print(tensor.binomial(n, p))
+
+        # [[835.,821.,681.,992.],
+        #  [238.,168.,842.,978.],
+        #  [189.,877.,855.,541.]]
+        # <QTensor [3, 4] DEV_CPU float32>
+
+        # [[859.,818.,686.,998.],
+        #  [214.,165.,834.,990.],
+        #  [184.,880.,849.,551.]]
+        # <QTensor [3, 4] DEV_CPU float32>
+
+        # [   0.,1000., 509.,   0.]
+        # <QTensor [4] DEV_CPU float32>
 
 multinomial
 ==============================
 
-.. py:function:: pyvqnet.tensor.multinomial(t, num_samples)
+.. py:function:: pyvqnet.tensor.multinomial(t, num_samples, generator=None, replacement=False)
 
     返回一个张量,其中每行包含 num_samples 个索引采样,来自位于张量输入的相应行中的多项式概率分布。
-    
-    :param t: 输入概率分布,仅支持浮点数。
-    :param num_samples: 采样样本。
+
+    :param t: 输入概率分布,仅支持浮点数,形状为 1 维或 2 维; ``kfloat16`` 与 ``kbfloat16`` 类型的输入会先转成 ``kfloat32`` 再采样。
+    :param num_samples: 采样样本数,必须大于 0; ``replacement`` 为 ``False`` 时不能大于最后一维的长度。
+    :param generator: 可选的 ``pyvqnet.random.Generator``;默认 ``None``,使用默认随机数引擎。
+    :param replacement: 是否有放回采样,默认 ``False`` (不放回)。
 
     :return:
-         输出采样索引
+         输出采样索引,数据类型为 ``kint64``。
 
     Example::
 
         from pyvqnet import tensor
-        weights = tensor.QTensor([0.1,10, 3, 1]) 
-        idx = tensor.multinomial(weights,3)
-        print(idx)
+        from pyvqnet.utils import set_random_seed
+        from pyvqnet.random import Generator
 
-        from pyvqnet import tensor
-        weights = tensor.QTensor([0,10, 3, 2.2,0.0]) 
-        idx = tensor.multinomial(weights,3)
+        set_random_seed(42)
+        weights = tensor.QTensor([0.1, 10, 3, 1])
+        idx = tensor.multinomial(weights, 3)
         print(idx)
+        idx = tensor.multinomial(weights, 3, replacement=True)
+        print(idx)
+        g = Generator(7)
+        print(tensor.multinomial(weights, 2, generator=g))
 
-        # [1 0 3]
-        # [1 3 2]
+        for call in (
+            lambda: tensor.multinomial(weights, 0),
+            lambda: tensor.multinomial(weights, 5),
+        ):
+            try:
+                call()
+            except ValueError as e:
+                print("ValueError:", e)
+
+        # [1,2,3]
+        # <QTensor [3] DEV_CPU int64>
+
+        # [1,1,2]
+        # <QTensor [3] DEV_CPU int64>
+
+        # [1,0]
+        # <QTensor [2] DEV_CPU int64>
+        # ValueError: cannot sample n_sample <= 0 samples
+        # ValueError: cannot sample n_sample > prob_dist.size(-1) samples without replacement
 
 triu
 ==============================
@@ -1576,32 +2335,80 @@ topK
 
     如果 if_descent 为 False,则返回 k 个最小元素。
 
-    :param t: 输入 QTensor 。
-    :param k: 取排序后的 k 的个数。
+    :param t: 输入 QTensor ,不能是复数或 ``kbool`` 类型。
+    :param k: 取排序后的 k 的个数,必须在 [1, dim 维的长度] 之内。
     :param dim: 要排序的维度。默认 = -1,最后一个轴。
     :param if_descent: 排序使用升序还是降序,默认降序。
 
     :return: 新的 QTensor 。
 
+    ``NaN`` 被视为最大:降序时排在最前,升序时排在最后。
+    选出的值可以求梯度,梯度被写回到被选中的位置。
+
     Example::
 
+        from pyvqnet import kcomplex64
         from pyvqnet.tensor import tensor, QTensor
+
         x = QTensor([
             24., 13., 15., 4., 3., 8., 11., 3., 6., 15., 24., 13., 15., 3., 3., 8., 7.,
             3., 6., 11.
         ])
-        x=x.reshape([2, 5, 1, 2])
+        x = x.reshape([2, 5, 1, 2])
+        print(tensor.topK(x, 3, 1))
+
+        print(tensor.topK(QTensor([[1.0, float("nan"), 3.0, float("nan"), 2.0]]), 3, -1))
+
         x.requires_grad = True
         y = tensor.topK(x, 3, 1)
-        print(y)
-        # [
-        # [[[24., 15.]],
-        # [[15., 13.]],
-        # [[11., 8.]]],
-        # [[[24., 13.]],
-        # [[15., 11.]],
-        # [[7., 8.]]]
-        # ]
+        y.backward(tensor.ones_like(y))
+        print(x.grad)
+
+        for call in (
+            lambda: tensor.topK(x, 6, 1),
+            lambda: tensor.topK(x, 0, 1),
+            lambda: tensor.topK(QTensor([[1 + 1j, 2], [3, 4]], dtype=kcomplex64), 1, -1),
+        ):
+            try:
+                call()
+            except RuntimeError as e:
+                print("RuntimeError:", str(e).split(" ( FILE")[0])
+
+        # [[[[24.,15.]],
+
+        #   [[15.,13.]],
+
+        #   [[11., 8.]]],
+
+        #  [[[24.,13.]],
+
+        #   [[15.,11.]],
+
+        # ...
+        # <QTensor [2, 3, 1, 2] DEV_CPU float32>
+
+        # [[nan,nan, 3.]]
+        # <QTensor [1, 3] DEV_CPU float32>
+
+        # [[[[1.,1.]],
+
+        #   [[1.,0.]],
+
+        #   [[0.,1.]],
+
+        #   [[1.,0.]],
+
+        #   [[0.,1.]]],
+
+        #  [[[1.,1.]],
+
+        #   [[1.,0.]],
+
+        # ...
+        # <QTensor [2, 5, 1, 2] DEV_CPU float32>
+        # RuntimeError: selected index k out of range
+        # RuntimeError: topk: k=0 would produce a zero-sized dimension, which VQNet tensors do not support
+        # RuntimeError: topk does not support complex or bool dtypes
 
 argtopK
 ==============================
@@ -1612,33 +2419,56 @@ argtopK
 
     如果 if_descent 为 False,则返回 k 个最小元素的索引。
 
-    :param t: 输入 QTensor 。
-    :param k: 取排序后的 k 的个数。
+    :param t: 输入 QTensor ,不能是复数或 ``kbool`` 类型。
+    :param k: 取排序后的 k 的个数,必须在 [1, dim 维的长度] 之内。
     :param dim: 要排序的维度。默认 = -1,最后一个轴。
     :param if_descent: 排序使用升序还是降序,默认降序。
 
-    :return: 新的 QTensor 。
+    :return: 新的 QTensor ,数据类型为 ``kint64``。
 
     Example::
 
         from pyvqnet.tensor import tensor, QTensor
+
         x = QTensor([
             24., 13., 15., 4., 3., 8., 11., 3., 6., 15., 24., 13., 15., 3., 3., 8., 7.,
             3., 6., 11.
         ])
-        x=x.reshape([2, 5, 1, 2])
-        x.requires_grad = True
-        y = tensor.argtopK(x, 3, 1)
-        print(y)
-        # [
-        # [[[0., 4.]],
-        # [[1., 0.]],
-        # [[3., 2.]]],
-        # [[[0., 0.]],
-        # [[1., 4.]],
-        # [[3., 2.]]]
-        # ]
+        x = x.reshape([2, 5, 1, 2])
+        print(tensor.argtopK(x, 3, 1))
+        print(tensor.argtopK(x, 3, 1, False))
+        print(tensor.argmax(x, 1))
 
+        # [[[[0,4]],
+
+        #   [[1,0]],
+
+        #   [[3,2]]],
+
+        #  [[[0,0]],
+
+        #   [[1,4]],
+
+        # ...
+        # <QTensor [2, 3, 1, 2] DEV_CPU int64>
+
+        # [[[[2,3]],
+
+        #   [[4,1]],
+
+        #   [[3,2]]],
+
+        #  [[[2,3]],
+
+        #   [[4,1]],
+
+        # ...
+        # <QTensor [2, 3, 1, 2] DEV_CPU int64>
+
+        # [[[0,4]],
+
+        #  [[0,0]]]
+        # <QTensor [2, 1, 2] DEV_CPU int32>
 
 add
 ==============================
@@ -1758,21 +2588,34 @@ cumsum
 
     返回维度轴中输入元素的累积总和。
 
-    :param t: 输入 QTensor 。
+    :param t: 输入 QTensor 。不支持 ``kcomplex32`` 类型(调用时抛出 ``RuntimeError``)。
     :param dim: 计算的轴,默认 -1,使用最后一个轴。
     :return: 输出 QTensor 。
 
     Example::
 
+        from pyvqnet import kcomplex32
         from pyvqnet.tensor import tensor, QTensor
         t = QTensor(([1, 2, 3], [4, 5, 6]))
         x = tensor.cumsum(t,-1)
         print(x)
-        # [
-        # [1., 3., 6.], 
-        # [4., 9., 15.]
-        # ]
 
+        c = QTensor([[1 + 2j, 3 - 1j], [0.5 + 0j, -1 + 1j]])
+        print(tensor.cumsum(tensor.conj(c), 1))
+
+        try:
+            tensor.cumsum(QTensor([[1 + 1j, 2 - 1j]], dtype=kcomplex32), 1)
+        except RuntimeError as e:
+            print("RuntimeError:", e)
+
+        # [[ 1, 3, 6],
+        #  [ 4, 9,15]]
+        # <QTensor [2, 3] DEV_CPU int64>
+
+        # [[ 1. -2.j, 4. -1.j],
+        #  [ 0.5+0.j,-0.5-1.j]]
+        # <QTensor [2, 2] DEV_CPU complex64>
+        # RuntimeError: cumsum is not implemented for complex32 storage on CPU.
 
 mean
 ==============================
@@ -1801,12 +2644,14 @@ median
 
 .. py:function:: pyvqnet.tensor.median(t: pyvqnet.tensor.QTensor, dim=None, keepdim=False)
 
-    对输入的 QTensor 按 dim 设定的轴计算元素的平均,如果 dim 是None,则返回所有元素平均。
+    对输入的 QTensor 按 dim 设定的轴计算元素的中值,如果 dim 是None,则返回所有元素的中值。
 
-    :param t: 输入 QTensor 。
-    :param dim: 用于求平均的轴,默认为None。
+    :param t: 输入 QTensor ,不支持复数类型。
+    :param dim: 用于求中值的轴,默认为None。
     :param keepdim: 输出张量是否保留了减小的维度。默认为False。
     :return: 输出 QTensor 或 中值。
+
+    当 ``dim`` 为 ``None`` 且张量不含元素时,抛出 ``ValueError``。
 
     Example::
 
@@ -1817,16 +2662,24 @@ median
         median_a = tensor.median(a)
         print(median_a)
 
-        # [0.2202000]
-
         b = QTensor([[0.2505, -0.3982, -0.9948,  0.3518, -1.3131],
-                    [0.3180, -0.6993,  1.0436,  0.0438,  0.2270],
-                    [-0.2751,  0.7303,  0.2192,  0.3321,  0.2488],
-                    [1.0778, -1.9510,  0.7048,  0.4742, -0.7125]])
+                     [0.3180, -0.6993,  1.0436,  0.0438,  0.2270],
+                     [-0.2751,  0.7303,  0.2192,  0.3321,  0.2488],
+                     [1.0778, -1.9510,  0.7048,  0.4742, -0.7125]])
         median_b = tensor.median(b,1, False)
         print(median_b)
 
-        # [-0.3982000, 0.2269999, 0.2487999, 0.4742000]
+        try:
+            tensor.median(QTensor([]))
+        except ValueError as e:
+            print("ValueError:", e)
+
+        # 0.2202
+        # <QTensor [] DEV_CPU float32>
+
+        # [-0.3982, 0.227 , 0.2488, 0.4742]
+        # <QTensor [4] DEV_CPU float32>
+        # ValueError: median(): cannot reduce a tensor with zero elements
 
 std
 ==============================
@@ -1834,6 +2687,8 @@ std
 .. py:function:: pyvqnet.tensor.std(t: pyvqnet.tensor.QTensor, dim=None, keepdim=False, unbiased=True)
 
     对输入的 QTensor 按 dim 设定的轴计算元素的标准差,如果 dim 是None,则返回所有元素标准差。
+
+    输入为复数类型时,结果是与实部精度对应的实数类型:``kcomplex64`` 的结果为 ``kfloat32``, ``kcomplex32`` 的结果为 ``kfloat16``。
 
     :param t: 输入 QTensor 。
     :param dim: 用于求标准差的轴,默认为None。
@@ -1843,6 +2698,7 @@ std
 
     Example::
 
+        from pyvqnet import kcomplex32
         from pyvqnet.tensor import tensor
         from pyvqnet.tensor import QTensor
 
@@ -1850,16 +2706,26 @@ std
         std_a = tensor.std(a)
         print(std_a)
 
-        # [0.5129624]
-
         b = QTensor([[0.2505, -0.3982, -0.9948,  0.3518, -1.3131],
-                    [0.3180, -0.6993,  1.0436,  0.0438,  0.2270],
-                    [-0.2751,  0.7303,  0.2192,  0.3321,  0.2488],
-                    [1.0778, -1.9510,  0.7048,  0.4742, -0.7125]])
+                     [0.3180, -0.6993,  1.0436,  0.0438,  0.2270],
+                     [-0.2751,  0.7303,  0.2192,  0.3321,  0.2488],
+                     [1.0778, -1.9510,  0.7048,  0.4742, -0.7125]])
         std_b = tensor.std(b, 1, False, False)
         print(std_b)
 
-        # [0.6593542, 0.5583112, 0.3206565, 1.1103367]
+        c = QTensor([1 + 2j, 0.5 - 1j, -0.25 + 0.75j], dtype=kcomplex32)
+        print(tensor.std(c).dtype, tensor.std(c))
+        print(tensor.std(c.astype(__import__("pyvqnet").kcomplex64)).dtype)
+
+        # 0.5129625
+        # <QTensor [] DEV_CPU float32>
+
+        # [0.6593543,0.5583113,0.3206565,1.1103367]
+        # <QTensor [4] DEV_CPU float32>
+        # float16 
+        # 1.633
+        # <QTensor [] DEV_CPU float16>
+        # float32
 
 var
 ==============================
@@ -1867,6 +2733,8 @@ var
 .. py:function:: pyvqnet.tensor.var(t: pyvqnet.tensor.QTensor, dim=None, keepdim=False, unbiased=True)
 
     对输入的 QTensor 按 dim 设定的轴计算元素的方差,如果 dim 是None,则返回所有元素方差。
+
+    输入为复数类型时,结果是与实部精度对应的实数类型:``kcomplex64`` 的结果为 ``kfloat32``, ``kcomplex32`` 的结果为 ``kfloat16``。
 
     :param t: 输入 QTensor 。
     :param dim: 用于求方差的轴,默认为None。
@@ -1876,6 +2744,7 @@ var
 
     Example::
 
+        from pyvqnet import kcomplex32, kcomplex64
         from pyvqnet.tensor import tensor
         from pyvqnet.tensor import QTensor
 
@@ -1883,7 +2752,25 @@ var
         a_var = tensor.var(a)
         print(a_var)
 
-        # [0.2631305]
+        b = QTensor([[0.2505, -0.3982, -0.9948,  0.3518, -1.3131],
+                     [0.3180, -0.6993,  1.0436,  0.0438,  0.2270],
+                     [-0.2751,  0.7303,  0.2192,  0.3321,  0.2488],
+                     [1.0778, -1.9510,  0.7048,  0.4742, -0.7125]])
+        print(tensor.var(b, 1, False, False))
+
+        c = QTensor([1 + 2j, 0.5 - 1j, -0.25 + 0.75j], dtype=kcomplex32)
+        print(tensor.var(c).dtype, tensor.var(c))
+        print(tensor.var(c.astype(kcomplex64)).dtype)
+
+        # 0.2631305
+        # <QTensor [] DEV_CPU float32>
+
+        # [0.4347481,0.3117115,0.1028206,1.2328476]
+        # <QTensor [4] DEV_CPU float32>
+        # float16 
+        # 2.666
+        # <QTensor [] DEV_CPU float16>
+        # float32
 
 matmul
 ==============================
@@ -1892,33 +2779,46 @@ matmul
 
     二维矩阵点乘或3、4维张量进行批矩阵乘法,或一维向量与二维矩阵矩阵向量积,或两个一维向量点积。
 
+    两个操作数的数据类型不同时,先把它们转换成较宽的类型再相乘:含复数操作数时转换成对应的复数类型
+    (``kcomplex128`` > ``kcomplex64`` > ``kcomplex32``),两个实数操作数转换成 ``kfloat64`` 或 ``kfloat32``。
+    两个操作数是不同的整数或 ``kbool`` 类型时抛出 ``TypeError``。
+
     :param t1: 第一个 QTensor 。
     :param t2: 第二个 QTensor 。
     :return:  输出 QTensor 。
 
     Example::
 
+        from pyvqnet import kfloat16, kint32, kint64
         from pyvqnet.tensor import tensor
-        t1 = tensor.ones([2,3])
+
+        t1 = tensor.ones([2, 3])
         t1.requires_grad = True
-        t2 = tensor.ones([3,4])
+        t2 = tensor.ones([3, 4])
         t2.requires_grad = True
-        t3  = tensor.matmul(t1,t2)
+        t3 = tensor.matmul(t1, t2)
         t3.backward(tensor.ones_like(t3))
         print(t1.grad)
-
-        # [
-        # [4., 4., 4.],
-        #  [4., 4., 4.]
-        # ]
-
         print(t2.grad)
 
-        # [
-        # [2., 2., 2., 2.],
-        #  [2., 2., 2., 2.],
-        #  [2., 2., 2., 2.]
-        # ]
+        a = tensor.ones([2, 3], dtype=kfloat16)
+        b = tensor.ones([3, 4])
+        print(tensor.matmul(a, b).dtype)
+        try:
+            tensor.matmul(tensor.ones([2, 3], dtype=kint32), tensor.ones([3, 4], dtype=kint64))
+        except TypeError as e:
+            print("TypeError:", e)
+
+        # [[4.,4.,4.],
+        #  [4.,4.,4.]]
+        # <QTensor [2, 3] DEV_CPU float32>
+
+        # [[2.,2.,2.,2.],
+        #  [2.,2.,2.,2.],
+        #  [2.,2.,2.,2.]]
+        # <QTensor [3, 4] DEV_CPU float32>
+        # float32
+        # TypeError: matmul() does not support mixed integer/bool dtypes: int32 and int64
 
 kron
 ==============================
@@ -2646,24 +3546,45 @@ min
 
     对输入的 QTensor 按 dim 设定的轴计算元素的最小值,如果 dim 是None,则返回所有元素的最小值。
 
-    :param t: 输入 QTensor 。
+    :param t: 输入 QTensor ,不支持复数类型。
     :param dim: 用于求最小值的轴,默认为None。
     :param keepdim: 输出张量是否保留了减小的维度。默认为False。
 
     :return: 输出 QTensor 或浮点数。
 
+    当 ``dim`` 为 ``None`` 且张量不含元素时,抛出 ``ValueError``。
+
     Example::
 
         from pyvqnet.tensor import tensor
         from pyvqnet.tensor import QTensor
-        t = QTensor([[1, 2, 3], [4, 5, 6]])
+
+        t = QTensor([[1., 2., 3.], [4., 5., 6.]])
         x = tensor.min(t, dim=1, keepdim=True)
         print(x)
+        print(tensor.min(t))
 
-        # [
-        # [1.],
-        #  [4.]
-        # ]
+        t.requires_grad = True
+        y = tensor.min(t, dim=1, keepdim=False)
+        y.backward(tensor.ones_like(y))
+        print(t.grad)
+
+        try:
+            tensor.min(QTensor([]))
+        except ValueError as e:
+            print("ValueError:", e)
+
+        # [[1.],
+        #  [4.]]
+        # <QTensor [2, 1] DEV_CPU float32>
+
+        # 1.
+        # <QTensor [] DEV_CPU float32>
+
+        # [[1.,0.,0.],
+        #  [1.,0.,0.]]
+        # <QTensor [2, 3] DEV_CPU float32>
+        # ValueError: min(): cannot reduce a tensor with zero elements
 
 max
 ==============================
@@ -2672,25 +3593,45 @@ max
 
     对输入的 QTensor 按 dim 设定的轴计算元素的最大值,如果 dim 是None,则返回所有元素的最大值。
 
-    :param t: 输入 QTensor 。
+    :param t: 输入 QTensor ,不支持复数类型。
     :param dim: 用于求最大值的轴,默认为None。
     :param keepdim: 输出张量是否保留了减小的维度。默认为False。
-    
+
     :return: 输出 QTensor 或浮点数。
 
+    当 ``dim`` 为 ``None`` 且张量不含元素时,抛出 ``ValueError``。
 
     Example::
 
         from pyvqnet.tensor import tensor
         from pyvqnet.tensor import QTensor
-        t = QTensor([[1, 2, 3], [4, 5, 6]])
+
+        t = QTensor([[1., 2., 3.], [4., 5., 6.]])
         x = tensor.max(t, dim=1, keepdim=True)
         print(x)
+        print(tensor.max(t))
 
-        # [
-        # [3.],
-        #  [6.]
-        # ]
+        t.requires_grad = True
+        y = tensor.max(t, dim=1, keepdim=False)
+        y.backward(tensor.ones_like(y))
+        print(t.grad)
+
+        try:
+            tensor.max(QTensor([]))
+        except ValueError as e:
+            print("ValueError:", e)
+
+        # [[3.],
+        #  [6.]]
+        # <QTensor [2, 1] DEV_CPU float32>
+
+        # 6.
+        # <QTensor [] DEV_CPU float32>
+
+        # [[0.,0.,1.],
+        #  [0.,0.,1.]]
+        # <QTensor [2, 3] DEV_CPU float32>
+        # ValueError: max(): cannot reduce a tensor with zero elements
 
 clip
 ==============================
@@ -3301,31 +4242,39 @@ permute
     根据输入的 dim 的顺序,改变t 的轴的顺序。
 
     :param t: 输入 QTensor 。
-    :param dim: 维度的新顺序(整数列表)。
+    :param dim: 维度的新顺序(整数列表),长度必须等于 ``t`` 的维数,且是 ``0..ndim-1`` 的一个排列;可以使用负数轴。不满足时抛出 ``ValueError``。
     :return: 输出 QTensor 。
 
     Example::
 
-        from pyvqnet.tensor import tensor
-        from pyvqnet.tensor import QTensor
-
+        from pyvqnet.tensor import tensor, QTensor
         import numpy as np
         R, C = 3, 4
-        a = np.arange(R * C).reshape([2,2,3]).astype(np.float32)
+        a = np.arange(R * C).reshape([2, 2, 3]).astype(np.float32)
         t = QTensor(a)
-        tt = tensor.permute(t,[2,0,1])
-        print(tt)
-        
-        # [
-        # [[0., 3.],
-        #  [6., 9.]],
-        # [[1., 4.],
-        #  [7., 10.]],
-        # [[2., 5.],
-        #  [8., 11.]]
-        # ]
-                
-        
+        rlt = tensor.permute(t,[2,0,1])
+        print(rlt)
+
+        print(tensor.permute(t, [-1, 0, 1]).shape)
+        for dims in ([0, 1], [0, 0, 2], [0, 1, 3]):
+            try:
+                tensor.permute(t, dims)
+            except ValueError as e:
+                print("ValueError:", e)
+
+        # [[[ 0., 3.],
+        #   [ 6., 9.]],
+
+        #  [[ 1., 4.],
+        #   [ 7.,10.]],
+
+        #  [[ 2., 5.],
+        #   [ 8.,11.]]]
+        # <QTensor [3, 2, 2] DEV_CPU float32>
+        # [3, 2, 2]
+        # ValueError: permute expected 3 dimensions, got 2
+        # ValueError: permute dims must be a permutation of 0..2
+        # ValueError: permute dims must be a permutation of 0..2
 
 transpose
 ==============================
@@ -3998,7 +4947,7 @@ pack_pad_sequence
 
 functional_conv2d
 ==============================
-.. py:function:: pyvqnet.nn.functional.functional_conv2d(x, weight, bias, stride=(1,1), padding=(0,0), dilation=(1,1), groups=1)
+.. py:function:: pyvqnet.nn.common.functional.functional_conv2d(x, weight, bias, stride=(1,1), padding=(0,0), dilation=(1,1), groups=1)
 
     对由多个输入平面组成的输入图像进行二维卷积。
 
@@ -4016,7 +4965,7 @@ functional_conv2d
 
     Example::
 
-        from pyvqnet.nn.functional import functional_conv2d
+        from pyvqnet.nn.common.functional import functional_conv2d
         from pyvqnet.tensor import arange,ones
         from pyvqnet import kfloat32
         from pyvqnet.nn import Module,Parameter

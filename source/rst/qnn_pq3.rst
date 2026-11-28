@@ -760,11 +760,11 @@ QiskitLayer
         sys.path.insert(0,"../../")
         random.seed(42)
         np.random.seed(42)
-        from pyvqnet.nn.module import Module
+        from pyvqnet.nn import Module
         from pyvqnet.optim import Adam
         import pyvqnet
         pyvqnet.utils.set_random_seed(42)
-        from pyvqnet.nn.loss import MeanSquaredError
+        from pyvqnet.nn import MeanSquaredError
         from pyvqnet.qnn.utils import QiskitLayer
 
         import qiskit
@@ -1036,12 +1036,12 @@ CirqLayer
         import random
         random.seed(42)
         np.random.seed(42)
-        from pyvqnet.nn.module import Module
+        from pyvqnet.nn import Module
         import pyvqnet
         pyvqnet.utils.set_random_seed(42)
         from pyvqnet.optim import Adam
 
-        from pyvqnet.nn.loss import MeanSquaredError
+        from pyvqnet.nn import MeanSquaredError
         from pyvqnet.qnn.utils import CirqLayer
 
 

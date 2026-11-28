@@ -134,10 +134,10 @@ VQNet支持将量子计算模块与经典计算模块(例如: 卷积,池化,全�
     #导入必须的库和函数
     from pyvqnet.qnn.pq3.quantumlayer import QuantumLayer
     from pyvqnet.optim import adam
-    from pyvqnet.nn.loss import CategoricalCrossEntropy
+    from pyvqnet.nn import CategoricalCrossEntropy
     from pyvqnet.tensor import QTensor
     import numpy as np
-    from pyvqnet.nn.module import Module
+    from pyvqnet.nn import Module
 
 
 定义模型Model,其中 `__init__` 函数定义内部各个神经网络模块以及量子模块,`forward` 函数定义前传函数。`QuantumLayer` 为封装量子计算的抽象类。

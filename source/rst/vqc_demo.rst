@@ -974,13 +974,13 @@ Circuit-centric quantum classifiers算法示例
     import os
     import struct
     import gzip
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.linear import Linear
-    from pyvqnet.nn.conv import Conv2D
+    from pyvqnet.nn import Module
+    from pyvqnet.nn import Linear
+    from pyvqnet.nn import Conv2D
 
-    from pyvqnet.nn import activation as F
-    from pyvqnet.nn.pooling import MaxPool2D
-    from pyvqnet.nn.loss import CategoricalCrossEntropy
+    from pyvqnet.nn.native import activation as F
+    from pyvqnet.nn import MaxPool2D
+    from pyvqnet.nn import CategoricalCrossEntropy
     from pyvqnet.optim.adam import Adam
     from pyvqnet.data.data import data_generator
     from pyvqnet.tensor import tensor
@@ -1287,13 +1287,13 @@ Circuit-centric quantum classifiers算法示例
     import sys
     sys.path.insert(0, "../")
     import numpy as np
-    from pyvqnet.nn.linear import Linear
+    from pyvqnet.nn import Linear
     from pyvqnet.qnn.vqc import QMachine,QModule,rz,ry,Probability
     from pyvqnet.nn import Parameter
     from pyvqnet.optim import sgd
-    from pyvqnet.nn.loss import CategoricalCrossEntropy
+    from pyvqnet.nn import CategoricalCrossEntropy
     from pyvqnet.tensor.tensor import QTensor
-    from pyvqnet.nn.module import Module
+    from pyvqnet.nn import Module
     import matplotlib.pyplot as plt
     import matplotlib
     from pyvqnet.data import data_generator as get_minibatch_data
@@ -1505,14 +1505,14 @@ Circuit-centric quantum classifiers算法示例
     import numpy as np
     import sys
     sys.path.insert(0,"../")
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.linear import Linear
-    from pyvqnet.nn.conv import Conv2D
+    from pyvqnet.nn import Module
+    from pyvqnet.nn import Linear
+    from pyvqnet.nn import Conv2D
     from pyvqnet.utils.storage import load_parameters, save_parameters
-    from pyvqnet.nn import activation as F
-    from pyvqnet.nn.pooling import MaxPool2D
+    from pyvqnet.nn.native import activation as F
+    from pyvqnet.nn import MaxPool2D
 
-    from pyvqnet.nn.loss import SoftmaxCrossEntropy
+    from pyvqnet.nn import SoftmaxCrossEntropy
     from pyvqnet.optim.sgd import SGD
     from pyvqnet.optim.adam import Adam
     from pyvqnet.data.data import data_generator
@@ -2018,14 +2018,14 @@ VSQL量子整体模型如下:
     import os.path
     import struct
     import gzip
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.loss import CategoricalCrossEntropy
+    from pyvqnet.nn import Module
+    from pyvqnet.nn import CategoricalCrossEntropy
     from pyvqnet.optim.adam import Adam
     from pyvqnet.data.data import data_generator
     from pyvqnet.tensor import tensor
-    from pyvqnet.qnn.measure import expval
-    from pyvqnet.qnn.template import AmplitudeEmbeddingCircuit
-    from pyvqnet.nn.linear import Linear
+    from pyvqnet.qnn import expval
+    from pyvqnet.qnn import AmplitudeEmbeddingCircuit
+    from pyvqnet.nn import Linear
     import numpy as np
 
     import matplotlib.pyplot as plt
@@ -2561,12 +2561,12 @@ QMLP模型示例
     import struct
     import numpy as np
 
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.loss import MeanSquaredError, CrossEntropyLoss
+    from pyvqnet.nn import Module
+    from pyvqnet.nn import MeanSquaredError, CrossEntropyLoss
     from pyvqnet.optim.adam import Adam
-    from pyvqnet.qnn.measure import expval
-    from pyvqnet.nn.pooling import AvgPool2D
-    from pyvqnet.nn.linear import Linear
+    from pyvqnet.qnn import expval
+    from pyvqnet.nn import AvgPool2D
+    from pyvqnet.nn import Linear
     from pyvqnet.data.data import data_generator
 
     from pyvqnet.qnn.vqc import QMachine,QModule,rot, crx,rx,MeasureAll
@@ -2870,7 +2870,7 @@ QMLP模型示例
     import time
     from matplotlib import animation
     from pyvqnet.nn import Module,Parameter
-    from pyvqnet.nn.loss import MeanSquaredError
+    from pyvqnet.nn import MeanSquaredError
     from pyvqnet.optim.adam import Adam
     from pyvqnet.tensor import tensor,QTensor,kfloat32
 
@@ -3319,7 +3319,7 @@ QMLP模型示例
 
     import numpy as np
     from pyvqnet.nn import Module,Parameter
-    from pyvqnet.nn.loss import MeanSquaredError
+    from pyvqnet.nn import MeanSquaredError
     from pyvqnet.optim.adam import Adam
     from pyvqnet.tensor import QTensor
     from pyvqnet import kfloat32, kint64
@@ -3493,8 +3493,8 @@ QMLP模型示例
     from pyvqnet.tensor.tensor import QTensor
     from pyvqnet.tensor import tensor
     from pyvqnet.optim import Adam
-    from pyvqnet.qnn.measure import expval
-    from pyvqnet.nn.parameter import Parameter
+    from pyvqnet.qnn import expval
+    from pyvqnet.nn import Parameter
     from pyvqnet.dtype import *
     import pyvqnet
     from pyvqnet.qnn.vqc import ry, QMachine, cnot, rz
@@ -3683,199 +3683,72 @@ QMLP模型示例
 变分量子线路的优化
 ===================================
 
-VQNet当前提供4种方式对用户自定义的变分量子线路中的量子逻辑门进行优化:融合旋转门(commute_controlled_right,commute_controlled_left),受控门交换(commute_controlled),单比特逻辑门融合(single_qubit_ops_fuse)。
+在 GPU 上，``pyvqnet.qnn.vqc.QMachine`` 不再逐个执行一次前向中的量子逻辑门。``reset_states`` 之后线路中的门先被记录下来，线路末尾的 ``MeasureAll`` 触发一次执行：记录下的门序列先经过融合规则处理，再交给融合执行器以一次调用运行。融合规则包括 ``cancel_inverses`` (抵消相邻的自逆门对)、``merge_rotations`` (合并相邻的同类型旋转门) 和 ``promote_fixed_rotations`` (把相邻的固定 Pauli 门并入同轴的旋转门)。这一过程不需要用户开启，结果和梯度与逐门执行一致。门表、融合规则、执行路径的判断条件与关闭方法见 :ref:`precompile_execution`。
 
-这里使用 `wrapper_compile` 装饰器对 `QModule` 定义的模型forward函数进行装饰,会默认连续调用 `commute_controlled_right`, `merge_rotations`, `single_qubit_ops_fuse` 三个规则进行线路优化。
-最后通过 `op_history_summary` 接口,对 `QModule` 前向函数运行后产生的 `op_history` 的信息对比。
-
+下面的例子需要 GPU：同一线路在关闭和打开融合执行器时得到相同的结果与梯度， ``pyvqnet.qnn.vqc.sv.common.cxx_runner.last_execution`` 返回线路最近一次运行所走的执行路径。
 
 .. code-block::
 
-    from functools import partial
-
-    from pyvqnet.qnn.vqc import op_history_summary
-    from pyvqnet.qnn.vqc import QModule
-    from pyvqnet import tensor
-    from pyvqnet.qnn.vqc import QMachine, wrapper_compile
-
-    from pyvqnet.qnn.vqc import pauliy
-
-    from pyvqnet.qnn.vqc import QMachine, ry,rz, ControlledPhaseShift, \
-        rx, S, rot, isingxy,CSWAP, PauliX, T, MeasureAll, RZ, CZ, PhaseShift, u3, cnot, cry, toffoli, cy
+    import numpy as np
+    import pyvqnet
+    from pyvqnet import DEV_GPU_0
+    from pyvqnet.nn import Module
+    from pyvqnet.qnn.vqc import Hadamard, MeasureAll, PauliX, QMachine, RX
+    from pyvqnet.qnn.vqc.sv.common import cxx_runner
     from pyvqnet.tensor import QTensor, tensor
-    import pyvqnet
 
-    class QModel_before(QModule):
-        def __init__(self, num_wires, dtype):
-            super(QModel_before, self).__init__()
 
-            self._num_wires = num_wires
-            self._dtype = dtype
-            self.qm = QMachine(num_wires, dtype=dtype)
-            self.qm.set_save_op_history_flag(True)
-            self.cswap = CSWAP(wires=(0, 2, 1))
-            self.cz = CZ(wires=[0, 2])
+    class Circuit(Module):
+        """相邻的同类型旋转门、相邻的自逆门对、固定 Pauli 门后接同轴旋转门."""
 
-            self.paulix = PauliX(wires=2)
+        def __init__(self):
+            super().__init__()
+            self.qm = QMachine(2, dtype=pyvqnet.kcomplex64)
+            self.rx0 = RX(trainable=True, wires=0, init_params=QTensor([[0.3]]))
+            self.rx1 = RX(trainable=True, wires=1, init_params=QTensor([[0.2]]))
 
-            self.s = S(wires=0)
-
-            self.ps = PhaseShift(trainable=True,
-                                    wires=0,
-                                    dtype=dtype)
-
-            self.cps = ControlledPhaseShift(trainable=True,
-                                            wires=(1, 0),
-                                            dtype=dtype)
-            self.t = T(wires=0)
-            self.rz = RZ(wires=1, dtype=dtype)
-
-            self.measure = MeasureAll(obs={
-                    "Z1":1
-            })
-
-        def forward(self, x, *args, **kwargs):
+        def forward(self, x):
             self.qm.reset_states(x.shape[0])
-            self.cz(q_machine=self.qm)
-            self.paulix(q_machine=self.qm)
-            rx(q_machine=self.qm,wires=1,params = x[:,[0]])
-            ry(q_machine=self.qm,wires=1,params = x[:,[1]])
-            rz(q_machine=self.qm,wires=1,params = x[:,[2]])
-            rot(q_machine=self.qm, params=x[:, 0:3], wires=(1, ), use_dagger=True)
-            rot(q_machine=self.qm, params=x[:, 1:4], wires=(1, ), use_dagger=True)
-            isingxy(q_machine=self.qm, params=x[:, [2]], wires=(0, 1))
-            u3(q_machine=self.qm, params=x[:, 0:3], wires=1)
-            self.s(q_machine=self.qm)
-            self.cswap(q_machine=self.qm)
-            cnot(q_machine=self.qm, wires=[0, 1])
-            ry(q_machine=self.qm,wires=2,params = x[:,[1]])
-            pauliy(q_machine=self.qm, wires=1)
-            cry(q_machine=self.qm, params=1 / 2, wires=[0, 1])
-            self.ps(q_machine=self.qm)
-            self.cps(q_machine=self.qm)
-            ry(q_machine=self.qm,wires=2,params = x[:,[1]])
-            rz(q_machine=self.qm,wires=2,params = x[:,[2]])
-            toffoli(q_machine=self.qm, wires=[0, 1, 2])
-            self.t(q_machine=self.qm)
-
-            cy(q_machine=self.qm, wires=(2, 1))
-            ry(q_machine=self.qm,wires=1,params = x[:,[1]])
-            self.rz(q_machine=self.qm)
-
-            rlt = self.measure(q_machine=self.qm)
-
-            return rlt
-    class QModel(QModule):
-        def __init__(self, num_wires, dtype):
-            super(QModel, self).__init__()
-
-            self._num_wires = num_wires
-            self._dtype = dtype
-            self.qm = QMachine(num_wires, dtype=dtype)
-
-            self.cswap = CSWAP(wires=(0, 2, 1))
-            self.cz = CZ(wires=[0, 2])
-
-            self.paulix = PauliX(wires=2)
-
-            self.s = S(wires=0)
-
-            self.ps = PhaseShift(trainable=True,
-                                    wires=0,
-                                    dtype=dtype)
-
-            self.cps = ControlledPhaseShift(trainable=True,
-                                            wires=(1, 0),
-                                            dtype=dtype)
-            self.t = T(wires=0)
-            self.rz = RZ(wires=1, dtype=dtype)
-
-            self.measure = MeasureAll(obs={
-                "Z1":1
-            })
-
-        @partial(wrapper_compile)
-        def forward(self, x, *args, **kwargs):
-            self.qm.reset_states(x.shape[0])
-            self.cz(q_machine=self.qm)
-            self.paulix(q_machine=self.qm)
-            rx(q_machine=self.qm,wires=1,params = x[:,[0]])
-            ry(q_machine=self.qm,wires=1,params = x[:,[1]])
-            rz(q_machine=self.qm,wires=1,params = x[:,[2]])
-            rot(q_machine=self.qm, params=x[:, 0:3], wires=(1, ), use_dagger=True)
-            rot(q_machine=self.qm, params=x[:, 1:4], wires=(1, ), use_dagger=True)
-            isingxy(q_machine=self.qm, params=x[:, [2]], wires=(0, 1))
-            u3(q_machine=self.qm, params=x[:, 0:3], wires=1)
-            self.s(q_machine=self.qm)
-            self.cswap(q_machine=self.qm)
-            cnot(q_machine=self.qm, wires=[0, 1])
-            ry(q_machine=self.qm,wires=2,params = x[:,[1]])
-            pauliy(q_machine=self.qm, wires=1)
-            cry(q_machine=self.qm, params=1 / 2, wires=[0, 1])
-            self.ps(q_machine=self.qm)
-            self.cps(q_machine=self.qm)
-            ry(q_machine=self.qm,wires=2,params = x[:,[1]])
-            rz(q_machine=self.qm,wires=2,params = x[:,[2]])
-            toffoli(q_machine=self.qm, wires=[0, 1, 2])
-            self.t(q_machine=self.qm)
-
-            cy(q_machine=self.qm, wires=(2, 1))
-            ry(q_machine=self.qm,wires=1,params = x[:,[1]])
-            self.rz(q_machine=self.qm)
-
-            rlt = self.measure(q_machine=self.qm)
-
-            return rlt
-
-    import pyvqnet
-    import pyvqnet.tensor as tensor
-    input_x = tensor.QTensor([[0.1, 0.2, 0.3, 0.4], [0.1, 0.2, 0.3, 0.4]],
-                                dtype=pyvqnet.kfloat64)
-
-    input_x.requires_grad = True
-    num_wires = 3
-    qunatum_model = QModel(num_wires=num_wires, dtype=pyvqnet.kcomplex128)
-    qunatum_model_before = QModel_before(num_wires=num_wires, dtype=pyvqnet.kcomplex128)
-
-    batch_y = qunatum_model(input_x)
-    batch_y = qunatum_model_before(input_x)
-
-    flatten_oph_names = []
-
-    print("before")
-
-    print(op_history_summary(qunatum_model_before.qm.op_history))
-    flatten_oph_names = []
-    for d in qunatum_model.compiled_op_historys:
-            if "compile" in d.keys():
-                oph = d["op_history"]
-                for i in oph:
-                    n = i["name"]
-                    w = i["wires"]
-                    p = i["params"]
-                    flatten_oph_names.append({"name":n,"wires":w, "params": p})
-    print("after")
-    print(op_history_summary(qunatum_model.qm.op_history))
+            self.rx0(q_machine=self.qm)  # RX(0.3) 与 RX(x[:, 0]) 相邻: merge_rotations 合并为一个 RX
+            RX(wires=0)(params=x[:, [0]], q_machine=self.qm)
+            Hadamard(wires=1)(q_machine=self.qm)  # 两个相邻的 H: cancel_inverses 抵消
+            Hadamard(wires=1)(q_machine=self.qm)
+            PauliX(wires=1)(q_machine=self.qm)  # X 与 RX(0.2) 相邻: promote_fixed_rotations 并入 RX
+            self.rx1(q_machine=self.qm)
+            return MeasureAll(obs={"Z0": 1.0, "Z1": 1.0})(q_machine=self.qm)
 
 
-    # ###################Summary#######################
-    # qubits num: 3
-    # gates: {'cz': 1, 'paulix': 1, 'rx': 1, 'ry': 4, 'rz': 3, 'rot': 2, 'isingxy': 1, 'u3': 1, 's': 1, 'cswap': 1, 'cnot': 1, 'pauliy': 1, 'cry': 1, 'phaseshift': 1, 'controlledphaseshift': 1, 'toffoli': 1, 't': 1, 'cy': 1}
-    # total gates: 24
-    # total parameter gates: 15
-    # total parameters: 21
-    # #################################################
-        
-    # after
+    def run(model, x_data):
+        x = QTensor(x_data, requires_grad=True, device=DEV_GPU_0)
+        y = model(x)
+        y_data = y.to_numpy().ravel().copy()
+        tensor.sum(y).backward()
+        grads = {name: p.grad.to_numpy().ravel().copy() for name, p in model.named_parameters()}
+        return y_data, grads
 
 
-    # ###################Summary#######################
-    # qubits num: 3
-    # gates: {'cz': 1, 'rot': 7, 'isingxy': 1, 'u3': 1, 'cswap': 1, 'cnot': 1, 'cry': 1, 'controlledphaseshift': 1, 'toffoli': 1, 'cy': 1}
-    # total gates: 16
-    # total parameter gates: 11
-    # total parameters: 27
-    # #################################################
+    x_data = np.array([[0.5], [0.7]], np.float32)
+
+    eager = Circuit().toGPU(DEV_GPU_0)
+    fused = Circuit().toGPU(DEV_GPU_0)
+    cxx_runner.CXX_RUNNER_AVAILABLE = False  # 关闭融合执行器: 逐门执行
+    y_eager, g_eager = run(eager, x_data)
+    print("off :", cxx_runner.last_execution(eager.qm))
+    cxx_runner.CXX_RUNNER_AVAILABLE = True  # 默认: 打开
+    y_fused, g_fused = run(fused, x_data)
+    print("on  :", cxx_runner.last_execution(fused.qm))
+    print("y:", y_fused)
+    print("max|dy| =", float(np.abs(y_fused - y_eager).max()))
+    for name in g_fused:
+        print(f"max|d{name}| =", float(np.abs(g_fused[name] - g_eager[name]).max()))
+
+    # off : eager
+    # on  : cxx
+    # y: [-0.2833599  -0.43976408]
+    # max|dy| = 2.384185791015625e-07
+    # max|drx0.params| = 0.0
+    # max|drx1.params| = 0.0
+
 
 
 量子dropout实现
@@ -4119,7 +3992,7 @@ Dropout是经典深度神经网络(DNN)的一种常用技术,可防止计算单�
             test_costs = []
             model = QNN(layers)
             optimizer = pyvqnet.optim.Adam(model.parameters(), lr=0.001)
-            loss = pyvqnet.nn.loss.MeanSquaredError()
+            loss = pyvqnet.nn.MeanSquaredError()
             
             for epoch in range(epochs):
                 # 生成dropout列表

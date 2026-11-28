@@ -176,14 +176,20 @@ cb, check-build
 
 CommController
 ^^^^^^^^^^^^^^^^^^^^^^^
-
-.. py:class:: pyvqnet.distributed.ControlComm.CommController(backend=None, rank=None, world_size=None)
+.. py:class:: pyvqnet.distributed.ControlComm.CommController(backend=None, rank=None, world_size=None, timeout=None)
 
     CommController用于控制在cpu、gpu下数据通信的控制器, 通过设置参数 `backend` 来生成cpu(gloo)、gpu(nccl)的控制器。(目前分布式计算的功能仅支持linux操作系系统下使用)
 
     :param backend: 用于生成cpu或者gpu的数据通信控制器,如果是None，则支持gloo/nccl两种通信，默认None.
     :param rank: 该参数仅在非pyvqnet后端下有用, 默认值为: None。
     :param world_size: 该参数仅在非pyvqnet后端下有用, 默认值为: None。
+    :param timeout: 通信超时时间,单位为秒的 ``int`` / ``float`` ,或 ``datetime.timedelta`` ,默认值 None,表示600秒。传入 ``bool`` 抛出 ``TypeError`` ,传入小于等于0的值抛出 ``ValueError``。默认后端下,该超时传给gloo通信器和NCCL通信器,惰性创建的NCCL控制器与子通信组沿用同一超时; ``torch`` 计算后端下 ``torch.distributed`` 进程组的超时时间固定为2分钟,本参数不生效。
+
+    .. note::
+
+        使用 ``backend="nccl"`` 时,每个NCCL通信器带有一个看门狗(watchdog)线程,每100毫秒检查一次尚未完成的集合通信操作;超过 ``timeout`` 仍未完成的操作被判定失败,看门狗中止该操作所在的通信器,对应的 ``wait()`` 抛出 ``RuntimeError`` ,消息以 ``Watchdog caught collective operation timeout`` 开头。
+
+        由 ``vqnetrun`` 启动的进程中,构造控制器时会登记该控制器;进程收到 ``SIGTERM`` 时先销毁所有已登记的控制器,再按信号退出。
 
     :return:
         CommController 实例。
@@ -191,7 +197,7 @@ CommController
     Example::
 
         from pyvqnet.distributed import CommController
-        Comm_OP = CommController("nccl") # init nccl controller
+        Comm_OP = CommController("nccl", timeout=120) # init nccl controller, 120 s timeout
 
     .. py:method:: getRank()
         
@@ -712,6 +718,8 @@ CommController
         NCCL resources. If not called, NCCL communicators may leak memory or
         cause errors during CUDA driver shutdown.
 
+        NCCL通信器带有的看门狗线程在这一步被停止,通信器资源被释放。
+
         Example::
 
             from pyvqnet.distributed import CommController
@@ -719,30 +727,36 @@ CommController
             # ... 使用 Comm_OP / use Comm_OP ...
             Comm_OP.destroy()  # 退出前调用 / Call before exit
 
-split_data
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+CommController 的超时参数
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-在多进程中,使用 ``split_data`` 根据进程数对数据进行切分,返回相应进程上数据。
+``CommController`` 的 ``timeout`` 接受秒数或 ``datetime.timedelta`` ,默认600秒; ``bool`` 和非正数被拒绝。下面的代码不需要启动多进程。
 
-.. py:function:: pyvqnet.distributed.datasplit.split_data(x_train, y_train, shuffle=False)
+Example::
 
-    设置分布式计算参数。
+        from datetime import timedelta
 
-    :param x_train: `np.array` - 训练数据.
-    :param y_train: `np.array` -  训练数据标签.
-    :param shuffle: `bool` - 是否打乱后再进行切分,默认值是False.
+        import pyvqnet
+        from pyvqnet.distributed import CommController
+        from pyvqnet.distributed.ControlComm import _ControlComm
 
-    :return: 切分后的训练数据和标签。
+        print(_ControlComm._DEFAULT_NCCL_TIMEOUT_MS)
+        for timeout in (True, 0, -3, timedelta(0)):
+            try:
+                CommController("nccl", timeout=timeout)
+            except (TypeError, ValueError) as e:
+                print(type(e).__name__, "|", e)
 
-    Example::
+        pyvqnet.backends.set_backend("torch")
+        from pyvqnet.backends.torch import _distributed
+        print(_distributed._DEFAULT_INIT_TIMEOUT.total_seconds())
 
-        from pyvqnet.distributed import split_data
-        import numpy as np
-
-        x_train = np.random.randint(255, size = (100, 5))
-        y_train = np.random.randint(2, size = (100, 1))
-
-        x_train, y_train= split_data(x_train, y_train)
+        # 600000
+        # TypeError | timeout must be a number of seconds or datetime.timedelta, not bool
+        # ValueError | timeout must be positive
+        # ValueError | timeout must be positive
+        # ValueError | timeout must be positive
+        # 120.0
 
 get_local_rank
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -809,23 +823,34 @@ init_groups
 PipelineParallelTrainingWrapper
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. py:class:: pyvqnet.distributed.pp.PipelineParallelTrainingWrapper(args,join_layers,trainset)
-    
-    Pipeline Parallel Training Wrapper 实现了 1F1B训练。仅在 Linux 平台上,且具有 GPU 的情况下可用。
-    更多算法细节可以在(https://www.deepspeed.ai/tutorials/pipeline/)找到。
 
-    :param args: 参数字典。参见示例。
-    :param join_layers: Sequential 模块的列表。
+    经典流水线并行训练的兼容封装。构造时发出 ``DeprecationWarning`` ,并把训练转交给 ``pyvqnet.distributed.hybrid.ParallelTrainingWrapper`` : ``join_layers`` 作为逐层(flat layer)列表交给统一封装器,按 ``args["partition_method"]`` 划分到各流水线级。
+
+    :param args: 参数字典。参见示例。 ``pipeline_parallel_size`` 为流水线级数; ``partition_method`` 取 ``"parameters"``(默认,按参数量均衡划分)或 ``"uniform"``(均匀划分);未给出 ``data_parallel_size`` 时取 ``总进程数 // pipeline_parallel_size`` 。
+    :param join_layers: ``Module`` 层的列表。不支持函数(例如 ``lambda`` )层,传入时抛出 ``ValueError`` ,请把函数逻辑写成 ``Module`` 子类。
     :param trainset: 数据集。
 
     :return:
         PipelineParallelTrainingWrapper 实例。
+
+    .. py:method:: net
+
+        属性。统一封装器持有的流水线模型,可用于 ``state_dict()`` 和参数查看。
+
+        :return: 流水线模型。
+
+    .. py:method:: train_batch()
+
+        执行 ``args["steps"]`` 步训练。
+
+        :return: 记录每一步损失的字典。
 
     以下使用 CIFAR10数据集 `CIFAR10_Dataset`,在2块GPU上训练AlexNet上的分类任务。
     本例子中分成两个流水线并行进程 `pipeline_parallel_size` = 2。
     批处理大小为 `train_batch_size` = 64, 单GPU 上为 `train_micro_batch_size_per_gpu` = 32。
     其他配置参数可见 `args`。
     此外,每个进程需要在 `__main__` 函数中配置环境变量的 `LOCAL_RANK`。
-    
+
     .. code-block::
 
         os.environ["LOCAL_RANK"] = str(dist.get_local_rank())
@@ -840,7 +865,7 @@ PipelineParallelTrainingWrapper
         from pyvqnet.nn import Module,Sequential,CrossEntropyLoss
         from pyvqnet.nn import Linear
         from pyvqnet.nn import Conv2D
-        from pyvqnet.nn import activation as F
+        from pyvqnet.nn.native import activation as F
         from pyvqnet.nn import MaxPool2D
         from pyvqnet.nn import CrossEntropyLoss
 
@@ -871,7 +896,7 @@ PipelineParallelTrainingWrapper
         class Model(Module):
             def __init__(self):
                 super(Model, self).__init__()
-                self.features = Sequential( 
+                self.features = Sequential(
                 Conv2D(input_channels=3, output_channels=8, kernel_size=(3, 3), stride=(1, 1), padding='same'),
                 F.ReLu(),
                 MaxPool2D([2, 2], [2, 2]),
@@ -889,8 +914,8 @@ PipelineParallelTrainingWrapper
                 Conv2D(input_channels=64, output_channels=64, kernel_size=(3, 3), stride=(1, 1), padding='same'),
                 F.ReLu(),
                 MaxPool2D([3, 3], [2, 2]),)
-                
-                self.cls = Sequential( 
+
+                self.cls = Sequential(
                 Linear(64 * 27 * 27, 512),
                 F.ReLu(),
 
@@ -904,11 +929,15 @@ PipelineParallelTrainingWrapper
                 x = self.cls(x)
 
                 return x
-            
+
+        class Flatten(Module):
+            def forward(self, x):
+                return tensor.flatten(x, 1)
+
         def join_layers(vision_model):
             layers = [
                 *vision_model.features,
-                lambda x: tensor.flatten(x, 1),
+                Flatten(),
                 *vision_model.cls,
             ]
             return layers
@@ -916,18 +945,17 @@ PipelineParallelTrainingWrapper
 
         if __name__ == "__main__":
 
-
             args = {
-            "backend":'nccl',  
+            "backend":'nccl',
             "train_batch_size" : 64,
             "train_micro_batch_size_per_gpu" : 32,
             "epochs":5,
-        "optimizer": {
+            "optimizer": {
             "type": "Adam",
             "params": {
             "lr": 0.001
-            }}, 
-            "local_rank":dist.get_local_rank(), 
+            }},
+            "local_rank":dist.get_local_rank(),
             "pipeline_parallel_size":pipeline_parallel_size, "seed":42, "steps":num_steps,
             "loss":CrossEntropyLoss(),
             }
@@ -935,11 +963,9 @@ PipelineParallelTrainingWrapper
             trainset = cifar_trainset_vqnet(args["local_rank"])
             w = PipelineParallelTrainingWrapper(args,join_layers(Model()),trainset)
 
-            all_loss = {}
-
             for i in range(args["epochs"]):
                 w.train_batch()
-                
+
             all_loss = w.loss_dict
 
 
@@ -1044,7 +1070,7 @@ ZeroModelInitial
                 self.fc3 = nn.Linear(256, 128)
                 self.fc4 = nn.Linear(128, 64)
                 self.fc5 = nn.Linear(64, 10)
-                self.ac = nn.activation.ReLu()
+                self.ac = nn.ReLu()
                 
             def forward(self, x:pyvqnet.QTensor):
                 
@@ -1234,7 +1260,7 @@ ColumnParallelLinear
                 self.fc3 = RowParallelLinear(256, 128, tp_comm = Comm_OP)
                 self.fc4 = ColumnParallelLinear(128, 64, tp_comm = Comm_OP)
                 self.fc5 = RowParallelLinear(64, 10, tp_comm = Comm_OP)  
-                self.ac = nn.activation.ReLu()
+                self.ac = nn.ReLu()
                 
             def forward(self, x:pyvqnet.QTensor):
                 
@@ -1408,7 +1434,7 @@ RowParallelLinear
                 self.fc3 = RowParallelLinear(256, 128, tp_comm = Comm_OP)
                 self.fc4 = ColumnParallelLinear(128, 64, tp_comm = Comm_OP)
                 self.fc5 = RowParallelLinear(64, 10, tp_comm = Comm_OP)  
-                self.ac = nn.activation.ReLu()
+                self.ac = nn.ReLu()
                 
                 
             def forward(self, x:pyvqnet.QTensor):
@@ -1484,14 +1510,14 @@ RowParallelLinear
 
 
 DistributedQMachine
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. py:class:: pyvqnet.distributed.qubits_reorder.DistributedQMachine(num_wires, dtype=kcomplex64, grad_mode="")
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. py:class:: pyvqnet.distributed.qubits_reorder.DistributedQMachine(num_wires, dtype=kcomplex64, state_storage=None)
 
     用于比特并行中的变分量子计算的模拟类，包含每个节点包含的部分比特上的量子态。通过MPI,每个节点都申请一个该类，进行分布式的量子变分线路模拟，N的值必须等于2的分布式并行的比特个数 `global_qubit` 的幂次方，可通过 `set_qr_config` 进行配置。
 
     :param num_wires: 完整量子线路的比特的数量。
     :param dtype: 计算数据的数据类型。默认是 pyvqnet.kcomplex64，对应的参数精度是 pyvqnet.kfloat32。
-    :param grad_mode: 在 ``DistQuantumLayerAdjoint`` 进行反传时设置为 adjoint。
+    :param state_storage: 态矢的存储数据类型,可选。传入 ``torch.complex32`` 或 ``pyvqnet.kcomplex32`` 时,本进程持有的态矢以fp16存储(每个振幅4个字节),计算精度保持 complex64;默认值 None,使用 complex64 存储。
 
     .. note::
 
@@ -1503,7 +1529,7 @@ DistributedQMachine
         该接口只支持在Linux下运行；
 
         必须对 ``DistributedQMachine`` 中比特并行中参数进行配置， 如样例中所示，包括：
-        
+
         .. code-block::
 
             qm.set_just_defined(True)
@@ -1524,18 +1550,18 @@ DistributedQMachine
         batch_size = 5
 
         class QModel(pyvqnet.nn.Module):
-            def __init__(self, num_wires, dtype, grad_mode=""):
+            def __init__(self, num_wires, dtype):
                 super(QModel, self).__init__()
 
                 self._num_wires = num_wires
                 self._dtype = dtype
-                self.qm = DistributedQMachine(num_wires, dtype=dtype, grad_mode=grad_mode)
-                
+                self.qm = DistributedQMachine(num_wires, dtype=dtype)
+
                 self.qm.set_just_defined(True)
                 self.qm.set_save_op_history_flag(True) # open save op
                 self.qm.set_qr_config({"qubit": num_wires, # open qubit reordered, set config
                                         "global_qubit": 1}) # global_qubit == log2(nproc)
-                
+
                 self.params = pyvqnet.nn.Parameter([qubit])
 
                 self.measure = MeasureAll(obs={
@@ -1561,8 +1587,7 @@ DistributedQMachine
         input_x.requires_grad = True
 
         quantum_model = QModel(num_wires=qubit,
-                            dtype=pyvqnet.kcomplex64,
-                            grad_mode="adjoint").toGPU(pyvqnet.DEV_GPU_0+get_rank())
+                            dtype=pyvqnet.kcomplex64).toGPU(pyvqnet.DEV_GPU_0+get_rank())
 
         adjoint_model = DistQuantumLayerAdjoint(quantum_model)
         adjoint_model.train()
@@ -1605,18 +1630,18 @@ DistQuantumLayerAdjoint
         batch_size = 5
 
         class QModel(pyvqnet.nn.Module):
-            def __init__(self, num_wires, dtype, grad_mode=""):
+            def __init__(self, num_wires, dtype):
                 super(QModel, self).__init__()
 
                 self._num_wires = num_wires
                 self._dtype = dtype
-                self.qm = DistributedQMachine(num_wires, dtype=dtype, grad_mode=grad_mode)
-                
+                self.qm = DistributedQMachine(num_wires, dtype=dtype)
+
                 self.qm.set_just_defined(True)
                 self.qm.set_save_op_history_flag(True) # open save op
                 self.qm.set_qr_config({"qubit": num_wires, # open qubit reordered, set config
-                                            "global_qubit": 1}) # global_qubit == log2(nproc)
-                
+                                        "global_qubit": 1}) # global_qubit == log2(nproc)
+
                 self.params = pyvqnet.nn.Parameter([qubit])
 
                 self.measure = MeasureAll(obs={
@@ -1642,8 +1667,7 @@ DistQuantumLayerAdjoint
         input_x.requires_grad = True
 
         quantum_model = QModel(num_wires=qubit,
-                            dtype=pyvqnet.kcomplex64,
-                            grad_mode="adjoint").toGPU(pyvqnet.DEV_GPU_0+get_rank())
+                            dtype=pyvqnet.kcomplex64).toGPU(pyvqnet.DEV_GPU_0+get_rank())
 
         adjoint_model = DistQuantumLayerAdjoint(quantum_model)
         adjoint_model.train()
@@ -1655,10 +1679,12 @@ DistQuantumLayerAdjoint
         # vqnetrun --nproc_per_node 2 python test.py
 
 ParallelTrainingWrapper
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. py:class:: pyvqnet.distributed.hybrid.ParallelTrainingWrapper(args, pipeline_def, trainset, strategy=None)
 
     统一的并行训练封装器，支持三种并行模式：经典层流水线并行（PP）、数据并行（DP）和比特并行（Bit），可将经典层与变分量子线路（VQC）混合编排到多级流水线中执行。
+
+    ``pyvqnet.distributed.hybrid.ParallelTrainingWrapper`` 是默认后端使用的封装器; ``torch`` 计算后端使用 ``pyvqnet.distributed.hybrid.torch.wrapper.ParallelTrainingWrapper`` ,二者参数相同,也可以用 ``pyvqnet.distributed.hybrid.get_parallel_wrapper()`` 取得当前后端对应的类。
 
     :param args: 训练配置字典，支持以下键：
 
@@ -1686,6 +1712,12 @@ ParallelTrainingWrapper
             打印间隔步数。
         ``seed`` (int, 默认 42)
             随机种子，用于 VQC 录制的确定性。
+        ``partition`` (``"manual"`` / ``"auto"``，默认 ``"manual"``)
+            ``"auto"`` 时 ``pipeline_def`` 必须是逐层列表,封装器把它均匀切分成 ``pipeline_parallel_size`` 个连续的 stage; ``"manual"`` 时按下面 ``pipeline_def`` 的形式处理。取其他值抛出 ``ValueError`` 。
+        ``backend`` (``"gloo"`` / ``"nccl"``，可省略)
+            仅 ``torch`` 计算后端使用:进程组的通信后端;省略时 ``device="gpu"`` 且CUDA可用取 ``"nccl"`` ,否则取 ``"gloo"`` 。
+        ``zero_optimization`` (dict, 可省略)
+            仅默认后端使用: ``{"stage": 1}`` 且 ``data_parallel_size > 1`` 时,用 ZeRO 第一阶段优化器包装优化器。
 
     :param pipeline_def: 模型定义，支持以下四种形式：
 
@@ -1701,34 +1733,122 @@ ParallelTrainingWrapper
 
         4. 混合模型：``("classical", [layers])`` / ``("vqc", VQCClass)`` 元组列表。
 
-        形式 2–4 通过 ``auto_plan`` 自动编译为旧版字典列表中间表示。
+        形式 2–4 是声明式的模型描述,封装器先用 ``pyvqnet.distributed.hybrid.pipeline_partition.plan_pipeline_stages`` 把它编译为形式 1 的字典列表中间表示。其中 VQC 块的切分需要知道线路的门数:封装器用 ``trainset[0][0]`` 作为输入录制一次每个 VQC 块的线路来统计门数。
 
     :param trainset: 数据集，需具有 ``.data``、``.labels`` 属性，且 ``__getitem__`` 返回 ``(data, label)`` 对。
     :param strategy: 策略字典，仅用于声明式模型定义（形式 2–4），可选键：
 
-        - ``classical_split``（``"uniform"`` | ``"auto"``，默认 ``"auto"``）：经典层分配策略。
-        - ``vqc_split``（``None`` | ``False``，默认 ``None``）：``None`` 表示自动切分 VQC 块；``False`` 表示保持每个 VQC 块完整。
-        - ``compression_policy`` （默认 ``"greedy"`` ）：stage 合并策略。
+        - ``classical_split``（``"uniform"`` | ``"auto"``，默认 ``"auto"``）：经典层分配策略。 ``"auto"`` 按各层参数量均衡划分。
+        - ``vqc_split``（``None`` | ``False``，默认 ``None``）：``None`` 表示自动切分 VQC 块; ``False`` 表示保持每个 VQC 块完整。
+        - ``compression_policy`` （默认 ``"greedy"`` ）：stage 合并策略,当前只实现 ``"greedy"`` ,传入其他值抛出 ``ValueError`` 。
 
     .. note::
 
         ``pipeline_parallel_size`` 必须等于 ``pipeline_def`` 中 stage 的总数。
 
-        启动时需通过 ``vqnetrun`` 指定进程数，且 ``data_parallel_size × pipeline_parallel_size × qubits_parallel_size`` 必须等于总进程数。
+        启动时需通过 ``vqnetrun`` 指定进程数，且 ``data_parallel_size × pipeline_parallel_size × qubits_parallel_size`` 必须等于总进程数。 ``torch`` 计算后端由 ``torchrun`` 启动(需要环境变量 ``RANK`` 和 ``WORLD_SIZE``);两个变量都不存在时按单进程运行。
 
     .. warning::
 
         该接口只支持在 Linux 下运行；
 
-        必须通过 ``vqnetrun --nproc_per_node <N>`` 启动。
+        多进程时必须通过 ``vqnetrun --nproc_per_node <N>`` 启动。
 
     .. py:method:: train_batch()
 
-        执行一个 batch 的完整训练流程（前向 → 反向 → 参数更新）。
+        执行一个 batch 的完整训练流程（前向 → 反向 → 参数更新），共 ``args["steps"]`` 步。
 
+        :return: 记录每一步损失的字典。
+
+    .. py:method:: net
+
+        属性。流水线模型,可用于 ``state_dict()`` 和参数查看。
+
+        :return: 流水线模型。
 
     Example::
- 
+
+        import numpy as np
+        import torch
+        import pyvqnet
+        from pyvqnet.logger import logger
+        logger.setLevel("WARNING")   # keep the INFO plan log out of the printed output
+        pyvqnet.backends.set_backend("torch")
+        pyvqnet.utils.set_random_seed(0)
+        torch.manual_seed(0)
+        from pyvqnet.distributed.hybrid import get_parallel_wrapper
+        ParallelTrainingWrapper = get_parallel_wrapper()
+        from pyvqnet.distributed.hybrid.common.partition import StageType
+        from pyvqnet.qnn.vqc.sv.torch import QMachine, QModule, MeasureAll, RY, rx
+
+
+        class VQCModel(QModule):
+            def __init__(self, bit_rank=0):
+                super().__init__()
+                self.qm = QMachine(3)
+                self.params = torch.nn.Parameter(torch.tensor([0.1, 0.2, 0.3]))
+                self.enc = [RY(trainable=False, wires=[i]) for i in range(3)]
+                self.measure = MeasureAll(obs={"Z0": 1.0})
+
+            def forward(self, x):
+                self.qm.reset_states(x.shape[0])
+                for i in range(3):
+                    rx(q_machine=self.qm, params=self.params[i], wires=i)
+                    self.enc[i](params=x[:, i].reshape(-1, 1), q_machine=self.qm)
+                return self.measure(q_machine=self.qm)
+
+
+        class LinearBlock(torch.nn.Module):
+            def __init__(self, in_dim=3, out_dim=3):
+                super().__init__()
+                self.lin = torch.nn.Linear(in_dim, out_dim)
+
+            def forward(self, x):
+                return self.lin(x)
+
+
+        class Dataset:
+            def __init__(self, n=16):
+                rng = np.random.default_rng(0)
+                self.data = rng.standard_normal((n, 3)).astype(np.float32)
+                self.labels = rng.standard_normal((n,)).astype(np.float32)
+                self.num_samples = n
+
+            def __len__(self):
+                return self.num_samples
+
+            def __getitem__(self, i):
+                return self.data[i], self.labels[i]
+
+
+        args = {
+            "device": "cpu",
+            "data_parallel_size": 1,
+            "pipeline_parallel_size": 1,
+            "qubits_parallel_size": 1,
+            "train_batch_size": 8,
+            "train_micro_batch_size_per_gpu": 8,
+            "epochs": 1,
+            "steps": 2,
+            "loss": lambda labels, y: torch.nn.functional.mse_loss(y.reshape(-1, 1), labels.reshape(-1, 1)),
+            "optimizer": {"type": "Adam", "params": {"lr": 0.01}},
+        }
+        model_spec = [("classical", [LinearBlock()]), ("vqc", VQCModel)]
+        w = ParallelTrainingWrapper(args, model_spec, Dataset())
+        print(w.stage_spec.stage_type.name, w.partition.total_pp_size)
+        print([s.stage_type.name for s in w.stage_spec.sub_stages])
+        loss_dict = w.train_batch()
+        print(loss_dict)
+        print([tuple(p.shape) for p in w.executor.get_params()])
+        # STAGE 1
+        # ['CLASSICAL', 'VQC_WHOLE']
+        # {0: 1.4253586530685425, 1: 1.9046924114227295}
+        # [(3, 3), (3,), (3,)]
+
+    多进程的经典-VQC 混合流水线示例如下(默认后端, ``vqnetrun --nproc_per_node 4 -- python your_script.py`` ):
+
+    .. code-block:: python
+
         import os
         import sys
 
@@ -1740,10 +1860,7 @@ ParallelTrainingWrapper
         from pyvqnet.qnn.vqc import rx, ry, rz, crx, MeasureAll
         from pyvqnet.nn import CrossEntropyLoss
         from pyvqnet.distributed.configs import comm as dist
-        from pyvqnet.distributed.hybrid.distributed_qmachine import (
-            HybridDistributedQMachine,
-        )
-        from pyvqnet.distributed.hybrid import ParallelTrainingWrapper
+        from pyvqnet.distributed.hybrid import HybridDistributedQMachine, ParallelTrainingWrapper
 
         NUM_WIRES = 8
         N_VQC_PARAMS = NUM_WIRES * 4  # 32
@@ -1754,11 +1871,10 @@ ParallelTrainingWrapper
 
 
         class MyVQC(nn.Module):
+
             def __init__(self, bit_rank):
                 super().__init__()
-                self.qm = HybridDistributedQMachine(
-                    NUM_WIRES, 2, bit_rank, grad_mode="adjoint"
-                )
+                self.qm = HybridDistributedQMachine(NUM_WIRES, 2, bit_rank)
                 self.qm.set_just_defined(True)
                 self.qm.set_save_op_history_flag(True)
                 self.qm.set_qr_config({"qubit": NUM_WIRES, "global_qubit": 1})
@@ -1817,7 +1933,7 @@ ParallelTrainingWrapper
 
             # 2-stage 复合流水线：classical+VQC | VQC+classical
             args = {
-                "device": os.environ.get("VQNET_TEST_DEVICE", "cpu"),
+                "device": "cpu",
                 "train_batch_size": BSZ,
                 "train_micro_batch_size_per_gpu": BSZ,
                 "epochs": 1,
@@ -1866,4 +1982,155 @@ ParallelTrainingWrapper
         if __name__ == "__main__":
             main()
 
-        # vqnetrun --nproc_per_node 4 -- python your_script.py
+
+流水线VQC的边界与分段伴随
+=================================
+
+``ParallelTrainingWrapper`` 把一个VQC块切分到多个流水线级时,每一级的线路由 ``DistQuantumSegmentAdjoint`` 包装,级与级之间的态矢布局和收发由边界策略决定。以下接口位于 ``pyvqnet.distributed.hybrid.pipeline`` ,由封装器在内部使用。
+
+.. py:class:: pyvqnet.distributed.hybrid.pipeline.PipelineBoundary(comm, num_wires, num_proc)
+
+    流水线边界的抽象基类,定义级间态矢的布局策略和收发方法: ``send_forward_state(states, dest_rank)`` 、 ``recv_forward_state(buffer, src_rank)`` 、 ``send_weighted_bra(weighted_bra, dest_rank)`` 和 ``recv_grad_output(buffer, src_rank)`` 分别通过 ``pyvqnet.backends.global_backend`` 的点对点通信收发前向态矢和反向的加权伴随态。
+
+    :param comm: 后端的点对点通信句柄:默认后端的 ``CommController`` , ``torch`` 后端的 ``torch.distributed`` 进程组或 ``None`` 。
+    :param num_wires: 比特总数(本地比特加全局比特)。
+    :param num_proc: 比特组的进程数,即 :math:`2^{\text{global\_qubit}}` 。
+
+.. py:class:: pyvqnet.distributed.hybrid.pipeline.OriginalOrderBoundary(comm, num_wires, num_proc)
+
+    发送前把态矢恢复到原始比特顺序(本地比特在前、全局比特在后)的边界策略。 ``restores_original_order`` 为 ``True`` , ``forward_order(qm)`` 返回 ``list(range(num_wires))`` 。
+
+    :param comm: 后端的点对点通信句柄。
+    :param num_wires: 比特总数。
+    :param num_proc: 比特组的进程数。
+
+.. py:class:: pyvqnet.distributed.hybrid.pipeline.FusedQrBoundary(comm, num_wires, num_proc, start_order=None)
+
+    保留该级线路固有的比特重排序顺序、不做恢复的边界策略。 ``restores_original_order`` 为 ``False`` , ``restore_original_qubit_order(states, qm)`` 原样返回 ``states`` , ``forward_order(qm)`` 返回 ``qm.final_qubit_order`` 的副本。
+
+    :param comm: 后端的点对点通信句柄。
+    :param num_wires: 比特总数。
+    :param num_proc: 比特组的进程数。
+    :param start_order: 保留参数,当前路径不使用,默认 ``None`` 。
+
+.. py:class:: pyvqnet.distributed.hybrid.pipeline.DistQuantumSegmentAdjoint(vqc_segment, boundary, is_last_stage=False, name="")
+
+    流水线中一级VQC线路的分段伴随梯度包装(默认后端)。 ``torch`` 后端使用 ``pyvqnet.distributed.hybrid.pipeline.torch.segment_adjoint.DistQuantumSegmentAdjointTorch`` ,参数相同。
+
+    :param vqc_segment: 含有比特组范围内 ``DistributedQMachine`` 的VQC模块。
+    :param boundary: ``PipelineBoundary`` 边界策略。
+    :param is_last_stage: 本级是否包含测量。
+    :param name: 模块名字,默认 ""。
+
+.. py:function:: pyvqnet.distributed.hybrid.pipeline.stage_adjoint_backward(qm, ket, weighted_bras, ops, is_last_stage, obs_list=None, start_order=None, fep=None, rev_qr_ops=None, return_rewound_bras=False)
+
+    对一级线路的门序列做一次伴随反传(默认后端)。
+
+    :param qm: 该级的 ``DistributedQMachine`` 。
+    :param ket: 该级前向计算后的态矢。
+    :param weighted_bras: 下一级传回的加权伴随态。
+    :param ops: 该级记录的门序列。
+    :param is_last_stage: 本级是否包含测量。
+    :param obs_list: 最后一级的观测量列表。
+    :param start_order: 该级线路开始时的比特顺序。
+    :param fep: 该级线路结束时的比特顺序。
+    :param rev_qr_ops: 逆序的比特重排序操作。
+    :param return_rewound_bras: 为 ``True`` 时额外返回回绕后的伴随态。
+    :return: ``(local_jac_or_grads, out_weighted_bra, ket, final_qubit_order)`` ,即本级的雅可比矩阵或梯度、交给上一级的加权伴随态、回绕后的态矢和最终的比特顺序。
+
+Example::
+
+        import types
+        import pyvqnet
+        from pyvqnet.distributed.hybrid.pipeline import (
+            PipelineBoundary, OriginalOrderBoundary, FusedQrBoundary, DistQuantumSegmentAdjoint, stage_adjoint_backward,
+        )
+
+        print(issubclass(OriginalOrderBoundary, PipelineBoundary), issubclass(FusedQrBoundary, PipelineBoundary))
+        qm = types.SimpleNamespace(final_qubit_order=[2, 0, 1])
+        states = [[1.0, 0.0], [0.0, 1.0]]
+        fused = FusedQrBoundary(comm=None, num_wires=3, num_proc=2, start_order=[2, 0, 1])
+        print(fused.restore_original_qubit_order(states, qm) is states, fused.restores_original_order)
+        print(fused.forward_order(qm))
+        original = OriginalOrderBoundary(comm=None, num_wires=3, num_proc=2)
+        print(original.forward_order(qm), original.restores_original_order)
+
+        # True True
+        # True False
+        # [2, 0, 1]
+        # [0, 1, 2] True
+
+
+complex32 态矢的进程间传输
+=================================
+
+``torch`` 后端下, complex32 (fp16存储)的态矢可以跨进程传输。点对点交换 ``send_recv(send, dst, recv, src, group=None)`` 要求收发两端的缓冲区都是 complex32 :NCCL后端用同存储的 float16 视图传输( ``pyvqnet.backends.torch.c32_as_f16_view`` ), gloo后端把数据放大为 complex64 传输后再拷贝回来。惰性共轭和非连续的缓冲区会先被实际化。
+
+Example::
+
+        import torch
+        import pyvqnet
+        pyvqnet.backends.set_backend("torch")
+        from pyvqnet.backends.torch import c32_as_f16_view, f16_view_as_c32
+
+        g = torch.Generator().manual_seed(0)
+        t = torch.complex(torch.randn(3, 8, generator=g), torch.randn(3, 8, generator=g)).to(torch.complex32)
+        v, base = c32_as_f16_view(t)
+        print(base is t, v.dtype, tuple(v.shape), v.element_size() * v.numel() == t.element_size() * t.numel())
+        back = f16_view_as_c32(v)
+        print(back.data_ptr() == t.data_ptr(), torch.equal(back.view(torch.int16), t.view(torch.int16)))
+
+        tc = t.conj()                       # lazy conjugate: metadata only
+        v2, base2 = c32_as_f16_view(tc)
+        print(base2 is tc, torch.equal(base2.view(torch.int16), t.conj().resolve_conj().view(torch.int16)))
+
+        s = t[::2]                          # non-contiguous view
+        v3, base3 = c32_as_f16_view(s)
+        print(s.is_contiguous(), base3 is s, tuple(v3.shape))
+
+        # True torch.float16 (3, 16) True
+        # True True
+        # False True
+        # False False (2, 16)
+
+
+两个进程各用一个 ``torch.distributed`` 的gloo进程组交换 complex32 张量(未在本文档的运行环境中执行):
+
+.. code-block:: python
+
+    import multiprocessing as mp
+    import torch
+    import torch.distributed as dist
+    import pyvqnet
+    pyvqnet.backends.set_backend("torch")
+    from pyvqnet.backends.torch._distributed import send_recv
+
+
+    def _c32(shape, seed=0):
+        g = torch.Generator().manual_seed(seed)
+        return torch.complex(torch.randn(shape, generator=g), torch.randn(shape, generator=g)).to(torch.complex32)
+
+
+    def exchange(rank, port):
+        dist.init_process_group("gloo", init_method=f"tcp://127.0.0.1:{port}", world_size=2, rank=rank)
+        try:
+            a = _c32((4, 8), seed=rank + 1)
+            b = torch.zeros_like(a)
+            if rank == 0:
+                send_recv(a, 1, b, 1)
+            else:
+                send_recv(a, 0, b, 0)
+            # b now holds the tensor sent by the other rank, bit for bit
+            expected = _c32((4, 8), seed=(1 - rank) + 1)
+            print(rank, torch.equal(b.view(torch.int16), expected.view(torch.int16)))
+        finally:
+            dist.destroy_process_group()
+
+
+    if __name__ == "__main__":
+        ctx = mp.get_context("spawn")
+        procs = [ctx.Process(target=exchange, args=(r, 29711)) for r in range(2)]
+        for p in procs:
+            p.start()
+        for p in procs:
+            p.join()

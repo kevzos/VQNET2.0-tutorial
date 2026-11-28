@@ -40,9 +40,9 @@
 .. code-block::
 
     import pyqpanda3.core as pq
-    from pyvqnet.nn.module import Module
+    from pyvqnet.nn import Module
     from pyvqnet.optim.sgd import SGD
-    from pyvqnet.nn.loss import CategoricalCrossEntropy
+    from pyvqnet.nn import CategoricalCrossEntropy
     from pyvqnet.tensor.tensor import QTensor
     from pyvqnet.data import data_generator as dataloader
     
@@ -275,12 +275,12 @@ Model中使用 ``pyvqnet.qnn.pq3.QuantumLayer`` 类这个可进行自动微分�
     import sys
     sys.path.insert(0, "../")
     import numpy as np
-    from pyvqnet.nn.linear import Linear
+    from pyvqnet.nn import Linear
     from pyvqnet.qnn.qdrl.vqnet_model import vmodel
     from pyvqnet.optim import sgd
-    from pyvqnet.nn.loss import CategoricalCrossEntropy
+    from pyvqnet.nn import CategoricalCrossEntropy
     from pyvqnet.tensor.tensor import QTensor
-    from pyvqnet.nn.module import Module
+    from pyvqnet.nn import Module
 
     from pyvqnet.data import data_generator as get_minibatch_data
 
@@ -433,15 +433,15 @@ VSQL中各个量子比特上的局部量子线路图如下:
         import os.path
         import struct
         import gzip
-        from pyvqnet.nn.module import Module
-        from pyvqnet.nn.loss import CategoricalCrossEntropy
+        from pyvqnet.nn import Module
+        from pyvqnet.nn import CategoricalCrossEntropy
         from pyvqnet.optim.adam import Adam
         from pyvqnet.data.data import data_generator
         from pyvqnet.tensor import tensor
         from pyvqnet.qnn.pq3.measure import expval
         from pyvqnet.qnn.pq3.quantumlayer import QuantumLayer
         from pyvqnet.qnn.pq3.template import AmplitudeEmbeddingCircuit
-        from pyvqnet.nn.linear import Linear
+        from pyvqnet.nn import Linear
         import numpy as np
         import pyqpanda3.core as pq
         import matplotlib.pyplot as plt
@@ -789,13 +789,13 @@ Mnist数据集定义
     import gzip
     import sys
     sys.path.insert(0, "../")
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.loss import NLL_Loss
+    from pyvqnet.nn import Module
+    from pyvqnet.nn import NLL_Loss
     from pyvqnet.optim.adam import Adam
     from pyvqnet.data.data import data_generator
     from pyvqnet.tensor import tensor
     from pyvqnet.qnn.pq3.measure import expval
-    from pyvqnet.nn.linear import Linear
+    from pyvqnet.nn import Linear
     import numpy as np
     from pyvqnet.qnn.qcnn import Quanvolution
     import matplotlib.pyplot as plt
@@ -1072,8 +1072,8 @@ QAE量子线路:
     import sys
     sys.path.insert(0,'../')
     import numpy as np
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.loss import  fidelityLoss
+    from pyvqnet.nn import Module
+    from pyvqnet.nn.native.loss import fidelityLoss
     from pyvqnet.optim.adam import Adam
     from pyvqnet.data.data import data_generator
     from pyvqnet.qnn.qae.qae import QAElayer
@@ -1463,13 +1463,13 @@ Quantum circuit structure learning任务的核心目标就是找到最优的带�
     import os
     import struct
     import gzip
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.linear import Linear
-    from pyvqnet.nn.conv import Conv2D
+    from pyvqnet.nn import Module
+    from pyvqnet.nn import Linear
+    from pyvqnet.nn import Conv2D
 
-    from pyvqnet.nn import activation as F
-    from pyvqnet.nn.pooling import MaxPool2D
-    from pyvqnet.nn.loss import CategoricalCrossEntropy
+    from pyvqnet.nn.native import activation as F
+    from pyvqnet.nn import MaxPool2D
+    from pyvqnet.nn import CategoricalCrossEntropy
     from pyvqnet.optim.adam import Adam
     from pyvqnet.data.data import data_generator
     from pyvqnet.tensor import tensor
@@ -1868,16 +1868,16 @@ Quantum circuit structure learning任务的核心目标就是找到最优的带�
     import numpy as np
     import matplotlib.pyplot as plt
 
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.linear import Linear
-    from pyvqnet.nn.conv import Conv2D
+    from pyvqnet.nn import Module
+    from pyvqnet.nn import Linear
+    from pyvqnet.nn import Conv2D
     from pyvqnet.utils.storage import load_parameters, save_parameters
 
-    from pyvqnet.nn import activation as F
-    from pyvqnet.nn.pooling import MaxPool2D
+    from pyvqnet.nn.native import activation as F
+    from pyvqnet.nn import MaxPool2D
 
-    from pyvqnet.nn.batch_norm import BatchNorm2d
-    from pyvqnet.nn.loss import SoftmaxCrossEntropy
+    from pyvqnet.nn import BatchNorm2d
+    from pyvqnet.nn import SoftmaxCrossEntropy
 
     from pyvqnet.optim.sgd import SGD
     from pyvqnet.optim.adam import Adam
@@ -1886,7 +1886,7 @@ Quantum circuit structure learning任务的核心目标就是找到最优的带�
     from pyvqnet.tensor.tensor import QTensor
     import pyqpanda3.core as pq
     import matplotlib
-    from pyvqnet.nn.module import *
+    from pyvqnet.nn import *
     from pyvqnet.utils.initializer import *
     from pyvqnet.qnn.pq3.quantumlayer import QuantumLayer
     from pyvqnet.qnn.pq3.measure import expval
@@ -2577,11 +2577,11 @@ QUnet主要是用于解决图像分割的技术。
 
     import os
     import numpy as np
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.conv import Conv2D, ConvT2D
-    from pyvqnet.nn import activation as F
-    from pyvqnet.nn.batch_norm import BatchNorm2d
-    from pyvqnet.nn.loss import BinaryCrossEntropy
+    from pyvqnet.nn import Module
+    from pyvqnet.nn import Conv2D, ConvT2D
+    from pyvqnet.nn.native import activation as F
+    from pyvqnet.nn import BatchNorm2d
+    from pyvqnet.nn import BinaryCrossEntropy
     from pyvqnet.optim.adam import Adam
     from pyvqnet.dtype import *
     from pyvqnet.tensor import tensor
@@ -3101,14 +3101,14 @@ QUnet主要是用于解决图像分割的技术。
     import matplotlib.pyplot as plt 
     import pyqpanda3.core as pq
     import pyvqnet
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.loss import CrossEntropyLoss
+    from pyvqnet.nn import Module
+    from pyvqnet.nn import CrossEntropyLoss
     from pyvqnet.optim.adam import Adam
 
     from pyvqnet.qnn.pq3.measure import expval
     from pyvqnet.qnn.pq3.quantumlayer import QuantumLayer
-    from pyvqnet.nn.pooling import AvgPool2D
-    from pyvqnet.nn.linear import Linear
+    from pyvqnet.nn import AvgPool2D
+    from pyvqnet.nn import Linear
     from pyvqnet.data.data import data_generator
 
     try:
@@ -3479,8 +3479,8 @@ QUnet主要是用于解决图像分割的技术。
     import time
     from matplotlib import animation
     import pyqpanda3.core as pq
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.loss import MeanSquaredError
+    from pyvqnet.nn import Module
+    from pyvqnet.nn import MeanSquaredError
     from pyvqnet.optim.adam import Adam
     from pyvqnet.tensor.tensor import QTensor
     from pyvqnet import kfloat32
@@ -4058,8 +4058,8 @@ QUnet主要是用于解决图像分割的技术。
     Quantum Fourier Series Serial
     """
     import numpy as np
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.loss import MeanSquaredError
+    from pyvqnet.nn import Module
+    from pyvqnet.nn import MeanSquaredError
     from pyvqnet.optim.adam import Adam
     from pyvqnet.tensor.tensor import QTensor
     import pyqpanda3.core as pq
@@ -4362,8 +4362,8 @@ QUnet主要是用于解决图像分割的技术。
     """
     import numpy as np
 
-    from pyvqnet.nn.module import Module
-    from pyvqnet.nn.loss import MeanSquaredError
+    from pyvqnet.nn import Module
+    from pyvqnet.nn import MeanSquaredError
     from pyvqnet.optim.adam import Adam
     from pyvqnet.tensor.tensor import QTensor
     import pyqpanda3.core as pq
@@ -4966,7 +4966,7 @@ VQNet实现了该算法的一个示例: 使用VQE 求解目标Hamiltonian的基�
     import numpy as np
     import pyqpanda3.core as pq
     from pyvqnet.qnn.pq3.template import StronglyEntanglingTemplate
-    from pyvqnet.qnn.measure import Hermitian_expval
+    from pyvqnet.qnn import Hermitian_expval
     from pyvqnet.qnn import QuantumLayer
     from pyvqnet.optim import SGD
     from pyvqnet.tensor import QTensor,to_tensor
@@ -5152,10 +5152,10 @@ vqe_func_analytic()函数是使用参数移位计算理论梯度,vqe_func_shots(
     import pyqpanda3.core as pq
     
     from pyvqnet.data import data_generator as dataloader
-    from pyvqnet.nn.module import Module
+    from pyvqnet.nn import Module
     from pyvqnet.optim import sgd
     from pyvqnet.qnn.pq3.quantumlayer import QuantumLayer
-    from pyvqnet.nn.loss import CategoricalCrossEntropy
+    from pyvqnet.nn import CategoricalCrossEntropy
     from pyvqnet.tensor.tensor import QTensor
     from pyvqnet.qnn import Gradient_Prune_Instance
     random.seed(1234)
@@ -5394,12 +5394,12 @@ vqe_func_analytic()函数是使用参数移位计算理论梯度,vqe_func_shots(
 
 .. code-block::
 
-    from pyvqnet.nn.module import Module
+    from pyvqnet.nn import Module
     from pyvqnet.optim import sgd
     import numpy as np
     import os
     from pyvqnet.data import data_generator as dataloader
-    from pyvqnet.nn.loss import CategoricalCrossEntropy
+    from pyvqnet.nn import CategoricalCrossEntropy
 
     from pyvqnet.tensor.tensor import QTensor
     import random

@@ -3,6 +3,68 @@ VQNet Changelog
 ######################
 
 
+[v2.18.3] - 2026-11-28
+***************************
+
+Added
+===================
+- 新增 ``pyvqnet.kcomplex32`` 与 ``pyvqnet.kfloat16`` 数据类型。 ``QMachine`` 新增 ``state_storage`` 参数，态矢可以 fp16 (complex32) 存储，每个振幅占 4 字节，门内运算保持 complex64 / float32；传入 ``dtype=torch.complex32`` 与传入 ``state_storage=torch.complex32`` 等价。 ``DistributedQMachine`` 同样支持 ``state_storage`` 。
+- 新增伴随梯度的分块 (tile) 执行路径，由环境变量 ``VQNET_ADJOINT_MODE`` 选择执行方式 ( ``0`` 仅逐门， ``1`` 分块优先并在不可用时回退， ``2`` 仅分块，默认 ``1`` )。 ``VQNET_TILE_PLAN_CACHE`` 控制执行方案缓存 (默认打开)，线路结构变化后需要调用 ``QuantumLayerAdjoint.invalidate_execution_plans()`` ； ``QuantumLayerAdjoint`` 新增 ``last_execution_impl`` 属性。
+- 新增自动预编译执行: CUDA 上的 ``QMachine`` 把一次前向中的门记录后融合执行，不需要装饰器。 ``pyvqnet.qnn.vqc.sv.common.cxx_runner`` 提供 ``last_execution`` 、 ``fused_plan_cache_stats`` 与 ``reset_fused_plan_cache`` ；张量网络线路无法被记录时抛出 ``PrecompileNotSupported`` 。
+- 新增量子信息测量 ``QInfoMeasurement`` (纯度、熵、Meyer-Wallach 测度、互信息、方差、厄米矩阵期望)，在态矢与密度矩阵模拟器上可以通过 ``QuantumLayerAdjoint`` 计算梯度； ``Probability`` 支持伴随梯度。
+- ``VQC_Purity`` 、 ``VQC_VarMeasure`` 、 ``VQC_DensityMatrixFromQstate`` 可以直接读取密度矩阵模拟器；新增 ``VQC_DensityMatrix`` 、 ``VQC_PartialTrace`` 、 ``VQC_MeyerWallachMeasure`` 。
+- 新增蒙特卡洛噪声信道 ``depolarizing`` 、 ``amplitude_damping`` 、 ``phase_damping`` 、 ``decoherence`` 、 ``bit_flip`` 、 ``readout`` ( ``at_measurement=True`` 时折入 ``Probability`` / ``Samples`` 的概率)，以及噪声策略 ``NoisePolicy`` / ``NoiseRule`` ( ``pyvqnet.qnn.vqc.common.noise_policy`` )。
+- 新增精确密度矩阵模拟器 ``pyvqnet.qnn.vqc.dm`` ( ``native`` 与 ``torch`` 两套实现)，支持噪声信道、伴随梯度与 fp16 存储，执行方式由 ``VQNET_DM_MODE`` 选择。
+- 新增有限采样工具 ``ShotConfig`` 、 ``sample_counts`` 、 ``sample_expectation`` 、 ``fit_shot_scaling`` ，以及可训练性诊断 ``pyvqnet.qnn.vqc.diagnostics`` ( ``scan_trainability`` 、 ``summarize_trainability`` 等)。
+- 新增 ``Unitary`` 模块类 ( ``unitary`` 的类形式)； ``MultiRZ`` 实现 ``generator()`` 并支持任意不少于 2 个量子比特。
+- ``QTensor`` 新增 ``requires_grad_`` 、 ``bernoulli_`` 、 ``bool`` ； ``tensor.multinomial`` 遵循 torch 语义并新增 ``replacement`` 参数； ``topk`` 的值可微。
+- ``nn.Module`` 新增 ``to`` 方法 (接受 ``torch.device`` 、 ``"cpu"`` 、 ``"cuda:1"`` )； ``nn.Parameter`` 新增 ``from_tensor`` 类方法； ``state_dict(keep_vars=True)`` 返回 ``Parameter`` 本身；新增数据加载章节 ``pyvqnet.data.DataLoader`` ( ``IterableDataset`` 、 ``batch_size=None`` 、 ``persistent_workers`` )。
+- torch 后端: 新增 ``TorchDataParallelVQCLayer`` 以及 complex32 张量的进程间传输视图 ``c32_as_f16_view`` / ``f16_view_as_c32`` ； ``SPSA`` 可以在 torch 后端与 GPU 上训练。
+- 分布式: ``CommController`` 新增 ``timeout`` 参数， NCCL 通信器带看门狗线程，停滞的集合通信被中止而不是一直等待； ``vqnetrun`` 新增 ``--timeout`` 参数； ``ParallelTrainingWrapper`` 接受声明式的 ``model_spec`` 列表与 ``vqc_split`` 阶段，并提供 ``net`` 属性； ``pyvqnet.distributed.hybrid.pipeline`` 提供流水线 VQC 的 ``PipelineBoundary`` 、 ``OriginalOrderBoundary`` 、 ``FusedQrBoundary`` 与 ``DistQuantumSegmentAdjoint`` 。
+
+Changed
+===================
+- ``QMachine`` 移除 ``grad_mode`` 参数，传入该参数抛出 ``TypeError`` ；量子部分的伴随梯度通过 ``QuantumLayerAdjoint`` 设置。 ``HermitianExpval`` 并入 ``QInfoMeasurement("expectation", obs=...)`` 。
+- ``pyvqnet.native`` 与 ``pyvqnet.torch`` 移至 ``pyvqnet.backends.native`` 与 ``pyvqnet.backends.torch`` ， ``pyvqnet.torch.trl`` 的导入路径相应改为 ``pyvqnet.backends.torch.trl`` ； ``pyvqnet.nn`` 的各层模块位于 ``nn/native`` 与 ``nn/common`` 之下， ``pyvqnet.nn`` 的导出名不变； ``pyvqnet.qnn.measure`` 、 ``pyvqnet.qnn.template`` 不再存在，相关接口由 ``pyvqnet.qnn`` 导出。
+- 分布式: ``auto_plan`` 更名为 ``plan_pipeline_stages`` 并移除 ``trainset`` 参数； ``PipelineParallelTrainingWrapper`` 弃用，委托给 ``ParallelTrainingWrapper`` ； ``HybridDistributedQMachine`` 移除 ``grad_mode`` 参数； ``VQC_Mutal_Info`` 更名为 ``VQC_Mutual_Info`` 。
+- 自动微分语义与 torch 对齐: 需要梯度的叶子张量经 ``toGPU`` / ``to`` / ``toCPU`` 移动后，梯度回传到原张量； ``p.grad = None`` 生效；对需要梯度的张量执行 ``add_`` / ``sub_`` / ``mul_`` / ``div_`` / ``clamp_`` 抛出 ``RuntimeError`` 。
+- ``Module.modules()`` 递归返回全部子模块 (直接子模块用 ``children()`` )； ``state_dict()`` 返回脱离原参数的克隆。
+- 随机数流: ``set_random_seed`` 同时设置 numpy 的种子， ``Samples`` 使用当前后端的随机数生成器，固定种子不再复现 2.18.2 的采样序列。
+- 参数检查更严格: 量子比特越界抛出 ``ValueError`` ； ``QLSTM`` / ``QGRU`` 的 ``num_of_qubits`` 为 0 时抛出 ``ValueError`` ； ``ReduceOp`` 只支持 ``SUM`` 与 ``AVG`` ；未知的 ``VQNET_ADJOINT_MODE`` / ``VQNET_DM_MODE`` 取值被拒绝。
+- ``tensor.round`` 在向量化路径上改为与 torch 、 numpy 一致的舍入到偶数 ( ``round(2.5)`` 为 2)。
+- 环境变量: ``VQNET_DISABLE_CXX_ENGINE`` 、 ``VQNET_DISABLE_TILING`` 与 ``USE_OLD_EXP`` 不再读取； ``VQNET_ACC_DEBUG`` 更名为 ``VQNET_DEBUG_ACC`` ， ``VQNET_TEST_DEVICE`` 更名为 ``VQNET_DEBUG_TEST_DEVICE`` 。
+
+Fixed
+===================
+- ``QLinear`` 与 ``QConv`` 的梯度不正确 (未通过有限差分检查)。
+- ``QNG`` 对共享参数、分解门与缩放输入的更新结果错误，且第二步在第一步的梯度上累加。
+- ``tensor.eigvalsh`` 返回的特征值未按升序排列，反向传播使用的特征向量与返回的特征值顺序不一致。
+- ``SPSA`` 在模型返回向量时崩溃，复数 ``Parameter`` 把实数输入转成了复数。
+- ``BatchNorm`` 在 CPU 上 eval 模式的反向传播使用了批统计量； Swin cosine attention 的 ``normalize()`` 与 ``q @ k`` 计算错误。
+- 惰性共轭: ``x.conj().detach()`` 丢失共轭标记， ``conj -> resolve`` 链的梯度方向错误，旋转门反向读取共轭视图时角度梯度有偏差。
+- ``QLSTM`` / ``QGRU`` 忽略 ``batch_first=False`` ； ``Quanvolution`` 的输出尺寸错误，步长为 ``(1, 1)`` 时崩溃。
+- ``VQC_PartialTrace`` 对错误的量子比特轴求偏迹， Meyer-Wallach 测度与 ``VQC_VarMeasure`` 的值错误； ``Projector`` 的基态矩阵构建错误。
+- ``MultiRZ`` 在伴随梯度下请求导数时导致进程中止。
+- 张量网络: 多参数门 ( ``u3`` 、 ``rot`` 、 ``crot`` ) 使用追踪时的角度而不是运行时输入编译，带 dagger 的门被编译为固定角度；方差对非 Pauli 观测量的映射错误， MPS 上的方差调用抛出 ``AttributeError`` 。
+- CPU 上的整数切片 ``matmul`` 返回错误的值； ``bmm`` 与 4 维 ``matmul`` 维度不匹配时返回错误结果；对空张量做 ``max`` / ``min`` / ``argmax`` 返回 ``FLT_MAX`` 或 ``[0]`` 。
+- ``tensor.full([1], 0.1, dtype=kfloat64)`` 与 ``fill_(2.3)`` 存储的是 float32 精度的值。
+- ``backward()`` 内部抛出的异常以退出码 1 结束解释器，现在重新抛出给调用方； ``is_cuda_available()`` 在一次驱动探测失败后一直返回 false 。
+- torch 后端: ``tensor.flip`` / ``tensor.tensordot`` 向 torch >= 2.9 传入了裸整数 ``dims`` ； DLPack 导出抛出 ``TypeError`` 。
+- 分布式: ``ColumnParallelLinear`` 的复制偏置在 2 个进程下得到 ``xW + 2b`` ； gloo 的 ``all_gather`` 对 complex64 返回 float32 ； NCCL 通信器被 Python finalizer 销毁时可能终止进程； ZeRO 在 ``clip_grad > 0`` 时未反缩放损失缩放的梯度。
+
+Removed
+===================
+- 移除预编译接口 ``wrapper_compile`` 、 ``wrapper_merge_rotations`` 、 ``wrapper_single_qubit_op_fuse`` 、 ``wrapper_commute_controlled`` 、 ``commute_controlled_left`` / ``commute_controlled_right`` 、 ``merge_rotations`` 、 ``single_qubit_ops_fuse`` ，以及 ``QModule`` 的 ``use_merge_rotations`` / ``use_single_qubit_ops_fuse`` / ``use_commute_controlled`` 开关；融合规则改为每次前向自动执行。
+- 移除 ``HermitianExpval`` 、 ``SDG`` / ``TDG`` 类与 ``ring_cnot`` / ``RING_CNOT`` ； ``sdg`` / ``tdg`` 函数仍然可用。
+- 移除 ``pyvqnet.distributed.split_data`` 、 ``DistVQCPipelineWrapper`` 、 ``HybridQuantumLayer`` 、 ``UnifiedPipelineEngine`` 与 ``HybridDataLoader`` ； ``BoundaryTransfer`` / ``CanonicalBoundaryTransfer`` / ``FusedQrBoundaryTransfer`` 由 ``pyvqnet.distributed.hybrid.pipeline`` 的 ``PipelineBoundary`` / ``OriginalOrderBoundary`` / ``FusedQrBoundary`` 取代； ``post_grad_all_reduce`` 位于 ``pyvqnet.distributed.dp.utils`` 。
+- 移除 ``get_if_show_bp_info`` / ``set_if_show_bp_info`` / ``init_if_show_bp`` 、 ``QTensor.id`` 与 ``generate_unique_id`` 。
+
+文档
+===================
+- 新增章节: 量子信息测量 ``QInfoMeasurement`` 、噪声信道与噪声策略、精确密度矩阵模拟器、可训练性诊断、分块 (tile) 执行路径、预编译执行与 ``PrecompileNotSupported`` 、fp16 (complex32) 态矢存储、半精度数据类型、数据加载、 ``CommController`` 的超时参数、流水线 VQC 的边界与分段伴随。
+- 删除已移除接口的条目； ``pyvqnet.torch`` 相关导入路径改为 ``pyvqnet.backends.torch`` ；示例中的 ``pyvqnet.nn.<模块>`` 导入改为 ``pyvqnet.nn`` 的导出名；首页概览补充 2.18.3 的功能。
+
+
 [v2.18.2] - 2026-08-17
 ***************************
 

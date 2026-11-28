@@ -95,29 +95,66 @@ abstract calculation module
 Module
 =================================
 
-.. py:class:: pyvqnet.nn.module.Module(name="", *args, **kwargs)
+.. py:class:: pyvqnet.nn.Module(name="", *args, **kwargs)
 
     所有神经网络模块的基类,包括量子模块或经典模块。您的模型也应该是此类的子类,用于 autograd 计算。
     模块还可以包含其他Module类,允许将它们嵌套在树状结构。 您可以将子模块分配为常规属性::
 
-
         class Model(Module):
             def __init__(self):
                 super(Model, self).__init__()
-                self.conv1 = pyvqnet.nn.Conv2d(1, 20, (5,5))
-                self.conv2 = pyvqnet.nn.Conv2d(20, 20, (5,5))
+                self.conv1 = pyvqnet.nn.Conv2d(1, 20, (5, 5))
+                self.conv2 = pyvqnet.nn.Conv2d(20, 20, (5, 5))
+                self.act = pyvqnet.nn.ReLu()
+
             def forward(self, x):
-                x = pyvqnet.nn.activation.relu(self.conv1(x))
-                return pyvqnet.nn.activation.relu(self.conv2(x))
+                x = self.act(self.conv1(x))
+                return self.act(self.conv2(x))
 
     以这种方式分配的子模块将被注册。
 
     :param name: 模块名,默认为""。
 
+    ``modules()`` 返回网络中的全部模块,自身是返回列表的第一个元素; ``named_parameters()`` 返回已注册参数的名字与参数。
+    ``to`` 方法见本节的 ``to`` 条目。
+
+    Example::
+
+        import numpy as np
+        import pyvqnet
+        from pyvqnet.tensor import QTensor
+        from pyvqnet.nn import Module
+        from pyvqnet.utils import set_random_seed
+
+
+        class Model(Module):
+            def __init__(self):
+                super(Model, self).__init__()
+                self.conv1 = pyvqnet.nn.Conv2d(1, 20, (5, 5))
+                self.conv2 = pyvqnet.nn.Conv2d(20, 20, (5, 5))
+                self.act = pyvqnet.nn.ReLu()
+
+            def forward(self, x):
+                x = self.act(self.conv1(x))
+                return self.act(self.conv2(x))
+
+
+        set_random_seed(42)
+        model = Model()
+        print([type(m).__name__ for m in model.modules()])
+        print([name for name, _ in model.named_parameters()])
+        x = QTensor(np.ones([1, 1, 24, 24]), dtype=pyvqnet.kfloat32, requires_grad=True)
+        y = model(x)
+        print(y.shape)
+
+        # ['Model', 'Conv2D', 'Conv2D', 'ReLu']
+        # ['conv1.weights', 'conv1.bias', 'conv2.weights', 'conv2.bias']
+        # [1, 20, 16, 16]
+
 forward
 =================================
 
-.. py:method:: pyvqnet.nn.module.Module.forward(x, *args, **kwargs)
+.. py:method:: pyvqnet.nn.Module.forward(x, *args, **kwargs)
 
     Module类抽象前向计算函数
 
@@ -162,67 +199,136 @@ forward
 state_dict 
 =================================
 
-.. py:method:: pyvqnet.nn.module.Module.state_dict(destination=None, prefix="", keep_vars=False)
+.. py:method:: pyvqnet.nn.Module.state_dict(destination=None, prefix="", keep_vars=False)
 
     返回包含模块整个状态的字典:包括参数和缓存值。
     键是对应的参数和缓存值名称。
 
+    返回的张量是脱离自动微分的副本:保存 ``state_dict`` 之后再修改参数,不会改变已保存的内容。
+    ``keep_vars=True`` 时返回参数本身(仍然跟踪梯度),而不是副本。
+
     :param destination: 返回保存模型内部模块,参数的字典。
     :param prefix: 使用的参数和缓存值的命名前缀。
-    :param keep_vars: 如果为 ``False``,返回的张量将从自动微分中分离;如果为 ``True``,则不分离。默认值: ``False``。
+    :param keep_vars: 如果为 ``False``,返回脱离自动微分的副本;如果为 ``True``,则返回模块中的参数和缓存本身。默认值: ``False``。
 
     :return: 包含模块整个状态的字典。
 
     Example::
 
         from pyvqnet.nn import Conv2D
-        test_conv = Conv2D(2,3,(3,3),(2,2),"same")
-        print(test_conv.state_dict().keys())
-        #odict_keys(['weights', 'bias'])
+        from pyvqnet.utils import set_random_seed
+        set_random_seed(42)
+        test_conv = Conv2D(2, 3, (3, 3), (2, 2), "same")
+        state = test_conv.state_dict()
+        print(state.keys())
+        print(state["weights"][0, 0, 0])
 
+        test_conv.weights.data = test_conv.weights.data * 0
+        print(state["weights"][0, 0, 0])
+        print(test_conv.state_dict()["weights"][0, 0, 0])
+
+        live = test_conv.state_dict(keep_vars=True)
+        print(live["weights"] is test_conv.weights, live["weights"].requires_grad)
+
+        # odict_keys(['weights', 'bias'])
+
+        # [0.1648333,0.1544084,0.0863073]
+        # <QTensor [3] DEV_CPU float32>
+
+        # [0.1648333,0.1544084,0.0863073]
+        # <QTensor [3] DEV_CPU float32>
+
+        # [0.,0.,0.]
+        # <QTensor [3] DEV_CPU float32>
+        # True True
 
 toGPU
 =================================
 
-.. py:function:: pyvqnet.nn.module.Module.toGPU(device: int = DEV_GPU_0)
+.. py:function:: pyvqnet.nn.Module.toGPU(device: int = DEV_GPU_0)
 
-    将模块和其子模块的参数和缓冲数据移动到指定的 GPU 设备中。
+    将模块和其子模块的参数和缓冲数据移动到指定的 GPU 设备中,返回模块自身。
 
     device 指定存储其内部数据的设备。 当device >= DEV_GPU_0时,数据存储在GPU上。如果您的计算机有多个GPU,
     则可以指定不同的设备来存储数据。例如device = DEV_GPU_1 , DEV_GPU_2, DEV_GPU_3, ... 表示存储在不同序列号的GPU上。
-    
+
     .. note::
         Module在不同GPU上无法进行计算。
         如果您尝试在 ID 超过验证 GPU 最大数量的 GPU 上创建 QTensor,将引发 Cuda 错误。
 
     :param device: 当前保存QTensor的设备,默认:DEV_GPU_0。device= pyvqnet.DEV_GPU_0,存储在第一个 GPU 中,device = DEV_GPU_1,存储在第二个 GPU 中,依此类推
-    :return: Module 移动到 GPU 设备。
+    :return: 移动到 GPU 设备后的 Module。
 
     Example::
 
-        from pyvqnet.nn.conv import ConvT2D 
-        test_conv = ConvT2D(3, 2, [4,4], [2, 2], (1, 1))
+        from pyvqnet.nn import ConvT2D
+        test_conv = ConvT2D(3, 2, [4, 4], [2, 2], (1, 1))
         test_conv = test_conv.toGPU()
         print(test_conv.backend)
-        #1000
 
+        # cuda:0
 
 toCPU
 =================================
 
-.. py:function:: pyvqnet.nn.module.Module.toCPU()
+.. py:function:: pyvqnet.nn.Module.toCPU()
 
-    将模块和其子模块的参数和缓冲数据移动到特定的 CPU 设备中。
+    将模块和其子模块的参数和缓冲数据移动到 CPU 设备中,返回模块自身。
 
-    :return: Module 移动到 CPU 设备。
+    :return: 移动到 CPU 设备后的 Module。
 
     Example::
 
-        from pyvqnet.nn.conv import ConvT2D 
-        test_conv = ConvT2D(3, 2, [4,4], [2, 2], (1, 1))
+        from pyvqnet.nn import ConvT2D
+        test_conv = ConvT2D(3, 2, [4, 4], [2, 2], (1, 1))
         test_conv = test_conv.toCPU()
         print(test_conv.backend)
-        #0
+
+        # cpu
+
+
+to
+=================================
+
+.. py:function:: pyvqnet.nn.Module.to(device)
+
+    将模块及其子模块的参数和缓冲数据移动到指定的设备,返回模块自身。
+
+    :param device: 目标设备,可以是 ``pyvqnet.DEV_CPU`` 、 ``pyvqnet.DEV_GPU_0`` 等设备常量,
+        设备名字符串( ``"cpu"`` 、 ``"cuda"`` 、 ``"cuda:1"`` ), ``pyvqnet.device.Device`` 对象或 ``torch.device`` 对象。
+        只接受设备,不支持数据类型转换;传入数据类型等其他对象会抛出 ``TypeError``。
+
+    :return: 移动后的 Module。
+
+    Example::
+
+        import numpy as np
+        import pyvqnet
+        from pyvqnet.tensor import QTensor
+        from pyvqnet.nn import Linear, Module
+        from pyvqnet.utils import set_random_seed
+
+        class Net(Module):
+            def __init__(self):
+                super().__init__()
+                self.li = Linear(4, 2)
+
+            def forward(self, x):
+                return self.li(x)
+
+        set_random_seed(42)
+        net = Net()
+        x = QTensor(np.ones([2, 4]))
+
+        net.to("cpu")
+        print(net.to("cpu") is net, net.li.weights.device)
+        try:
+            net.to(pyvqnet.kfloat16)         # only devices are accepted, not dtypes
+        except TypeError as e:
+            print("TypeError:", e)
+
+        # True cpu
+        # TypeError: float16 is not a device: pass a legacy device code (DEV_CPU, DEV_GPU_0..DEV_GPU_7), a device name ('cpu', 'cuda', 'cuda:<index>'), a Device, or a torch.device
 
 
 .. _save_parameters:
@@ -296,7 +402,7 @@ load_parameters
 
 ModuleList
 *********************************************************
-.. py:class:: pyvqnet.nn.module.ModuleList(modules=None)
+.. py:class:: pyvqnet.nn.ModuleList(modules=None)
 
 
     将子模块保存在列表中。 ModuleList 可以像普通的 Python 列表一样被索引, 它包含的Module的内部参数等可以被保存起来。
@@ -365,7 +471,7 @@ ModuleList
 
 ParameterList
 *********************************************************
-.. py:class:: pyvqnet.nn.module.ParameterList(values=None)
+.. py:class:: pyvqnet.nn.ParameterList(values=None)
 
 
     将参数保存在列表中, ParameterList 可以像普通的 Python 列表一样被索引, 它包含的Parameter的内部参数等可以被保存起来。
@@ -394,7 +500,7 @@ ParameterList
 
 Sequential
 *********************************************************
-.. py:class:: pyvqnet.nn.module.Sequential(*args)
+.. py:class:: pyvqnet.nn.Sequential(*args)
 
     模块将按照传递的顺序添加模块。或者,也可以将模块的 ``OrderedDict`` 传入。``Sequential`` 的 ``forward()`` 方法接受任何输入,并将其转发给它的第一个模块。
     然后将输出依次 "链 "到其后每个模块的输入、最后返回最后一个模块的输出。
@@ -426,6 +532,53 @@ Sequential
                   ('relu2', nn.ReLu())
                 ]))
         print(model.state_dict().keys())
+
+Parameter.from_tensor
+=================================
+
+.. py:method:: pyvqnet.nn.Parameter.from_tensor(t)
+
+    类方法。用张量 ``t`` 的数值、形状、设备和数据类型构造一个跟踪梯度的 ``Parameter``。
+
+    :param t: 输入 QTensor。如果 ``t`` 已经是 ``Parameter``,则原样返回。
+
+    :return: 一个 ``Parameter``。
+
+    Example::
+
+        from pyvqnet import kfloat16
+        from pyvqnet.nn import Module, Parameter, ParameterDict
+        from pyvqnet.tensor import QTensor
+        from pyvqnet.utils import set_random_seed
+        set_random_seed(42)
+
+        p = Parameter.from_tensor(QTensor([[1.0, 2.0], [3.0, 4.0]]))
+        print(type(p).__name__, p.requires_grad, p.shape, p.dtype)
+        print(p)
+
+        print(Parameter.from_tensor(p) is p)
+
+        class Net(Module):
+            def __init__(self):
+                super().__init__()
+                self.pd = ParameterDict({"scale": QTensor([0.5], dtype=kfloat16, requires_grad=True)})
+
+            def forward(self, x):
+                return x * self.pd["scale"]
+
+        net = Net()
+        print(type(net.pd["scale"]).__name__, net.pd["scale"].dtype)
+        print(list(net.state_dict().keys()))
+
+        # Parameter True [2, 2] float32
+
+        # [[1.,2.],
+        #  [3.,4.]]
+        # <Parameter [2, 2] DEV_CPU float32>
+        # True
+        # Parameter float16
+        # ['pd.scale']
+
 
 经典神经网络层
 *********************************************************
@@ -489,6 +642,8 @@ Conv2D
 
     在输入上进行二维卷积运算。 Conv2D模块的输入具有形状(batch_size, input_channels, height, width)。
 
+    ``pyvqnet.nn.Conv2d`` 是 ``pyvqnet.nn.Conv2D`` 的别名。
+
     :param input_channels: `int` - 输入数据的通道数。
     :param output_channels: `int` - 输出数据的通道数。
     :param kernel_size: `tuple|list` - 卷积核的尺寸. 卷积核形状 = [output_channels,input_channels/group,kernel_size,kernel_size]。
@@ -499,7 +654,7 @@ Conv2D
     :param bias_initializer: `callable` - 偏置初始化方法。默认为空,使用kaiming_uniform。
     :param dilation_rate: `int` - 空洞大小,默认:  1。
     :param group: `int` -  分组卷积的分组数. Default: 1。
-    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
+    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数;也可以取 ``kfloat16``,此时输入张量也必须是 ``kfloat16``。
     :param name: 模块的名字,default:""。
 
     :return: 二维卷积实例。
@@ -513,31 +668,44 @@ Conv2D
 
         import numpy as np
         from pyvqnet.tensor import QTensor
-        from pyvqnet.nn import Conv2D
+        from pyvqnet.nn import Conv2D, Conv2d
+        from pyvqnet.utils import set_random_seed
         import pyvqnet
-        b= 2
-        ic =3
+
+        print(Conv2d is Conv2D)
+
+        set_random_seed(42)
+        b = 2
+        ic = 3
         oc = 2
-        test_conv = Conv2D(ic,oc,(3,3),(2,2),"same")
-        x0 = QTensor(np.arange(1,b*ic*5*5+1).reshape([b,ic,5,5]),requires_grad=True,dtype=pyvqnet.kfloat32)
+        test_conv = Conv2D(ic, oc, (3, 3), (2, 2), "same")
+        x0 = QTensor(np.arange(1, b * ic * 5 * 5 + 1).reshape([b, ic, 5, 5]), requires_grad=True,
+                     dtype=pyvqnet.kfloat32)
         x = test_conv.forward(x0)
         print(x)
 
-        # [
-        # [[[-0.1256833, 23.8978596, 26.7449780],
-        #  [-7.2959919, 33.4023743, 42.1283913],
-        #  [-8.7684336, 25.2698975, 40.4024887]],
-        # [[33.0653763, 40.3120155, 27.3781891],
-        #  [39.2921371, 45.8685760, 38.1885109],
-        #  [23.1873779, 12.0480318, 12.7278290]]],
-        # [[[-0.9730744, 61.3967094, 79.0511856],
-        #  [-29.3652401, 75.0349350, 112.7325439],
-        #  [-26.4682808, 59.0924797, 104.2572098]],
-        # [[66.8064194, 96.0953140, 72.9157486],
-        #  [90.9154129, 110.7232437, 91.2616043],
-        #  [56.8825951, 34.6904907, 30.1957760]]]
-        # ]
-        
+        conv16 = Conv2d(ic, oc, (3, 3), (2, 2), "same", dtype=pyvqnet.kfloat16)
+        print(conv16(x0.astype(pyvqnet.kfloat16)).dtype)
+
+        # True
+
+        # [[[[  1.8997326,  0.0134312, -5.6444526],
+        #    [ 14.990569 , 29.350773 , 26.018543 ],
+        #    [ 27.545668 , 50.990643 , 38.426014 ]],
+
+        #   [[ -3.4785824,-12.280744 ,  5.80832  ],
+        #    [ -2.2173116,-21.106382 , -1.3348091],
+        #    [ -6.064667 ,-19.991014 ,-15.281724 ]]],
+
+        #  [[[  8.94364  , 26.354565 , 19.31346  ],
+        #    [ 56.50526  ,120.4851   ,111.78032  ],
+        #    [ 65.49504  ,137.20752  ,108.157394 ]],
+
+        #   [[ -0.161819 ,-15.339291 , 40.88609  ],
+        #    [  1.6875006,-30.899015 , 11.249098 ],
+        #    [ -3.863109 ,-28.361012 ,-28.58072  ]]]]
+        # <QTensor [2, 2, 3, 3] DEV_CPU float32>
+        # float16
 
 ConvT2D
 =================================
@@ -755,7 +923,7 @@ MaxPool2D
 Embedding
 =================================
 
-.. py:class:: pyvqnet.nn.embedding.Embedding(num_embeddings, embedding_dim, weight_initializer=xavier_normal, dtype=None, name: str = "")
+.. py:class:: pyvqnet.nn.Embedding(num_embeddings, embedding_dim, weight_initializer=xavier_normal, dtype=None, name: str = "")
 
     该模块通常用于存储词嵌入并使用索引检索它们。模块的输入是索引列表,输出是对应的词嵌入。
     该层的输入应该是kint64。 
@@ -772,7 +940,7 @@ Embedding
 
         import numpy as np
         from pyvqnet.tensor import QTensor
-        from pyvqnet.nn.embedding import Embedding
+        from pyvqnet.nn import Embedding
         import pyvqnet
         vlayer = Embedding(30,3)
         x = QTensor(np.arange(1,25).reshape([2,3,2,2]),dtype= pyvqnet.kint64)
@@ -921,7 +1089,7 @@ BatchNorm1d
 LayerNormNd
 =================================
 
-.. py:class:: pyvqnet.nn.layer_norm.LayerNormNd(normalized_shape: list, epsilon: float = 1e-5,affine=True, dtype=None, name="")
+.. py:class:: pyvqnet.nn.LayerNormNd(normalized_shape: list, epsilon: float = 1e-5,affine=True, dtype=None, name="")
 
     在任意输入的后D个维度上进行层归一化。具体方式如论文所述:
     `Layer Normalization <https://arxiv.org/abs/1607.06450>`__。
@@ -943,7 +1111,7 @@ LayerNormNd
 
         import numpy as np
         from pyvqnet.tensor import QTensor,kfloat32
-        from pyvqnet.nn.layer_norm import LayerNormNd
+        from pyvqnet.nn import LayerNormNd
         ic = 4
         test_conv = LayerNormNd([2,2])
         x = QTensor(np.arange(1,17).reshape([2,2,2,2]),requires_grad=True,dtype=kfloat32)
@@ -963,7 +1131,7 @@ LayerNormNd
 LayerNorm2d
 =================================
 
-.. py:class:: pyvqnet.nn.layer_norm.LayerNorm2d(norm_size:int, epsilon:float = 1e-5, affine=True, dtype=None, name="")
+.. py:class:: pyvqnet.nn.LayerNorm2d(norm_size:int, epsilon:float = 1e-5, affine=True, dtype=None, name="")
 
     在 4D 输入上进行层归一化。具体方式如论文所述:
     `Layer Normalization <https://arxiv.org/abs/1607.06450>`__。
@@ -986,7 +1154,7 @@ LayerNorm2d
         import numpy as np
         import pyvqnet
         from pyvqnet.tensor import QTensor
-        from pyvqnet.nn.layer_norm import LayerNorm2d
+        from pyvqnet.nn import LayerNorm2d
         ic = 4
         test_conv = LayerNorm2d(8)
         x = QTensor(np.arange(1,17).reshape([2,2,4,1]),requires_grad=True,dtype=pyvqnet.kfloat32)
@@ -1016,7 +1184,7 @@ LayerNorm2d
 LayerNorm1d
 =================================
 
-.. py:class:: pyvqnet.nn.layer_norm.LayerNorm1d(norm_size:int, epsilon:float = 1e-5, affine=True, dtype=None, name="")
+.. py:class:: pyvqnet.nn.LayerNorm1d(norm_size:int, epsilon:float = 1e-5, affine=True, dtype=None, name="")
     
     在 2D 输入上进行层归一化。具体方式如论文所述:
     `Layer Normalization <https://arxiv.org/abs/1607.06450>`__。
@@ -1039,7 +1207,7 @@ LayerNorm1d
         import numpy as np
         import pyvqnet
         from pyvqnet.tensor import QTensor
-        from pyvqnet.nn.layer_norm import LayerNorm1d
+        from pyvqnet.nn import LayerNorm1d
         test_conv = LayerNorm1d(4)
         x = QTensor(np.arange(1,17).reshape([4,4]),requires_grad=True,dtype=pyvqnet.kfloat32)
         y = test_conv.forward(x)
@@ -1056,7 +1224,7 @@ LayerNorm1d
 GroupNorm
 ===========================================================
 
-.. py:class:: pyvqnet.nn.group_norm.GroupNorm(num_groups: int, num_channels: int, epsilon = 1e-5, affine = True, dtype = None, name = "")
+.. py:class:: pyvqnet.nn.GroupNorm(num_groups: int, num_channels: int, epsilon = 1e-5, affine = True, dtype = None, name = "")
 
     对小批量输入应用组归一化。输入: :math:`(N, C, *)` 其中 :math:`C=\mathrm{num\_channels}` , 输出: :math:`(N, C, *)` 。
 
@@ -1100,9 +1268,32 @@ RMSNorm
     :param dtype: 参数数据类型,默认: None,使用默认数据类型。
     :return: 一个 RMSNorm 类实例。
 
-    .. note::
+    该模块可以在 CPU 和 GPU 上运行,支持反向传播。``affine=True`` 时只有缩放参数 ``gamma``,没有偏置参数。
 
-            该模块仅在 GPU 下运行。请参考上方「GPU下模型训练」部分将模型与数据转移至 GPU。
+    Example::
+
+        from pyvqnet.nn import RMSNorm
+        from pyvqnet.tensor import tensor, kfloat32
+
+        rms = RMSNorm(8, eps=1e-5, dtype=kfloat32)
+        x = tensor.arange(1.0, 17.0, dtype=kfloat32).reshape([2, 8])
+        x.requires_grad = True
+        y = rms(x)
+        print(y)
+        y.backward()
+        print(x.grad[0].astype(kfloat32))
+        print(list(rms.state_dict().keys()))
+
+        # [[0.1980295,0.3960589,0.5940884,...,1.1881769,1.3862063,1.5842358],
+        #  [0.7082006,0.7868895,0.8655784,...,1.1016452,1.1803342,1.2590232]]
+        # <QTensor [2, 8] DEV_CPU float32>
+
+        # [ 0.1630831, 0.1281367, 0.0931904, 0.058244 , 0.0232976,-0.0116487,
+        #  -0.0465951,-0.0815415]
+        # <QTensor [8] DEV_CPU float32>
+        # ['gamma']
+
+    在 GPU 上运行:
 
     Example::
 
@@ -1119,6 +1310,7 @@ RMSNorm
 
         # [[0.1980295,0.3960589,0.5940884,...,1.1881769,1.3862063,1.5842358],
         #  [0.7082005,0.7868894,0.8655784,...,1.1016452,1.1803341,1.2590231]]
+        # <QTensor [2, 8] DEV_GPU_0 float32>
 
 RoPE
 =================================
@@ -1145,7 +1337,7 @@ RoPE
 
         import pyvqnet
         from pyvqnet.tensor import QTensor, DEV_GPU_0
-        from pyvqnet.nn.rope import RoPE
+        from pyvqnet.nn import RoPE
         import numpy as np
 
         # Fixed input
@@ -1208,8 +1400,8 @@ Linear
     :param output_channels: `int` - 输出数据通道数。
     :param weight_initializer: `callable` - 权重初始化函数,默认为空,使用he_uniform。
     :param bias_initializer: `callable` - 偏置初始化参数,默认为空,使用he_uniform。
-    :param use_bias: `bool` - 是否使用偏置项, 默认使用。
-    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
+    :param use_bias: `bool` - 是否使用偏置项, 默认使用。为 ``False`` 时属性 ``bias`` 的值为 ``None``,不出现在 ``parameters()`` 和 ``state_dict()`` 中。
+    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数;也可以取 ``kfloat16``,此时输入张量的数据类型必须也是 ``kfloat16``。
     :param name: 线性层的命名,默认为""。
 
     :return: 线性层实例。
@@ -1220,30 +1412,41 @@ Linear
         import pyvqnet
         from pyvqnet.tensor import QTensor
         from pyvqnet.nn import Linear
-        c1 =2
+        from pyvqnet.utils import set_random_seed
+
+        set_random_seed(42)
+        c1 = 2
         c2 = 3
         cin = 7
         cout = 5
-        n = Linear(cin,cout)
-        input = QTensor(np.arange(1,c1*c2*cin+1).reshape((c1,c2,cin)),requires_grad=True,dtype=pyvqnet.kfloat32)
+        n = Linear(cin, cout)
+        input = QTensor(np.arange(1, c1 * c2 * cin + 1).reshape((c1, c2, cin)), requires_grad=True,
+                        dtype=pyvqnet.kfloat32)
         y = n.forward(input)
         print(y)
 
-        # [
-        # [[4.3084583, -1.9228780, -0.3428757, 1.2840536, -0.5865945],
-        #  [9.8339605, -5.5135884, -3.1228657, 4.3025794, -4.1492314],
-        #  [15.3594627, -9.1042995, -5.9028554, 7.3211040, -7.7118683]],
-        # [[20.8849659, -12.6950111, -8.6828451, 10.3396301, -11.2745066],
-        #  [26.4104652, -16.2857227, -11.4628344, 13.3581581, -14.8371439],
-        #  [31.9359703, -19.8764324, -14.2428246, 16.3766804, -18.3997803]]
-        # ]
-        
+        nb = Linear(cin, cout, use_bias=False)
+        print(nb.bias)
+        print([n for n, _ in nb.named_parameters()])
+        print(list(nb.state_dict().keys()))
 
+        n16 = Linear(cin, cout, dtype=pyvqnet.kfloat16)
+        print(n16.weights.dtype, n16(input.astype(pyvqnet.kfloat16)).dtype)
+
+        # [[[  1.4863188,  3.3430684,  4.2540674, -1.5380379,  3.6695848],
+        #   [  7.075008 ,  9.796321 , 12.300696 , -4.0635676,  6.7248497],
+        #   [ 12.663696 , 16.249573 , 20.347324 , -6.589098 ,  9.780115 ]],
+        # ...
+        # <QTensor [2, 3, 5] DEV_CPU float32>
+        # None
+        # ['weights']
+        # ['weights']
+        # float16 float16
 
 Dropout
 =================================
 
-.. py:class:: pyvqnet.nn.dropout.Dropout(dropout_rate: float = 0.5, name: str = "")
+.. py:class:: pyvqnet.nn.Dropout(dropout_rate: float = 0.5, name: str = "")
 
     Dropout 模块。dropout 模块将一些单元的输出随机设置为零,同时根据给定的 dropout_rate 概率升级其他单元。
 
@@ -1255,7 +1458,7 @@ Dropout
     Example::
 
         import numpy as np
-        from pyvqnet.nn.dropout import Dropout
+        from pyvqnet.nn import Dropout
         from pyvqnet.tensor import QTensor
         b = 2
         ic = 2
@@ -1282,7 +1485,7 @@ Dropout
 DropPath
 =================================
 
-.. py:class:: pyvqnet.nn.dropout.DropPath(dropout_rate = 0.5,name="")
+.. py:class:: pyvqnet.nn.DropPath(dropout_rate = 0.5,name="")
 
     DropPath 模块将逐样本丢弃路径(随机深度)。
 
@@ -1307,7 +1510,7 @@ DropPath
 Pixel_Shuffle 
 =================================
 
-.. py:class:: pyvqnet.nn.pixel_shuffle.Pixel_Shuffle(upscale_factors, name="")
+.. py:class:: pyvqnet.nn.Pixel_Shuffle(upscale_factors, name="")
 
     重新排列形状为:(*, C * r^2, H, W)  的张量
     到形状为 (*, C, H * r, W * r) 的张量,其中 r 是尺度变换因子。
@@ -1332,7 +1535,7 @@ Pixel_Shuffle
 Pixel_Unshuffle 
 =================================
 
-.. py:class:: pyvqnet.nn.pixel_shuffle.Pixel_Unshuffle(downscale_factors, name="")
+.. py:class:: pyvqnet.nn.Pixel_Unshuffle(downscale_factors, name="")
 
     通过重新排列元素来反转 Pixel_Shuffle 操作. 将 (*, C, H * r, W * r) 形状的张量变化为 (*, C * r^2, H, W) ,其中 r 是缩小因子。
 
@@ -1357,8 +1560,7 @@ Pixel_Unshuffle
 GRU
 =================================
 
-.. py:class:: pyvqnet.nn.gru.GRU(input_size, hidden_size, num_layers=1, batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
-
+.. py:class:: pyvqnet.nn.GRU(input_size, hidden_size, num_layers=1, batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
 
     门控循环单元 (GRU) 模块。支持多层堆叠,双向配置。单层单向GRU的计算公式如下:
 
@@ -1377,16 +1579,22 @@ GRU
      如果为 False, 则输入形状为 [seq_len,batch_size,feature_dim],默认为 True。
     :param use_bias: 如果为 False,该模块不适用偏置项,默认: True。
     :param bidirectional: 如果为 True, 变为双向GRU, 默认: False。
-    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
+    :param dtype: 权重的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数;也可以取 ``kfloat16`` 或 ``kbfloat16``。
     :param name: 这个模块的名字, 默认为""。
 
     :return: GRU 实例
+
+    输入 ``x`` 的数据类型必须与权重的数据类型相同,否则抛出 ``ValueError``。
+    不传入初始隐藏状态时,隐藏状态用输入张量的数据类型和设备置零;显式传入的初始隐藏状态必须与权重同类型,否则抛出 ``RuntimeError``。
+    输出和隐藏状态保持该数据类型,不会提升为 ``kfloat32``。
 
     Example::
 
         from pyvqnet.nn import GRU
         from pyvqnet.tensor import tensor
+        from pyvqnet.utils import set_random_seed
 
+        set_random_seed(42)
         rnn2 = GRU(4, 6, 2, batch_first=False, bidirectional=True)
 
         input = tensor.ones([5, 3, 4])
@@ -1395,42 +1603,77 @@ GRU
         output, hn = rnn2(input, h0)
         print(output)
         print(hn)
-        # [
-        # [[0.2815045, 0.2056844, 0.0750246, 0.5802019, 0.3536537, 0.8136684, -0.0034523, 0.1634004, 0.6099871, 0.8451654, -0.2833570, 0.7294812],
-        #  [0.2815045, 0.2056844, 0.0750246, 0.5802019, 0.3536537, 0.8136684, -0.0034523, 0.1634004, 0.6099871, 0.8451654, -0.2833570, 0.7294812],
-        #  [0.2815045, 0.2056844, 0.0750246, 0.5802019, 0.3536537, 0.8136684, -0.0034523, 0.1634004, 0.6099871, 0.8451654, -0.2833570, 0.7294812]],
-        # [[0.0490867, 0.0115325, -0.2797680, 0.4711050, -0.0687061, 0.7216146, 0.0258964, 0.0619203, 0.6341010, 0.8445141, -0.4164453, 0.7409840],
-        #  [0.0490867, 0.0115325, -0.2797680, 0.4711050, -0.0687061, 0.7216146, 0.0258964, 0.0619203, 0.6341010, 0.8445141, -0.4164453, 0.7409840],
-        #  [0.0490867, 0.0115325, -0.2797680, 0.4711050, -0.0687061, 0.7216146, 0.0258964, 0.0619203, 0.6341010, 0.8445141, -0.4164453, 0.7409840]],
-        # [[0.0182974, -0.0536071, -0.4478674, 0.4315647, -0.2191887, 0.6492687, 0.1572548, 0.0839213, 0.6707115, 0.8444533, -0.3811499, 0.7448123],
-        #  [0.0182974, -0.0536071, -0.4478674, 0.4315647, -0.2191887, 0.6492687, 0.1572548, 0.0839213, 0.6707115, 0.8444533, -0.3811499, 0.7448123],
-        #  [0.0182974, -0.0536071, -0.4478674, 0.4315647, -0.2191887, 0.6492687, 0.1572548, 0.0839213, 0.6707115, 0.8444533, -0.3811499, 0.7448123]],
-        # [[0.0722285, -0.0636698, -0.5457084, 0.3817562, -0.1890205, 0.5696942, 0.3855782, 0.2057217, 0.7370453, 0.8646453, -0.1967214, 0.7630759],
-        #  [0.0722285, -0.0636698, -0.5457084, 0.3817562, -0.1890205, 0.5696942, 0.3855782, 0.2057217, 0.7370453, 0.8646453, -0.1967214, 0.7630759],
-        #  [0.0722285, -0.0636698, -0.5457084, 0.3817562, -0.1890205, 0.5696942, 0.3855782, 0.2057217, 0.7370453, 0.8646453, -0.1967214, 0.7630759]],
-        # [[0.1834545, -0.0489200, -0.6343678, 0.3061281, -0.0449328, 0.4901535, 0.6941375, 0.4570828, 0.8433002, 0.9152645, 0.2342478, 0.8299093],
-        #  [0.1834545, -0.0489200, -0.6343678, 0.3061281, -0.0449328, 0.4901535, 0.6941375, 0.4570828, 0.8433002, 0.9152645, 0.2342478, 0.8299093],
-        #  [0.1834545, -0.0489200, -0.6343678, 0.3061281, -0.0449328, 0.4901535, 0.6941375, 0.4570828, 0.8433002, 0.9152645, 0.2342478, 0.8299093]]
-        # ]
-        # [
-        # [[-0.8070476, -0.5560303, 0.7575479, -0.2368367, 0.4228620, -0.2573725],
-        #  [-0.8070476, -0.5560303, 0.7575479, -0.2368367, 0.4228620, -0.2573725],
-        #  [-0.8070476, -0.5560303, 0.7575479, -0.2368367, 0.4228620, -0.2573725]],
-        # [[-0.3857390, -0.3195596, 0.0281313, 0.8734715, -0.4499536, 0.2270730],
-        #  [-0.3857390, -0.3195596, 0.0281313, 0.8734715, -0.4499536, 0.2270730],
-        #  [-0.3857390, -0.3195596, 0.0281313, 0.8734715, -0.4499536, 0.2270730]],
-        # [[0.1834545, -0.0489200, -0.6343678, 0.3061281, -0.0449328, 0.4901535],
-        #  [0.1834545, -0.0489200, -0.6343678, 0.3061281, -0.0449328, 0.4901535],
-        #  [0.1834545, -0.0489200, -0.6343678, 0.3061281, -0.0449328, 0.4901535]],
-        # [[-0.0034523, 0.1634004, 0.6099871, 0.8451654, -0.2833570, 0.7294812],
-        #  [-0.0034523, 0.1634004, 0.6099871, 0.8451654, -0.2833570, 0.7294812],
-        #  [-0.0034523, 0.1634004, 0.6099871, 0.8451654, -0.2833570, 0.7294812]]
-        # ]
+
+        # [[[ 0.3938366, 0.8392922, 0.4995765,...,-0.1274377, 0.8335117, 0.6604407],
+        #   [ 0.3938366, 0.8392922, 0.4995765,...,-0.1274377, 0.8335117, 0.6604407],
+        #   [ 0.3938366, 0.8392922, 0.4995764,...,-0.1274377, 0.8335117, 0.6604407]],
+        # ...
+        # <QTensor [5, 3, 12] DEV_CPU float32>
+
+        # [[[-0.4933411,-0.097776 ,-0.3080812,-0.4734903, 0.9743335, 0.6904665],
+        #   [-0.4933411,-0.097776 ,-0.3080812,-0.4734903, 0.9743335, 0.6904665],
+        #   [-0.4933411,-0.097776 ,-0.3080812,-0.4734903, 0.9743335, 0.6904665]],
+        # ...
+        # <QTensor [4, 3, 6] DEV_CPU float32>
+
+    以 ``kfloat16`` 运行 GRU 、 LSTM 和 RNN:
+
+    Example::
+
+        from pyvqnet import kfloat16, kfloat32
+        from pyvqnet.nn import GRU, LSTM, RNN
+        from pyvqnet.tensor import QTensor, tensor
+        from pyvqnet.utils import set_random_seed
+        import numpy as np
+
+        set_random_seed(7)
+        x_np = np.random.randn(2, 5, 4).astype(np.float32)
+
+        gru = GRU(4, 3, dtype=kfloat16)
+        x = QTensor(x_np).astype(kfloat16)
+        x.requires_grad = True
+        y, h = gru(x)
+        print(y.dtype, h.dtype, h.shape)
+        print(y[0, 0].astype(kfloat32))
+        y.backward(tensor.ones(y.shape, dtype=kfloat16))
+        print(x.grad.dtype, x.grad[0, 0].astype(kfloat32))
+
+        y2, h2 = gru(x.detach())
+        print(h2.dtype)
+        try:
+            gru(x.detach(), tensor.zeros([1, 2, 3]))
+        except RuntimeError as e:
+            print("RuntimeError:", e)
+
+        try:
+            gru(QTensor(x_np))
+        except ValueError as e:
+            print("ValueError:", e)
+
+        lstm = LSTM(4, 3, dtype=kfloat16)
+        y, (hn, cn) = lstm(x)
+        print(y.dtype, hn.dtype, cn.dtype)
+        rnn = RNN(4, 3, dtype=kfloat16)
+        y, h = rnn(x)
+        print(y.dtype, h.dtype)
+
+        # float16 float16 [1, 2, 3]
+
+        # [ 0.1699219,-0.2719727,-0.2375488]
+        # <QTensor [3] DEV_CPU float32>
+        # float16 
+        # [0.0666504,0.3215332,0.3046875,0.104126 ]
+        # <QTensor [4] DEV_CPU float32>
+        # float16
+        # RuntimeError: Expected hidden state dtype (float32) to match weight dtype (float16).
+        # ValueError: RNN input dtype (float32) does not match weight dtype (float16). Convert both to the same dtype.
+        # float16 float16 float16
+        # float16 float16
 
 RNN 
 =================================
 
-.. py:class:: pyvqnet.nn.rnn.RNN(input_size, hidden_size, num_layers=1, nonlinearity='tanh', batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
+.. py:class:: pyvqnet.nn.RNN(input_size, hidden_size, num_layers=1, nonlinearity='tanh', batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
 
 
     循环神经网络(RNN)模块,使用 :math:`\tanh` 或 :math:`\text{ReLU}` 作为激活函数。支持双向,多层配置。
@@ -1449,16 +1692,22 @@ RNN
      如果为 False, 则输入形状为 [seq_len,batch_size,feature_dim],默认为 True。
     :param use_bias: 如果为 False, 该模块不适用偏置项,默认: True。
     :param bidirectional: 如果为 True,变为双向RNN,默认: False。
-    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
+    :param dtype: 权重的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数;也可以取 ``kfloat16`` 或 ``kbfloat16``。
     :param name: 这个模块的名字, 默认为""。
 
     :return: RNN 实例
+
+    输入 ``x`` 的数据类型必须与权重的数据类型相同,否则抛出 ``ValueError``。
+    不传入初始隐藏状态时,隐藏状态用输入张量的数据类型和设备置零;显式传入的初始隐藏状态必须与权重同类型,否则抛出 ``RuntimeError``。
+    输出和隐藏状态保持该数据类型,不会提升为 ``kfloat32``。半精度的示例见本节 ``GRU`` 条目。
 
     Example::
 
         from pyvqnet.nn import RNN
         from pyvqnet.tensor import tensor
+        from pyvqnet.utils import set_random_seed
 
+        set_random_seed(42)
         rnn2 = RNN(4, 6, 2, batch_first=False, bidirectional = True)
 
         input = tensor.ones([5, 3, 4])
@@ -1467,62 +1716,22 @@ RNN
         print(output)
         print(hn)
 
-        # [[[-0.413501  -0.4584284 -0.7530673  0.017902   0.5038776  0.6589128
-        #    -0.3040171  0.6689512 -0.5059364 -0.4492912 -0.1206206 -0.3208488]
-        #   [-0.413501  -0.4584284 -0.7530673  0.017902   0.5038776  0.6589128
-        #    -0.3040171  0.6689512 -0.5059364 -0.4492912 -0.1206206 -0.3208488]
-        #   [-0.413501  -0.4584284 -0.7530673  0.017902   0.5038776  0.6589128
-        #    -0.3040171  0.6689512 -0.5059364 -0.4492912 -0.1206206 -0.3208488]]
+        # [[[-0.6079447,-0.4532993, 0.4304047,..., 0.4597782,-0.7243103, 0.563678 ],
+        #   [-0.6079447,-0.4532993, 0.4304047,..., 0.4597782,-0.7243103, 0.563678 ],
+        #   [-0.6079447,-0.4532993, 0.4304047,..., 0.4597782,-0.7243104, 0.563678 ]],
+        # ...
+        # <QTensor [5, 3, 12] DEV_CPU float32>
 
-        #  [[ 0.2127696 -0.6644132 -0.3884572 -0.0344413  0.35414    0.5639224
-        #    -0.2358238  0.7706838 -0.3650029 -0.54729   -0.2392456 -0.3285939]
-        #   [ 0.2127696 -0.6644132 -0.3884572 -0.0344413  0.35414    0.5639224
-        #    -0.2358238  0.7706838 -0.3650029 -0.54729   -0.2392456 -0.3285939]
-        #   [ 0.2127696 -0.6644132 -0.3884572 -0.0344413  0.35414    0.5639224
-        #    -0.2358238  0.7706838 -0.3650029 -0.54729   -0.2392456 -0.3285939]]
-
-        #  [[ 0.0432173 -0.3811357 -0.4611054 -0.255436   0.4998702  0.6649145
-        #    -0.3132874  0.5965794 -0.5760088 -0.5618317 -0.2404964 -0.4669401]
-        #   [ 0.0432173 -0.3811357 -0.4611054 -0.255436   0.4998702  0.6649145
-        #    -0.3132874  0.5965794 -0.5760088 -0.5618317 -0.2404964 -0.4669401]
-        #   [ 0.0432173 -0.3811357 -0.4611054 -0.255436   0.4998702  0.6649145
-        #    -0.3132874  0.5965794 -0.5760088 -0.5618317 -0.2404964 -0.4669401]]
-
-        #  [[ 0.1083845 -0.4397578 -0.4745184 -0.2148822  0.3674186  0.6907974
-        #    -0.061549   0.452508  -0.5262724 -0.3184315 -0.4691838 -0.0438465]
-        #   [ 0.1083845 -0.4397578 -0.4745184 -0.2148822  0.3674186  0.6907974
-        #    -0.061549   0.452508  -0.5262724 -0.3184315 -0.4691838 -0.0438465]
-        #   [ 0.1083845 -0.4397578 -0.4745184 -0.2148822  0.3674186  0.6907974
-        #    -0.061549   0.452508  -0.5262724 -0.3184315 -0.4691838 -0.0438465]]
-
-        #  [[-0.1835401 -0.6232781 -0.3571274  0.2283377  0.5426646  0.6719067
-        #    -0.8672301  0.0971878 -0.7561615 -0.5063094  0.5117968 -0.0985391]
-        #   [-0.1835401 -0.6232781 -0.3571274  0.2283377  0.5426646  0.6719067
-        #    -0.8672301  0.0971878 -0.7561615 -0.5063094  0.5117968 -0.0985391]
-        #   [-0.1835401 -0.6232781 -0.3571274  0.2283377  0.5426646  0.6719067
-        #    -0.8672301  0.0971878 -0.7561615 -0.5063094  0.5117968 -0.0985391]]]
-        # [[[ 0.2451548  0.9127097 -0.6998036  0.6434992  0.1046313  0.6530996]
-        #   [ 0.2451548  0.9127097 -0.6998036  0.6434992  0.1046313  0.6530996]
-        #   [ 0.2451548  0.9127097 -0.6998036  0.6434992  0.1046313  0.6530996]]
-
-        #  [[-0.1760802 -0.546555   0.7547818  0.8418489 -0.2011115  0.1687339]
-        #   [-0.1760802 -0.546555   0.7547818  0.8418489 -0.2011115  0.1687339]
-        #   [-0.1760802 -0.546555   0.7547818  0.8418489 -0.2011115  0.1687339]]
-
-        #  [[-0.1835401 -0.6232781 -0.3571274  0.2283377  0.5426646  0.6719067]
-        #   [-0.1835401 -0.6232781 -0.3571274  0.2283377  0.5426646  0.6719067]
-        #   [-0.1835401 -0.6232781 -0.3571274  0.2283377  0.5426646  0.6719067]]
-
-        #  [[-0.3040171  0.6689512 -0.5059364 -0.4492912 -0.1206206 -0.3208488]
-        #   [-0.3040171  0.6689512 -0.5059364 -0.4492912 -0.1206206 -0.3208488]
-        #   [-0.3040171  0.6689512 -0.5059364 -0.4492912 -0.1206206 -0.3208488]]]
-
-
+        # [[[ 0.3287382, 0.3597023,-0.1884527, 0.2387275, 0.8852126, 0.1251301],
+        #   [ 0.3287382, 0.3597023,-0.1884527, 0.2387275, 0.8852126, 0.1251301],
+        #   [ 0.3287382, 0.3597023,-0.1884527, 0.2387275, 0.8852126, 0.1251301]],
+        # ...
+        # <QTensor [4, 3, 6] DEV_CPU float32>
 
 LSTM
 =================================
 
-.. py:class:: pyvqnet.nn.lstm.LSTM(input_size, hidden_size, num_layers=1, batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
+.. py:class:: pyvqnet.nn.LSTM(input_size, hidden_size, num_layers=1, batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
 
     长短期记忆(LSTM)模块。支持双向LSTM, 堆叠多层LSTM等配置。单层单向LSTM计算公式如下:
 
@@ -1543,16 +1752,23 @@ LSTM
      如果为 False, 则输入形状为 [seq_len,batch_size,feature_dim],默认为 True。
     :param use_bias: 如果为 False,该模块不适用偏置项, 默认: True。
     :param bidirectional: 如果为 True,变为双向LSTM, 默认: False。
-    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
+    :param dtype: 权重的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数;也可以取 ``kfloat16`` 或 ``kbfloat16``。
     :param name: 这个模块的名字, 默认为""。
 
     :return: LSTM 实例
+
+    输入 ``x`` 的数据类型必须与权重的数据类型相同,否则抛出 ``ValueError``。
+    不传入初始状态时,初始隐藏状态 ``h0`` 和单元状态 ``c0`` 用输入张量的数据类型和设备置零;
+    显式传入的 ``h0`` 、 ``c0`` 必须与权重同类型,否则抛出 ``RuntimeError``。
+    输出和隐藏状态保持该数据类型,不会提升为 ``kfloat32``。半精度的示例见本节 ``GRU`` 条目。
 
     Example::
 
         from pyvqnet.nn import LSTM
         from pyvqnet.tensor import tensor
+        from pyvqnet.utils import set_random_seed
 
+        set_random_seed(42)
         rnn2 = LSTM(4, 6, 2, batch_first=False, bidirectional = True)
 
         input = tensor.ones([5, 3, 4])
@@ -1564,75 +1780,28 @@ LSTM
         print(hn)
         print(cn)
 
-        # [[[ 0.2732482  0.1701475  0.1449948  0.0736707  0.1340735  0.1299259 
-        #     0.0551452  0.2563322  0.040974   0.1358014 -0.1953781 -0.061493 ]
-        #   [ 0.2732482  0.1701475  0.1449948  0.0736707  0.1340735  0.1299259
-        #     0.0551452  0.2563322  0.040974   0.1358014 -0.1953781 -0.061493 ]
-        #   [ 0.2732482  0.1701475  0.1449948  0.0736707  0.1340735  0.1299259
-        #     0.0551452  0.2563322  0.040974   0.1358014 -0.1953781 -0.061493 ]]
+        # [[[-0.0799114,-0.0129676, 0.3312458,...,-0.068499 , 0.2339387, 0.0091012],
+        #   [-0.0799114,-0.0129676, 0.3312458,...,-0.068499 , 0.2339387, 0.0091012],
+        #   [-0.0799114,-0.0129676, 0.3312458,...,-0.068499 , 0.2339386, 0.0091012]],
+        # ...
+        # <QTensor [5, 3, 12] DEV_CPU float32>
 
-        #  [[ 0.0973835  0.2728153  0.0826659  0.1486651  0.001023  -0.0002572
-        #     0.0662036  0.2953667  0.0374205  0.1520839 -0.1803852 -0.0302957]
-        #   [ 0.0973835  0.2728153  0.0826659  0.1486651  0.001023  -0.0002572
-        #     0.0662036  0.2953667  0.0374205  0.1520839 -0.1803852 -0.0302957]
-        #   [ 0.0973835  0.2728153  0.0826659  0.1486651  0.001023  -0.0002572
-        #     0.0662036  0.2953667  0.0374205  0.1520839 -0.1803852 -0.0302957]]
+        # [[[-0.5239814,-0.0522218, 0.004135 ,-0.0725957, 0.3535964, 0.0437999],
+        #   [-0.5239814,-0.0522218, 0.004135 ,-0.0725957, 0.3535964, 0.0437999],
+        #   [-0.5239814,-0.0522218, 0.004135 ,-0.0725957, 0.3535964, 0.0437999]],
+        # ...
+        # <QTensor [4, 3, 6] DEV_CPU float32>
 
-        #  [[ 0.0228571  0.1898227  0.0312898  0.1559544 -0.0909701 -0.0543313
-        #     0.0921322  0.3542943  0.0323457  0.1877485 -0.1509136  0.0398105]
-        #   [ 0.0228571  0.1898227  0.0312898  0.1559544 -0.0909701 -0.0543313
-        #     0.0921322  0.3542943  0.0323457  0.1877485 -0.1509136  0.0398105]
-        #   [ 0.0228571  0.1898227  0.0312898  0.1559544 -0.0909701 -0.0543313
-        #     0.0921322  0.3542943  0.0323457  0.1877485 -0.1509136  0.0398105]]
-
-        #  [[-0.0164866  0.1411722 -0.002618   0.1457977 -0.1280925 -0.0702658
-        #     0.1419625  0.4266106  0.0363048  0.2426503 -0.0849762  0.1489675]
-        #   [-0.0164866  0.1411722 -0.002618   0.1457977 -0.1280925 -0.0702658
-        #     0.1419625  0.4266106  0.0363048  0.2426503 -0.0849762  0.1489675]
-        #   [-0.0164866  0.1411722 -0.002618   0.1457977 -0.1280925 -0.0702658
-        #     0.1419625  0.4266106  0.0363048  0.2426503 -0.0849762  0.1489675]]
-
-        #  [[-0.0223669  0.1591602 -0.0311901  0.0958475 -0.122227  -0.0682742
-        #     0.2645994  0.4319879  0.0528811  0.3815826  0.1058483  0.1233259]
-        #   [-0.0223669  0.1591602 -0.0311901  0.0958475 -0.122227  -0.0682742
-        #     0.2645994  0.4319879  0.0528811  0.3815826  0.1058483  0.1233259]
-        #   [-0.0223669  0.1591602 -0.0311901  0.0958475 -0.122227  -0.0682742
-        #     0.2645994  0.4319879  0.0528811  0.3815826  0.1058483  0.1233259]]]
-        # [[[ 0.1752738 -0.0356635  0.2989266  0.20517   -0.0896036  0.5098922]
-        #   [ 0.1752738 -0.0356635  0.2989266  0.20517   -0.0896036  0.5098922]
-        #   [ 0.1752738 -0.0356635  0.2989266  0.20517   -0.0896036  0.5098922]]
-
-        #  [[-0.2443907 -0.0827548 -0.1557958  0.1731217 -0.0342197 -0.1101249]
-        #   [-0.2443907 -0.0827548 -0.1557958  0.1731217 -0.0342197 -0.1101249]
-        #   [-0.2443907 -0.0827548 -0.1557958  0.1731217 -0.0342197 -0.1101249]]
-
-        #  [[-0.0223669  0.1591602 -0.0311901  0.0958475 -0.122227  -0.0682742]
-        #   [-0.0223669  0.1591602 -0.0311901  0.0958475 -0.122227  -0.0682742]
-        #   [-0.0223669  0.1591602 -0.0311901  0.0958475 -0.122227  -0.0682742]]
-
-        #  [[ 0.0551452  0.2563322  0.040974   0.1358014 -0.1953781 -0.061493 ]
-        #   [ 0.0551452  0.2563322  0.040974   0.1358014 -0.1953781 -0.061493 ]
-        #   [ 0.0551452  0.2563322  0.040974   0.1358014 -0.1953781 -0.061493 ]]]
-        # [[[ 0.3543518 -0.1842273  0.8745036  0.6013567 -0.1227313  1.0065726]
-        #   [ 0.3543518 -0.1842273  0.8745036  0.6013567 -0.1227313  1.0065726]
-        #   [ 0.3543518 -0.1842273  0.8745036  0.6013567 -0.1227313  1.0065726]]
-
-        #  [[-0.5912023 -0.2058601 -0.4632604  0.3671726 -0.0673411 -0.327456 ]
-        #   [-0.5912023 -0.2058601 -0.4632604  0.3671726 -0.0673411 -0.327456 ]
-        #   [-0.5912023 -0.2058601 -0.4632604  0.3671726 -0.0673411 -0.327456 ]]
-
-        #  [[-0.0393696  0.301177  -0.0757513  0.196299  -0.3163165 -0.1804099]
-        #   [-0.0393696  0.301177  -0.0757513  0.196299  -0.3163165 -0.1804099]
-        #   [-0.0393696  0.301177  -0.0757513  0.196299  -0.3163165 -0.1804099]]
-
-        #  [[ 0.1547394  0.4916601  0.1061193  0.2582704 -0.3499697 -0.1048216]
-        #   [ 0.1547394  0.4916601  0.1061193  0.2582704 -0.3499697 -0.1048216]
-        #   [ 0.1547394  0.4916601  0.1061193  0.2582704 -0.3499697 -0.1048216]]]
+        # [[[-0.9296281,-0.1563546, 0.0064872,-0.1456601, 0.644179 , 0.0584091],
+        #   [-0.9296281,-0.1563546, 0.0064872,-0.1456601, 0.644179 , 0.0584091],
+        #   [-0.929628 ,-0.1563546, 0.0064872,-0.1456601, 0.644179 , 0.0584091]],
+        # ...
+        # <QTensor [4, 3, 6] DEV_CPU float32>
 
 Dynamic_GRU
 =================================
 
-.. py:class:: pyvqnet.nn.gru.Dynamic_GRU(input_size,hidden_size, num_layers=1, batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
+.. py:class:: pyvqnet.nn.Dynamic_GRU(input_size,hidden_size, num_layers=1, batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
 
     将多层门控循环单元 (GRU) RNN 应用于动态长度输入序列。
 
@@ -1642,7 +1811,7 @@ Dynamic_GRU
     连续调用下一个函数: ``pad_sequence`` 、 ``pack_pad_sequence``。
 
     Dynamic_GRU 的第一个输出也是一个 ``tensor.PackedSequence`` 类,
-    可以使用 ``tensor.pad_pack_sequence`` 将其解压缩为普通 QTensor。
+    可以使用 ``tensor.pad_packed_sequence`` 将其解压缩为普通 QTensor。
 
     对于输入序列中的每个元素,每一层计算以下公式:
 
@@ -1654,22 +1823,27 @@ Dynamic_GRU
             h_t = (1 - z_t) * n_t + z_t * h_{(t-1)}
         \end{array}
 
-
     :param input_size: 输入特征维度。
     :param hidden_size: 隐藏的特征维度。
     :param num_layers: 循环层数。 默认值:1
     :param batch_first: 如果为 True,输入形状提供为 [批大小,序列长度,特征维度]。如果为 False,输入形状提供为 [序列长度,批大小,特征维度],默认为 True。
     :param use_bias: 如果为False,则该层不使用偏置权重b_ih和b_hh。 默认值:True。
     :param bidirectional: 如果为真,则成为双向 GRU。 默认值:False。
-    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
+    :param dtype: 权重的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数;也可以取 ``kfloat16`` 或 ``kbfloat16``。
     :param name: 这个模块的名字, 默认为""。
 
     :return: 一个 Dynamic_GRU 类
+
+    输入的数据类型必须与权重的数据类型相同,否则抛出 ``ValueError``。初始隐藏状态 ``h0`` 的形状为
+    [num_layers * num_directions, batch_size, hidden_size],数据类型必须与权重相同,否则抛出 ``RuntimeError``。
+    半精度的示例见本节 ``GRU`` 条目。
 
     Example::
 
         from pyvqnet.nn import Dynamic_GRU
         from pyvqnet.tensor import tensor
+        from pyvqnet.utils import set_random_seed
+        set_random_seed(42)
         seq_len = [4,1,2]
         input_size = 4
         batch_size =3
@@ -1703,27 +1877,18 @@ Dynamic_GRU
         tensor.pad_packed_sequence(output, batch_first=False)
         print(seq_unpacked)
         print(lens_unpacked)
-        # [
-        # [[-0.3918380, 0.0056273, 0.9018179, 0.9006662],
-        #  [-0.3715909, 0.0307644, 0.9756137, 0.9705784],
-        #  [-0.3917399, 0.0057521, 0.9507942, 0.9456232]],
-        # [[-0.6348240, -0.0603764, 0.9014163, 0.8903066],
-        #  [0., 0., 0., 0.],
-        #  [-0.6333261, -0.0592172, 0.9660671, 0.9580816]],
-        # [[-0.4571511, 0.0210018, 0.9151242, 0.9011748],
-        #  [0., 0., 0., 0.],
-        #  [0., 0., 0., 0.]],
-        # [[-0.3585358, 0.0918219, 0.9496037, 0.9391552],
-        #  [0., 0., 0., 0.],
-        #  [0., 0., 0., 0.]]
-        # ]
+
+        # [[[ 0.7521774, 0.7677011,-0.8743251, 0.8427663],
+        #   [ 0.8054866, 0.7439914,-0.4407494, 0.9327118],
+        #   [ 0.752525 , 0.7676451,-0.8203526, 0.9065282]],
+        # ...
+        # <QTensor [4, 3, 4] DEV_CPU float32>
         # [4 1 2]
 
 Dynamic_RNN 
 =================================
 
-.. py:class:: pyvqnet.nn.rnn.Dynamic_RNN(input_size, hidden_size, num_layers=1, nonlinearity='tanh', batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
-
+.. py:class:: pyvqnet.nn.Dynamic_RNN(input_size, hidden_size, num_layers=1, nonlinearity='tanh', batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
 
     将循环神经网络 RNN 应用于动态长度输入序列。
 
@@ -1733,7 +1898,7 @@ Dynamic_RNN
     连续调用下一个函数: ``pad_sequence`` 、 ``pack_pad_sequence``。
 
     Dynamic_RNN 的第一个输出也是一个 ``tensor.PackedSequence`` 类,
-    可以使用 ``tensor.pad_pack_sequence`` 将其解压缩为普通 QTensor。
+    可以使用 ``tensor.pad_packed_sequence`` 将其解压缩为普通 QTensor。
 
     循环神经网络(RNN)模块,使用 :math:`\tanh` 或 :math:`\text{ReLU}` 作为激活函数。支持双向,多层配置。
     单层单向RNN计算公式如下:
@@ -1751,15 +1916,21 @@ Dynamic_RNN
      如果为 False, 则输入形状为 [序列长度,批大小,特征维度],默认为 True。
     :param use_bias: 如果为 False, 该模块不适用偏置项,默认: True。
     :param bidirectional: 如果为 True,变为双向RNN,默认: False。
-    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
+    :param dtype: 权重的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数;也可以取 ``kfloat16`` 或 ``kbfloat16``。
     :param name: 这个模块的名字, 默认为""。
 
     :return: Dynamic_RNN 实例
+
+    输入的数据类型必须与权重的数据类型相同,否则抛出 ``ValueError``。初始隐藏状态 ``h0`` 的形状为
+    [num_layers * num_directions, batch_size, hidden_size],数据类型必须与权重相同,否则抛出 ``RuntimeError``。
+    半精度的示例见本节 ``GRU`` 条目。
 
     Example::
 
         from pyvqnet.nn import Dynamic_RNN
         from pyvqnet.tensor import tensor
+        from pyvqnet.utils import set_random_seed
+        set_random_seed(42)
         seq_len = [4,1,2]
         input_size = 4
         batch_size =3
@@ -1795,29 +1966,17 @@ Dynamic_RNN
         print(seq_unpacked)
         print(lens_unpacked)
 
-        # [
-        # [[1.2980951, 0., 0., 0.],
-        #  [1.5040692, 0., 0., 0.],
-        #  [1.4927036, 0., 0., 0.1065927]],
-        # [[2.6561704, 0., 0., 0.2532321],
-        #  [0., 0., 0., 0.],
-        #  [3.1472805, 0., 0., 0.]],
-        # [[5.1231661, 0., 0., 0.7596353],
-        #  [0., 0., 0., 0.],
-        #  [0., 0., 0., 0.]],
-        # [[8.4954977, 0., 0., 0.8191229],
-        #  [0., 0., 0., 0.],
-        #  [0., 0., 0., 0.]]
-        # ]
+        # [[[ 6.653963 , 0.       , 0.       , 0.       ],
+        #   [ 4.832572 , 0.       , 0.       , 0.       ],
+        #   [ 4.9693546, 0.       , 0.       , 0.       ]],
+        # ...
+        # <QTensor [4, 3, 4] DEV_CPU float32>
         # [4 1 2]
-
-
 
 Dynamic_LSTM
 =================================
 
-.. py:class:: pyvqnet.nn.lstm.Dynamic_LSTM(input_size, hidden_size, num_layers=1, batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
-
+.. py:class:: pyvqnet.nn.Dynamic_LSTM(input_size, hidden_size, num_layers=1, batch_first=True, use_bias=True, bidirectional=False, dtype=None, name: str = "")
 
     将长短期记忆(LSTM) RNN 应用于动态长度输入序列。
 
@@ -1827,10 +1986,9 @@ Dynamic_LSTM
     连续调用下一个函数: ``pad_sequence`` 、 ``pack_pad_sequence``。
 
     Dynamic_LSTM 的第一个输出也是一个 ``tensor.PackedSequence`` 类,
-    可以使用 ``tensor.pad_pack_sequence`` 将其解压缩为普通 QTensor。
+    可以使用 ``tensor.pad_packed_sequence`` 将其解压缩为普通 QTensor。
 
-    循环神经网络(RNN)模块,使用 :math:`\tanh` 或 :math:`\text{ReLU}` 作为激活函数。支持双向,多层配置。
-    单层单向RNN计算公式如下:
+    单层单向LSTM计算公式如下:
 
     .. math::
         \begin{array}{ll} \\
@@ -1849,16 +2007,22 @@ Dynamic_LSTM
      如果为 False, 则输入形状为 [序列长度,批大小,特征维度],默认为 True。
     :param use_bias: 如果为 False,该模块不适用偏置项, 默认: True。
     :param bidirectional: 如果为 True,变为双向LSTM, 默认: False。
-    :param dtype: 参数的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数。
+    :param dtype: 权重的数据类型,默认: None,使用默认数据类型:kfloat32,代表32位浮点数;也可以取 ``kfloat16`` 或 ``kbfloat16``。
     :param name: 这个模块的名字, 默认为""。
 
-    :return: Dynamic_LSTM 实例
+    :return: Dynamic_LSTM 类
+
+    输入的数据类型必须与权重的数据类型相同,否则抛出 ``ValueError``。初始隐藏状态 ``h0`` 和单元状态 ``c0`` 的形状为
+    [num_layers * num_directions, batch_size, hidden_size],数据类型必须与权重相同,否则抛出 ``RuntimeError``。
+    半精度的示例见本节 ``GRU`` 条目。
 
     Example::
 
         from pyvqnet.nn import Dynamic_LSTM
         from pyvqnet.tensor import tensor
+        from pyvqnet.utils import set_random_seed
 
+        set_random_seed(42)
         input_size = 2
         hidden_size = 2
         ml = 2
@@ -1897,23 +2061,12 @@ Dynamic_LSTM
         print(seq_unpacked)
         print(lens_unpacked)
 
-        # [
-        # [[0.2038177, 0.1139005, 0.2312966, -0.1140076],
-        #  [0.1992285, 0.1221137, 0.2277344, -0.3147154],
-        #  [0.2293468, 0.0681745, 0.2426863, 0.2572871]],
-        # [[0.1398094, -0.0150359, 0.2513067, 0.0783743],
-        #  [0.1328388, -0.0031956, 0.2324090, -0.1962151],
-        #  [0., 0., 0., 0.]],
-        # [[0.0898260, -0.0706460, 0.2396922, 0.2323916],
-        #  [0.0817787, -0.0449937, 0.2388873, -0.0000469],
-        #  [0., 0., 0., 0.]],
-        # [[0., 0., 0., 0.],
-        #  [0.0532839, -0.0870574, 0.2397324, 0.2103822],
-        #  [0., 0., 0., 0.]]
-        # ]
+        # [[[ 0.3395967,-0.0288559,-0.4148546, 0.1724512],
+        #   [ 0.3400651,-0.0284723,-0.4636016, 0.2154493],
+        #   [ 0.3396083,-0.0347108, 0.01393  , 0.0407573]],
+        # ...
+        # <QTensor [4, 3, 4] DEV_CPU float32>
         # [3 4 1]
-
-
 
 Interpolate
 =================================
@@ -2146,6 +2299,125 @@ SDPA
             out_sdpa = model(query_p, key_p, value_p)
 
             out_sdpa.backward()
+
+数据加载
+**********************************************************
+
+DataLoader
+=================================
+
+.. py:class:: pyvqnet.data.DataLoader(dataset, batch_size=1, shuffle=None, sampler=None, batch_sampler=None, seed=None, num_workers=0, prefetch_factor=None, collate_fn=None, drop_last=False, timeout=0, multiprocessing_context=None, persistent_workers=False)
+
+    数据加载器。它从 ``dataset`` 中按批取出数据,返回的每个元素是一个 ``(x, y)`` 批,批内数据被堆叠为 QTensor。
+
+    ``dataset`` 可以是实现了 ``__getitem__`` 和 ``__len__`` 的 ``pyvqnet.data.data.Dataset`` 子类(映射式),
+    也可以是 ``pyvqnet.data.data.IterableDataset`` 的子类(迭代式)。对迭代式数据集, ``shuffle`` 、 ``sampler`` 和 ``batch_sampler`` 必须保持默认值,否则抛出 ``ValueError``。
+
+    :param dataset: 数据集。
+    :param batch_size: 每批的样本数,默认为 1。为 ``None`` 时不自动组批。
+    :param shuffle: 是否在每个 epoch 打乱数据,默认 ``None``。与 ``sampler`` 互斥。
+    :param sampler: 自定义采样器 ``pyvqnet.data.Sampler``。指定后不能再设置 ``shuffle=True``。
+    :param batch_sampler: 自定义的批采样器。指定后 ``batch_size`` 、 ``shuffle`` 、 ``sampler`` 和 ``drop_last`` 必须保持默认值。
+    :param seed: ``shuffle=True`` 时打乱顺序所用的随机种子,默认 ``None`` 时取 42。
+    :param num_workers: 读取数据的子进程数,默认为 0(在主进程中读取)。不能为负数。
+    :param prefetch_factor: 每个Worker进程预先准备的最大批数。只在 ``num_workers > 0`` 时可以指定,此时默认为 2。
+    :param collate_fn: 把一批样本合并成一个批的函数,默认使用 ``pyvqnet.data.collate.default_collate``。
+    :param drop_last: 是否丢弃最后一个不满 ``batch_size`` 的批,默认为 ``False``。
+    :param timeout: 等待一个批的超时时间(秒),默认为 0(不超时)。不能为负数。
+    :param multiprocessing_context: 子进程的启动方式。多进程读取时推荐显式传入 ``"fork"``:
+        Python 3.14 在 Linux 上默认的启动方式为 ``forkserver``,该数据加载器的进程协议不支持它。
+        可以是 ``multiprocessing.get_all_start_methods()`` 中的名字或 ``multiprocessing.context.BaseContext`` 对象;
+        只能与 ``num_workers > 0`` 一起使用。
+    :param persistent_workers: 为 ``True`` 时,各个 epoch 复用同一组 Worker 进程,而不是每个 epoch 重新创建。
+        需要 ``num_workers > 0``。每次重新迭代该 ``DataLoader`` 时复用这些进程。
+
+    .. note::
+
+        ``num_workers < 0`` 、 ``timeout < 0`` 、 ``num_workers == 0`` 时指定 ``prefetch_factor`` 或 ``multiprocessing_context`` 、
+        ``persistent_workers=True`` 而 ``num_workers == 0`` 、 ``sampler`` 与 ``shuffle=True`` 同时指定等情况都会抛出 ``ValueError`` 。
+        该数据加载器不支持 ``pin_memory``。
+
+    :return: 一个 DataLoader 对象,可以迭代; ``len()`` 返回批的个数。
+
+    Example::
+
+        import numpy as np
+        from pyvqnet.data import DataLoader
+        from pyvqnet.data.data import Dataset
+        from pyvqnet.utils import set_random_seed
+
+        class MyDataset(Dataset):
+            def __init__(self, x, y):
+                self.x, self.y = x, y
+
+            def __getitem__(self, index):
+                return self.x[index], self.y[index]
+
+            def __len__(self):
+                return len(self.x)
+
+        set_random_seed(42)
+        dataset = MyDataset(np.arange(12).reshape(6, 2), np.arange(6))
+
+        loader = DataLoader(dataset, batch_size=2, shuffle=True, seed=1, drop_last=True)
+        for xb, yb in loader:
+            print(xb.shape, yb.to_numpy().tolist(), type(xb).__name__)
+        print(len(loader))
+
+        from pyvqnet.data.data import IterableDataset
+
+        class Stream(IterableDataset):
+            def __iter__(self):
+                for i in range(5):
+                    yield np.array([i], dtype=np.float32), i
+
+        for xb, yb in DataLoader(Stream(), batch_size=2):
+            print(xb.to_numpy().reshape(-1).tolist(), yb.to_numpy().tolist())
+
+        # [2, 2] [4, 0] QTensor
+        # [2, 2] [2, 1] QTensor
+        # [2, 2] [5, 3] QTensor
+        # 3
+        # [0.0, 1.0] [0, 1]
+        # [2.0, 3.0] [2, 3]
+        # [4.0] [4]
+
+    Example::
+
+        import numpy as np
+        from pyvqnet.data import DataLoader
+        from pyvqnet.data.data import Dataset
+
+        class MyDataset(Dataset):
+            def __init__(self, x, y):
+                self.x, self.y = x, y
+
+            def __getitem__(self, index):
+                return self.x[index], self.y[index]
+
+            def __len__(self):
+                return len(self.x)
+
+        dataset = MyDataset(np.arange(12).reshape(6, 2), np.arange(6))
+
+        workers = DataLoader(dataset, batch_size=2, num_workers=2,
+                             multiprocessing_context="fork", persistent_workers=True)
+        for epoch in range(2):
+            print([yb[0].item() for _, yb in workers])
+
+        for kw in (dict(num_workers=2, multiprocessing_context="spawn "), dict(persistent_workers=True),
+                   dict(num_workers=0, prefetch_factor=2)):
+            try:
+                DataLoader(dataset, **kw)
+            except ValueError as e:
+                print("ValueError:", str(e).split("\n")[0])
+
+        # [0, 2, 4]
+        # [0, 2, 4]
+        # ValueError: multiprocessing_context option should specify a valid start method in ['forkserver', 'fork', 'spawn'], but got multiprocessing_context='spawn '
+        # ValueError: persistent_workers option needs num_workers > 0
+        # ValueError: prefetch_factor option could only be specified in multiprocessing.let num_workers > 0 to enable multiprocessing, otherwise set prefetch_factor to None.
+
 
 
 损失函数层
@@ -2439,12 +2711,12 @@ CrossEntropyLoss
 
         #[1.1508200]
 
-``pyvqnet.nn.functional`` 与 ``pyvqnet.nn._sampling`` 模块提供了一系列底层函数式算子,可用于构建自定义层或实现采样逻辑。
+``pyvqnet.nn.common.functional`` 与 ``pyvqnet.nn.native._sampling`` 模块提供了一系列底层函数式算子,可用于构建自定义层或实现采样逻辑。
 
 rope (旋转位置编码)
 =================================
 
-.. py:function:: pyvqnet.nn.functional.rope(q, k, cos, sin)
+.. py:function:: pyvqnet.nn.common.functional.rope(q, k, cos, sin)
 
     对查询与键张量应用旋转位置编码(RoPE)的前向计算。
 
@@ -2458,7 +2730,7 @@ rope (旋转位置编码)
 
         import pyvqnet
         from pyvqnet.tensor import QTensor, tensor, DEV_GPU_0, kfloat32, cos, sin
-        from pyvqnet.nn.functional import rope
+        from pyvqnet.nn.common.functional import rope
         import numpy as np
 
         # Precompute cos/sin cache
@@ -2493,7 +2765,7 @@ rope (旋转位置编码)
 swiglu (门控线性单元)
 -----------------------------
 
-.. py:function:: pyvqnet.nn.functional.swiglu(gate, up)
+.. py:function:: pyvqnet.nn.common.functional.swiglu(gate, up)
 
     SwiGLU 函数式算子: ``SiLU(gate) * up`` 。
 
@@ -2504,7 +2776,7 @@ swiglu (门控线性单元)
     Example::
 
         from pyvqnet.tensor import QTensor, kfloat32
-        from pyvqnet.nn.functional import swiglu
+        from pyvqnet.nn.common.functional import swiglu
 
         gate = QTensor([1.0, 2.0, 3.0, 4.0], dtype=kfloat32)
         up = QTensor([0.5, 1.0, 1.5, 2.0], dtype=kfloat32)
@@ -2516,7 +2788,7 @@ swiglu (门控线性单元)
 scaled_softmax (缩放 Softmax)
 =================================
 
-.. py:function:: pyvqnet.nn.functional.scaled_softmax(input, scale: float)
+.. py:function:: pyvqnet.nn.common.functional.scaled_softmax(input, scale: float)
 
     对输入进行缩放 softmax 计算。
 
@@ -2527,7 +2799,7 @@ scaled_softmax (缩放 Softmax)
     Example::
 
         from pyvqnet.tensor import QTensor, kfloat32
-        from pyvqnet.nn.functional import scaled_softmax
+        from pyvqnet.nn.common.functional import scaled_softmax
 
         x = QTensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]], dtype=kfloat32)
         out = scaled_softmax(x, 0.5)
@@ -2539,7 +2811,7 @@ scaled_softmax (缩放 Softmax)
 scaled_masked_softmax (掩码缩放 Softmax)
 ==========================================
 
-.. py:function:: pyvqnet.nn.functional.scaled_masked_softmax(input, mask, scale: float)
+.. py:function:: pyvqnet.nn.common.functional.scaled_masked_softmax(input, mask, scale: float)
 
     带掩码的缩放 softmax 计算。
 
@@ -2551,7 +2823,7 @@ scaled_masked_softmax (掩码缩放 Softmax)
     Example::
 
         from pyvqnet.tensor import QTensor, kfloat32
-        from pyvqnet.nn.functional import scaled_masked_softmax
+        from pyvqnet.nn.common.functional import scaled_masked_softmax
 
         x = QTensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]], dtype=kfloat32)
         mask = QTensor([[0, 0, 1], [1, 0, 0]], dtype=kfloat32)  # 1=masked
@@ -2564,7 +2836,7 @@ scaled_masked_softmax (掩码缩放 Softmax)
 scaled_upper_triang_masked_softmax (上三角掩码缩放 Softmax)
 =============================================================
 
-.. py:function:: pyvqnet.nn.functional.scaled_upper_triang_masked_softmax(input, scale: float)
+.. py:function:: pyvqnet.nn.common.functional.scaled_upper_triang_masked_softmax(input, scale: float)
 
     对输入上三角部分进行掩码的缩放 softmax 计算。
 
@@ -2575,7 +2847,7 @@ scaled_upper_triang_masked_softmax (上三角掩码缩放 Softmax)
     Example::
 
         from pyvqnet.tensor import QTensor, kfloat32
-        from pyvqnet.nn.functional import scaled_upper_triang_masked_softmax
+        from pyvqnet.nn.common.functional import scaled_upper_triang_masked_softmax
 
         x = QTensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]], dtype=kfloat32)
         out = scaled_upper_triang_masked_softmax(x, 1.0)
@@ -2587,7 +2859,7 @@ scaled_upper_triang_masked_softmax (上三角掩码缩放 Softmax)
 fused_moe (融合专家混合)
 =====================================
 
-.. py:function:: pyvqnet.nn.functional.fused_moe(input, fc1_weight, fc2_weight, probs, indices, num_experts)
+.. py:function:: pyvqnet.nn.common.functional.fused_moe(input, fc1_weight, fc2_weight, probs, indices, num_experts)
 
     融合专家混合(MoE)前向计算。
 
@@ -2608,7 +2880,7 @@ fused_moe (融合专家混合)
         import pyvqnet
         from pyvqnet.tensor import QTensor, DEV_GPU_0, kfloat32
         from pyvqnet.dtype import kint32
-        from pyvqnet.nn.functional import fused_moe
+        from pyvqnet.nn.common.functional import fused_moe
         import numpy as np
 
         np.random.seed(42)
@@ -2627,7 +2899,7 @@ fused_moe (融合专家混合)
 基于logits的 Top-K 和 Top-P 采样
 =====================================
 
-.. py:function:: pyvqnet.nn._sampling.top_k_top_p_sampling_from_logits(logits, temperature: Union[QTensor, float] = 1.0, top_k: Union[QTensor, int] = 0, top_p: Union[QTensor, float] = 1.0, deterministic: bool = True)
+.. py:function:: pyvqnet.nn.native._sampling.top_k_top_p_sampling_from_logits(logits, temperature: Union[QTensor, float] = 1.0, top_k: Union[QTensor, int] = 0, top_p: Union[QTensor, float] = 1.0, deterministic: bool = True)
 
     基于 logits 进行 top-k 与 top-p 联合采样。
 
@@ -2646,7 +2918,7 @@ fused_moe (融合专家混合)
 
         import pyvqnet
         from pyvqnet.tensor import QTensor, DEV_GPU_0, kfloat32
-        from pyvqnet.nn._sampling import top_k_top_p_sampling_from_logits
+        from pyvqnet.nn.native._sampling import top_k_top_p_sampling_from_logits
 
         logits = QTensor([[1.0, 2.0, 3.0, 4.0], [4.0, 3.0, 2.0, 1.0]],
                          dtype=kfloat32, device=DEV_GPU_0)
@@ -2659,7 +2931,7 @@ fused_moe (融合专家混合)
 基于概率的 Top-K 和 Top-P 联合采样
 ---------------------------------------------------------------
 
-.. py:function:: pyvqnet.nn._sampling.top_k_top_p_sampling_from_probs(probs, top_k: Union[QTensor, int] = 0, top_p: Union[QTensor, float] = 1.0, deterministic: bool = True)
+.. py:function:: pyvqnet.nn.native._sampling.top_k_top_p_sampling_from_probs(probs, top_k: Union[QTensor, int] = 0, top_p: Union[QTensor, float] = 1.0, deterministic: bool = True)
 
     基于概率分布进行 top-k 与 top-p 联合采样。
 
@@ -2677,7 +2949,7 @@ fused_moe (融合专家混合)
 
         import pyvqnet
         from pyvqnet.tensor import QTensor, DEV_GPU_0, kfloat32
-        from pyvqnet.nn._sampling import top_k_top_p_sampling_from_probs
+        from pyvqnet.nn.native._sampling import top_k_top_p_sampling_from_probs
         from pyvqnet.utils import set_random_seed
 
         set_random_seed(42)
@@ -2692,7 +2964,7 @@ fused_moe (融合专家混合)
 基于概率的 Top-K 采样
 ---------------------------------------------
 
-.. py:function:: pyvqnet.nn._sampling.top_k_sampling_from_probs(probs, top_k: Union[QTensor, int] = 0, deterministic: bool = True)
+.. py:function:: pyvqnet.nn.native._sampling.top_k_sampling_from_probs(probs, top_k: Union[QTensor, int] = 0, deterministic: bool = True)
 
     基于概率分布进行 top-k 采样。
 
@@ -2709,7 +2981,7 @@ fused_moe (融合专家混合)
 
         import pyvqnet
         from pyvqnet.tensor import QTensor, DEV_GPU_0, kfloat32
-        from pyvqnet.nn._sampling import top_k_sampling_from_probs
+        from pyvqnet.nn.native._sampling import top_k_sampling_from_probs
         from pyvqnet.utils import set_random_seed
 
         set_random_seed(42)
@@ -2724,7 +2996,7 @@ fused_moe (融合专家混合)
 基于概率的 Top-P 采样
 ---------------------------------------------
 
-.. py:function:: pyvqnet.nn._sampling.top_p_sampling_from_probs(probs, top_p: Union[QTensor, float] = 1.0, deterministic: bool = True)
+.. py:function:: pyvqnet.nn.native._sampling.top_p_sampling_from_probs(probs, top_p: Union[QTensor, float] = 1.0, deterministic: bool = True)
 
     基于概率分布进行 top-p 采样。
 
@@ -2741,7 +3013,7 @@ fused_moe (融合专家混合)
 
         import pyvqnet
         from pyvqnet.tensor import QTensor, DEV_GPU_0, kfloat32
-        from pyvqnet.nn._sampling import top_p_sampling_from_probs
+        from pyvqnet.nn.native._sampling import top_p_sampling_from_probs
         from pyvqnet.utils import set_random_seed
 
         set_random_seed(42)
@@ -2756,7 +3028,7 @@ fused_moe (融合专家混合)
 基于概率的 Min-P 采样
 ---------------------------------------------
 
-.. py:function:: pyvqnet.nn._sampling.min_p_sampling_from_probs(probs, min_p: Union[QTensor, float] = 0.0, deterministic: bool = True)
+.. py:function:: pyvqnet.nn.native._sampling.min_p_sampling_from_probs(probs, min_p: Union[QTensor, float] = 0.0, deterministic: bool = True)
 
     基于 min-p 策略的概率采样。
 
@@ -2773,7 +3045,7 @@ fused_moe (融合专家混合)
 
         import pyvqnet
         from pyvqnet.tensor import QTensor, DEV_GPU_0, kfloat32
-        from pyvqnet.nn._sampling import min_p_sampling_from_probs
+        from pyvqnet.nn.native._sampling import min_p_sampling_from_probs
         from pyvqnet.utils import set_random_seed
 
         set_random_seed(42)
@@ -2793,11 +3065,41 @@ fused_moe (融合专家混合)
 
 Activation
 =================================
-.. py:class:: pyvqnet.nn.activation.Activation(name: str = "")
+.. py:class:: pyvqnet.nn.native.activation.Activation(name: str = "")
 
     激活的基类。 特定的激活函数继承了这个类。
 
+    子类必须实现 ``forward(x)``;直接调用没有实现 ``forward`` 的子类会抛出 ``NotImplementedError``。
+
     :param name: 激活模块名,默认为""。
+
+    Example::
+
+        from pyvqnet.nn.native.activation import Activation, Sigmoid
+        from pyvqnet.tensor import QTensor
+
+        class MyAct(Activation):
+            pass
+
+        try:
+            MyAct()(QTensor([1.0]))
+        except NotImplementedError as e:
+            print("NotImplementedError:", e)
+
+        class Double(Activation):
+            def forward(self, x):
+                return 2 * x
+
+        print(Double()(QTensor([1.0, 2.0])))
+        print(Sigmoid()(QTensor([0.0])))
+
+        # NotImplementedError: MyAct must implement forward(x)
+
+        # [2.,4.]
+        # <QTensor [2] DEV_CPU float32>
+
+        # [0.5]
+        # <QTensor [1] DEV_CPU float32>
 
 Sigmoid
 =================================
@@ -3660,14 +3962,15 @@ precision_recall_f1_2_score
 
     计算2分类任务下预测值的精确率,召回率和F1分数。其中预测值和真值需要是形状类似(n_samples,)的QTensor,值为0或1,代表两个类的标签。
 
+    标签也可以使用 -1 和 1 (``-1`` 视为负类);两套标签之外的其他取值抛出 ``ValueError``。
+
     :param y_true_Qtensor: 一维QTensor的输入,形状类似(n_samples,),真实目标值。
     :param y_pred_Qtensor: 一维QTensor的输入,形状类似(n_samples,),估计目标值。
 
-    :returns: 
+    :returns:
         - precision - 精确率
         - recall - 召回率
         - f1 - F1 分数
-
 
     Example::
 
@@ -3681,8 +3984,21 @@ precision_recall_f1_2_score
         precision, recall, f1 = vqnet_metrics.precision_recall_f1_2_score(
             y_true_Qtensor, y_pred_Qtensor)
         print(precision, recall, f1)
-        # 0.5 0.6 0.5454545454545454
 
+        precision, recall, f1 = vqnet_metrics.precision_recall_f1_2_score(
+            tensor.QTensor([-1, -1, 1, 1]), tensor.QTensor([-1, 1, 1, 1]))
+        print(precision, recall, f1)
+
+        for bad in (tensor.QTensor([0, 2, 1, 1]), tensor.QTensor([0.5, 0.5, 1, 1])):
+            try:
+                vqnet_metrics.precision_recall_f1_2_score(bad, y_pred_Qtensor[:len(bad.to_numpy().reshape(-1))])
+            except ValueError as e:
+                print("ValueError:", e)
+
+        # 0.5 0.6 0.5454545454545454
+        # 0.6666666666666666 1.0 0.8
+        # ValueError: y_true must use the {0,1} or {-1,1} label domain, got [0, 1, 2]
+        # ValueError: y_true must contain integer binary labels
 
 precision_recall_f1_N_score
 =================================
@@ -3691,9 +4007,12 @@ precision_recall_f1_N_score
 
     多分类任务的精确率,召回率,F1分数计算。其中预测值和真值是形状类似(n_samples,)的QTensor,值为0到N-1的整数,代表N个类的标签。
 
+    标签可以是 ``0`` 到 ``N-1`` 或 ``1`` 到 ``N`` 两套之一; ``y_true_Qtensor`` 与 ``y_pred_Qtensor`` 必须使用同一套标签(一个是 0 起始而另一个是 1 起始时抛出 ``ValueError``)。
+    ``average`` 不是 ``'micro'`` 、 ``'macro'`` 、 ``'weighted'`` 之一,或 ``N`` 不是正整数时,抛出 ``ValueError``。
+
     :param y_true_Qtensor: 一维QTensor的输入,真实目标值。
     :param y_pred_Qtensor: 一维QTensor的输入,估计目标值。
-    :param N: N类(类别数)。
+    :param N: N类(类别数),正整数。
     :param average: string, ['micro', 'macro', 'weighted']。
             多类/多标签目标需要此参数。
             ``'micro'``: 通过计算总真正数来全局计算指标,假阴性和假阳性。
@@ -3702,7 +4021,7 @@ precision_recall_f1_N_score
 
             ``'weighted'``: 计算每个标签的指标,并找到它们的平均值(每个标签的真实实例数)。这改变 ``'macro'`` 以解释标签不平衡; 这可能会导致F分数不在精度和召回之间。
 
-    :returns: 
+    :returns:
         - precision - 精确率
         - recall - 召回率
         - f1 - F1 分数
@@ -3721,18 +4040,34 @@ precision_recall_f1_N_score
         precision_micro, recall_micro, f1_micro = vqnet_metrics.precision_recall_f1_N_score(
             y_true_Qtensor, y_pred_Qtensor, 3, average='micro')
         print(precision_micro, recall_micro, f1_micro)
-        # 0.6 0.6 0.6
 
         precision_macro, recall_macro, f1_macro = vqnet_metrics.precision_recall_f1_N_score(
             y_true_Qtensor, y_pred_Qtensor, 3, average='macro')
         print(precision_macro, recall_macro, f1_macro)
-        # 0.5833333333333334 0.5888888888888889 0.5793650793650794
 
         precision_weighted, recall_weighted, f1_weighted = vqnet_metrics.precision_recall_f1_N_score(
             y_true_Qtensor, y_pred_Qtensor, 3, average='weighted')
         print(precision_weighted, recall_weighted, f1_weighted)
-        # 0.625 0.6 0.6047619047619047
 
+        print(vqnet_metrics.precision_recall_f1_N_score(
+            tensor.QTensor([0, 0, 1, 1]), tensor.QTensor([0, 1, 1, 1]), 2, average='macro'))
+        for call in (
+            lambda: vqnet_metrics.precision_recall_f1_N_score(
+                y_true_Qtensor, tensor.QTensor([0, 1, 1, 1, 2, 0, 1, 2, 2, 2]), 3, average='macro'),
+            lambda: vqnet_metrics.precision_recall_f1_N_score(
+                y_true_Qtensor, y_pred_Qtensor, 3, average='none'),
+        ):
+            try:
+                call()
+            except ValueError as e:
+                print("ValueError:", e)
+
+        # 0.6 0.6 0.6
+        # 0.5833333333333334 0.5888888888888889 0.5793650793650794
+        # 0.625 0.6 0.6047619047619047
+        # (0.8333333333333333, 0.75, 0.7333333333333334)
+        # ValueError: y_true and y_pred use different label domains (0-based vs 1-based, N=3)
+        # ValueError: wrong average ! expected one of 'micro', 'macro' or 'weighted'
 
 precision_recall_f1_Multi_score
 =================================
